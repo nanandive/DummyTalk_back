@@ -10,14 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @Controller
-@RestController
 @RequiredArgsConstructor
 public class ChannelController {
     private final ChannelRepository channelRepository;
 
-    @GetMapping("/")
+    @GetMapping("/chat")
     public String main() {
-        return "/chat/writeForm";
+        return "chat/writeForm";
     }
-
 }
