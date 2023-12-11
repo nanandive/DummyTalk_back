@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -29,4 +32,12 @@ public class ChatDataEntity extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
     private ChannelEntity channelId;
+
+    /* 채널 데이터와 번역된 텍스트의 연관관계 (부모) */
+    @OneToMany( mappedBy = "channelDataId", fetch = FetchType.LAZY)
+    private List<TranslatedTextEntity> translatedTextEntityList = new ArrayList<>();
+
+    /* 채널 데이터와 이미지의 연관관계 (부모) */
+    @OneToMany( mappedBy = "channelDataId", fetch = FetchType.LAZY)
+    private List<ImageEntity> imageEntityList = new ArrayList<>();
 }
