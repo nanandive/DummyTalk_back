@@ -9,5 +9,4 @@ public class DummyTalkApplication {
     public static void main(String[] args) {
         SpringApplication.run(DummyTalkApplication.class, args);
     }
-
 }
