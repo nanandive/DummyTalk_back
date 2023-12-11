@@ -1,35 +1,37 @@
 package com.example.DummyTalk.Chat.Server.Entity;
 
+import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
+import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
+import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
 @Table(name = "server")
-public class ServerEntity {
+public class ServerEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "server_id")
-    private Long id;
+    private Long serverId;
 
-    @Column(nullable = false)
-    private String ServerName;
+    private String serverName;
 
-    @Column(nullable = false)
-    private String user_id;
+    private String invitedCode;
 
-    @Column(nullable = false)
-    private String invitedUser;
+    /* 유저와 서버의 관계 */
 
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
+    /* 채널과의 연관관계 (부모) */
+    @OneToMany(mappedBy = "serverEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ChannelEntity> channelEntityList = new ArrayList<>();
+
 
 }
