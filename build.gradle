@@ -9,18 +9,18 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '17'
-}
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
     }
-}
 
-repositories {
-    mavenCentral()
-    maven { url 'https://repo.spring.io/milestone' }
-    maven { url 'https://repo.spring.io/snapshot' }
+    repositories {
+        mavenCentral()
+        maven { url 'https://repo.spring.io/milestone' }
+        maven { url 'https://repo.spring.io/snapshot' }
+    }
 }
 
 dependencies {

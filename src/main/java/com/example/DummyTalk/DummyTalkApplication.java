@@ -46,6 +46,6 @@ public class DummyTalkApplication {
             System.out.println("비동기 요청 실행");
         }
 
-        
+
     }
 }
