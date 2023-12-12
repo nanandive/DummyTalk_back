@@ -6,6 +6,7 @@ import com.example.DummyTalk.Jwt.JwtAuthenticationEntryPoint;
 import com.example.DummyTalk.Jwt.TokenProvider;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -58,8 +59,9 @@ public class SecurityConfig {
                 ) // 1번
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
+
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()     // cors를 위해 허용
                                 .requestMatchers("/", "/login/**", "/websocket/**", "/app/**").permitAll()          // index와 login페이지만 허용
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // cors를 위해 허용
 //                                .anyRequest().authenticated()                               // 모든 요청의 기본 값은 사용자 인증(authenticated) 필요
                                 .anyRequest().permitAll()
                 ).apply(new JwtSecurityConfig(tokenProvider));
@@ -90,12 +92,12 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Content-type"  // setAllowedHeaders() : 허용되는 HTTP 헤더의 목록을 지정
                 , "Access-Control-Allow-Headers", "Authorization"
                 , "X-Requested-With"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+//        configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin"));               // setExposedHeaders() : 서버에서 클라이언트로 응답할 때 노출할 수 있는 헤더의 목록을 지정
-        configuration.addAllowedMethod("*");                                                         // addAllowedMethod() : Get/Post/Delete.. 등 요청의 모든 방식을 허용
-
+//        configuration.addAllowedMethod("*");                                                         // addAllowedMethod() : Get/Post/Delete.. 등 요청의 모든 방식을 허용
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));  // addAllowedMethod() 대신에 setAllowedMethods()를 사용합니다.
         source.registerCorsConfiguration("/**", configuration);                               // 특정 URL이 아닌 모든 URL에 CORS 적용
-
+`
         return source;
     }
 

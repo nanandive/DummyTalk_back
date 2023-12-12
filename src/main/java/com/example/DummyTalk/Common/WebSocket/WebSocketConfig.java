@@ -1,6 +1,7 @@
 package com.example.DummyTalk.Common.WebSocket;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.TextMessage;
