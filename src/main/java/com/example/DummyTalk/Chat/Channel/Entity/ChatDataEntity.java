@@ -23,8 +23,7 @@ public class ChatDataEntity extends BaseTimeEntity {
     private Long channelDataId;
 
     private String sender;
-    private String contents;
-    private String file;
+    private String message;
     private String language;
 
 
