@@ -1,11 +1,10 @@
 package com.example.DummyTalk.Common.Config;
 
 
-import com.example.DummyTalk.Jwt.JwtAccessDeniedHandler;
-import com.example.DummyTalk.Jwt.JwtAuthenticationEntryPoint;
-import com.example.DummyTalk.Jwt.TokenProvider;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,9 +14,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
-
-import java.util.Arrays;
+import com.example.DummyTalk.Jwt.JwtAccessDeniedHandler;
+import com.example.DummyTalk.Jwt.JwtAuthenticationEntryPoint;
+import com.example.DummyTalk.Jwt.TokenProvider;
 
 @Configuration
 @EnableWebSecurity
