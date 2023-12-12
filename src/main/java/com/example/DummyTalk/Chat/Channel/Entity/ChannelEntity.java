@@ -26,11 +26,4 @@ public class ChannelEntity {
     @Column(name = "channel_name")
     private String name;
 
-
-
-
-
-
-
-
 }
