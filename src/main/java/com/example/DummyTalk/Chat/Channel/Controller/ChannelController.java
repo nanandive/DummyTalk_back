@@ -1,7 +1,6 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
-import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Channel.Service.ChannelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
