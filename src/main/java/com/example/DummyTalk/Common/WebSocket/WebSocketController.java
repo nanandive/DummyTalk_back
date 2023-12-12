@@ -16,4 +16,7 @@ public class WebSocketController {
         System.out.println(message);
         simpMessagingTemplate.convertAndSend("/topic/msg", "hi");
     }
+
+
+
 }
