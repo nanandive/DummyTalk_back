@@ -1,3 +1,8 @@
 ### 로그인 요청 확인
 POST http://localhost:9999/login
 Accept: */*
+Content-Type: application/json
+
+{
+  "name":"김지수","email":"dkljjh10@gmail.com","password":"1234"
+}

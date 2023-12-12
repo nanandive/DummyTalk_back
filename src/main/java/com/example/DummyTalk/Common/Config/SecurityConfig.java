@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
+import org.springframework.web.filter.CorsFilter;
 
 
 import java.util.Arrays;
@@ -60,11 +60,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
 
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()     // cors를 위해 허용
-                                .requestMatchers("/", "/login/**", "/websocket/**", "/app/**").permitAll()          // index와 login페이지만 허용
+//                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()     // cors를 위해 허용
+//                                .requestMatchers("/", "/login/**", "/websocket/**", "/app/**").permitAll()          // index와 login페이지만 허용
 //                                .anyRequest().authenticated()                               // 모든 요청의 기본 값은 사용자 인증(authenticated) 필요
                                 .anyRequest().permitAll()
-                ).apply(new JwtSecurityConfig(tokenProvider));
+                );
+//                .apply(new JwtSecurityConfig(tokenProvider));
         return http.build();
 
         /* 스프링부트 2.xx 버전 */
@@ -81,6 +82,7 @@ public class SecurityConfig {
 //                .apply(new JwtSecurityConfig(tokenProvider));               // apply() : 시큐리티 설정 이후 추가 설정으로 jwt토큰 방식을 쓰겠다는 설정
 //        return http.build();
     }
+
     /* CORS(Cross-origin-resource-sharing) 설정용 Bean */
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
@@ -92,12 +94,12 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Content-type"  // setAllowedHeaders() : 허용되는 HTTP 헤더의 목록을 지정
                 , "Access-Control-Allow-Headers", "Authorization"
                 , "X-Requested-With"));
-//        configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin"));               // setExposedHeaders() : 서버에서 클라이언트로 응답할 때 노출할 수 있는 헤더의 목록을 지정
-//        configuration.addAllowedMethod("*");                                                         // addAllowedMethod() : Get/Post/Delete.. 등 요청의 모든 방식을 허용
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));  // addAllowedMethod() 대신에 setAllowedMethods()를 사용합니다.
+        configuration.addAllowedMethod("*");                                                         // addAllowedMethod() : Get/Post/Delete.. 등 요청의 모든 방식을 허용
+                                                                                                    // addAllowedMethod() 대신에 setAllowedMethods()를 사용합니다.
+
+
         source.registerCorsConfiguration("/**", configuration);                               // 특정 URL이 아닌 모든 URL에 CORS 적용
-`
         return source;
     }
 
