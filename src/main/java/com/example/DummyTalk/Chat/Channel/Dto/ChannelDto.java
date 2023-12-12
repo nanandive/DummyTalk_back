@@ -24,6 +24,4 @@ public class ChannelDto {
         this.chatDataDtoList = chatDataDtoList;
     }
 
-
-
 }
