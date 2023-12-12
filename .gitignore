@@ -197,6 +197,7 @@ replay_pid*
 .history
 .ionide
 
+application-dev.properties
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,visualstudiocode
 
 
