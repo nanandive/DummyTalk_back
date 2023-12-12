@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class WebSocketController {
     private final SimpMessagingTemplate simpMessagingTemplate;
-    @MessageMapping("message")  // 클라이언트에서 메시지를 보내면 /app/message로 메시지를 전달
+    @MessageMapping("message")  // '/app/message'로 들어오는 메시지를 처리
     public void handleMessage(String message) {
         // 웹소켓 클라이언트로 메시지 전송
         System.out.println(message);

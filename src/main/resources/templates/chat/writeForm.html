@@ -1,28 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>채팅방 생성 폼</title>
-    <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
-    <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
-</head>
-<body>
-    채팅방 생성
-    <button id="send" >메세지 보내기</button>
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>채팅방 생성 폼</title>-->
+<!--    <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>-->
+<!--    <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>-->
+<!--</head>-->
+<!--<body>-->
+<!--    채팅방 생성-->
+<!--    <button id="send" >메세지 보내기</button>-->
 
-    <script>
-        const sock = new SockJS('/websocket');
-        const stompClient = Stomp.over(sock)
+<!--    <script>-->
+<!--        const sock = new SockJS('/websocket');-->
+<!--        const stompClient = Stomp.over(sock)-->
 
-        stompClient.connect({},  function (frame) {
-            console.log('ConnectedTest: ' + frame);
+<!--        stompClient.connect({},  function (frame) {-->
+<!--            console.log('ConnectedTest: ' + frame);-->
 
-            stompClient.subscribe('/topic/msg', function (msg) {
-                console.log('구독 중', msg);
-            });
+<!--            stompClient.subscribe('/topic/msg', function (msg) {-->
+<!--                console.log('구독 중', msg);-->
+<!--            });-->
 
-            stompClient.send(`/app/message`,{}, '{Test : test}');
-        });
-    </script>
-</body>
-</html>
+<!--            stompClient.send(`/app/message`,{}, '{Test : test}');-->
+<!--        });-->
+<!--    </script>-->
+<!--</body>-->
+<!--</html>-->
