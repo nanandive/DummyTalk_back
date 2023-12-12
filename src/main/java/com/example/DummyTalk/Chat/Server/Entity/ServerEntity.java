@@ -9,6 +9,7 @@ import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Entity
@@ -24,8 +25,10 @@ public class ServerEntity extends BaseTimeEntity {
     private Long serverId;
 
     private String serverName;
-
+    private String userName;
     private String invitedCode;
+    private long userCount;
+
 
     /* 유저와 서버의 관계 */
 

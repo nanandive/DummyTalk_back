@@ -19,6 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+@Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
@@ -89,6 +90,7 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Content-type"  // setAllowedHeaders() : 허용되는 HTTP 헤더의 목록을 지정
                 , "Access-Control-Allow-Headers", "Authorization"
                 , "X-Requested-With"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin"));               // setExposedHeaders() : 서버에서 클라이언트로 응답할 때 노출할 수 있는 헤더의 목록을 지정
         configuration.addAllowedMethod("*");                                                         // addAllowedMethod() : Get/Post/Delete.. 등 요청의 모든 방식을 허용
 

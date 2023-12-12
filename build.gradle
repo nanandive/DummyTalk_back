@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.7-SNAPSHOT'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'war'
 }
 
 group = 'com.example.DummyTalk'
@@ -18,40 +17,66 @@ java {
     }
 
     repositories {
+        jcenter()
         mavenCentral()
         maven { url 'https://repo.spring.io/milestone' }
         maven { url 'https://repo.spring.io/snapshot' }
     }
-}
 
+<<<<<<< HEAD
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-security'
+        implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+        implementation 'org.springframework.boot:spring-boot-starter-webflux'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+        compileOnly 'org.projectlombok:lombok'
+        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+        runtimeOnly 'com.mysql:mysql-connector-j'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'org.springframework.security:spring-security-test'
+        implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+
+        /* 웹소켓 */
+        implementation 'org.springframework.boot:spring-boot-starter-websocket'
+        implementation 'org.webjars:sockjs-client:1.1.2'
+        implementation 'org.webjars:stomp-websocket:2.3.3-1'
+=======
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-    /* JWT 및 로그인 관련 */
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    /* modelMapper */
+    // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1'
 
     /* 웹소켓 */
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.webjars:sockjs-client:1.1.2'
     implementation 'org.webjars:stomp-websocket:2.3.3-1'
-}
+>>>>>>> 945e82bd3ce2c76c2ee61db0f8d8be189dcbf710
 
-tasks.named('bootBuildImage') {
-    builder = 'paketobuildpacks/builder-jammy-base:latest'
-}
 
-tasks.named('test') {
-    useJUnitPlatform()
+    }
+
+    tasks.named('bootBuildImage') {
+        builder = 'paketobuildpacks/builder-jammy-base:latest'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
 }
