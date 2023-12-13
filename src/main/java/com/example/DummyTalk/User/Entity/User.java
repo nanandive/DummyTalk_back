@@ -1,6 +1,7 @@
 package com.example.DummyTalk.User.Entity;
 
 
+import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "User")
@@ -30,7 +33,7 @@ public class User {
             generator = "MAIL_NO"
     )
     @Column(name = "user_id")
-    private int userId;
+    private Long userId;
 
     @Column(name = "user_name")
     private String userName;
@@ -50,11 +53,15 @@ public class User {
     @Column(name = "user_img_path")
     private String userImgPath;
 
-    @Column(name = "createAt")
+    @Column(name = "create_at")
     private LocalDateTime createAt;
 
-    @Column(name = "updateAt")
+    @Column(name = "update_at")
     private LocalDateTime updateAt;
+
+    /* 유저와 서버의 관계 */
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserChat> userChats = new ArrayList<>();
 
 
 }

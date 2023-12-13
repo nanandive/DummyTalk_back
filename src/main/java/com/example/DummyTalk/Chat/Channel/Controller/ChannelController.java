@@ -16,17 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ChannelController {
     private final ChannelService channelService;
 
-    @GetMapping("/chat")
-    public String main() {
-        return "chat/writeForm";
-        // private static Set<Long>userList = new HashSet<>();
-    }
 
-//    /* 채널 리스트 */
-//    @GetMapping("/list")
-//    public List<ChannelDto> channelDtoList () {
-//        return channelService.findAllChannel();
-//    }
 
 
 }
