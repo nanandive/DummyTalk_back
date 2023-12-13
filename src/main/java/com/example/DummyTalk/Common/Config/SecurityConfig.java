@@ -57,16 +57,12 @@ public class SecurityConfig {
                 .csrf((csrfConfig) ->
                         csrfConfig.disable()
                 ) // 1번
-                .headers((headerConfig) ->
-                        headerConfig.frameOptions(frameOptionsConfig ->
-                                frameOptionsConfig.disable()
-                        )
-                ) // 2번
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/", "/login/**", "/websocket/**").permitAll()          // index와 login페이지만 허용
+                                .requestMatchers("/", "/login/**", "/websocket/**", "/app/**").permitAll()          // index와 login페이지만 허용
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // cors를 위해 허용
-                                .anyRequest().authenticated()                               // 모든 요청의 기본 값은 사용자 인증(authenticated) 필요
+//                                .anyRequest().authenticated()                               // 모든 요청의 기본 값은 사용자 인증(authenticated) 필요
+                                .anyRequest().permitAll()
                 ).apply(new JwtSecurityConfig(tokenProvider));
         return http.build();
 
