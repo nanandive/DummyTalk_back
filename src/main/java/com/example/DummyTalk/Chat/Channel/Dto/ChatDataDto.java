@@ -23,6 +23,8 @@ public class ChatDataDto {
     private String sender;
     private String language;
     private MessageType type;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private List<ImageDto> imageDtoList;
     private List<EmbeddingImageDto> embeddingImageDtoList;
 

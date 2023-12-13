@@ -2,11 +2,9 @@ package com.example.DummyTalk.Chat.Channel.Entity;
 
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Table(name = "chat_data")
+@Builder(toBuilder = true)
 public class ChatDataEntity extends BaseTimeEntity {
 
     @Id
@@ -38,4 +37,5 @@ public class ChatDataEntity extends BaseTimeEntity {
     /* 채널 데이터와 이미지의 연관관계 (부모) */
     @OneToMany( mappedBy = "channelDataId", fetch = FetchType.LAZY)
     private List<ImageEntity> imageEntityList = new ArrayList<>();
+
 }

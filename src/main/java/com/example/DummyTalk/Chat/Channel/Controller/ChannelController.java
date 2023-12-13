@@ -12,6 +12,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Slf4j
 @Controller
@@ -52,7 +54,7 @@ public class ChannelController {
 
     /* 채팅 데이터 삽입 */
     @PostMapping("/chat")
-    public ResponseEntity<ResponseDTO> saveChatData(@RequestBody ChatDataDto message) {
+    public ResponseEntity<ResponseDTO> saveChatData(@ModelAttribute ChatDataDto message) {
         log.info("ChatDataDto ============================={}.", message);
         channelService.saveChatData(message);
 
@@ -61,5 +63,17 @@ public class ChannelController {
                 .body(new ResponseDTO(HttpStatus.OK, "업무 등록 성공"));
     }
 
+    @GetMapping("/chat/{channelId}")
+    public ResponseEntity<ResponseDTO> getChatData(@PathVariable Long channelId) {
+        log.info("getChatData ============================={}", channelId);
+
+        List<ChatDataDto> list = channelService.findChatData(channelId);
+        log.info("getChatData list============================={}", list.size());
+
+        return ResponseEntity
+                .ok()
+                .body(new ResponseDTO(HttpStatus.OK,
+                        "업무 등록 성공", list));
+    }
 
 }

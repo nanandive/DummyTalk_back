@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -56,9 +57,33 @@ public class ChannelService {
     public void saveChatData(ChatDataDto message){
         log.info("SendChatDto : " + message);
         // sender, message, language, channelId
-        chatRepository.save(modelMapper.map(message, ChatDataEntity.class));
+        chatRepository.save(convert(message));
     }
 
 
+    private ChatDataEntity convert(ChatDataDto chatDataDto) {
 
+        return ChatDataEntity.builder()
+                .message(chatDataDto.getMessage())
+                .sender(chatDataDto.getSender())
+                .language(chatDataDto.getLanguage())
+                .build();
+
+
+    }
+
+    public List<ChatDataDto> findChatData(Long channelId) {
+        Optional<ChannelEntity> channelEntity =  channelRepository.findById(channelId);
+
+
+        List<ChatDataDto> chatlist =  chatRepository.findByChannelId(channelEntity).stream()
+                .map(chatDataEntity -> ChatDataDto.builder()
+                        .message(chatDataEntity.getMessage())
+                        .sender(chatDataEntity.getSender())
+                        .language(chatDataEntity.getLanguage())
+                        .build())
+                .collect(Collectors.toList());
+        log.info("findChatData ============================={}", chatlist);
+        return chatlist;
+    }
 }
