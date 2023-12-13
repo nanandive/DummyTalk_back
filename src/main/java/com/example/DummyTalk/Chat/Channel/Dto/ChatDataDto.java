@@ -18,13 +18,16 @@ public class ChatDataDto {
         ENTER,TALK,LEAVE
     }
 
+//    create_at : 채팅 데이터 생성 시간
+    private Long channelDataId;
     private String message;
     private String sender;
     private String language;
-    private MessageType type;
-
-    private List<ImageDto> imageDtoList;
-    private List<EmbeddingImageDto> embeddingImageDtoList;
+//    private MessageType type;
+//    private LocalDateTime createAt;
+//    private LocalDateTime updateAt;
+//    private List<ImageDto> imageDtoList;
+//    private List<EmbeddingImageDto> embeddingImageDtoList;
 
 
 
