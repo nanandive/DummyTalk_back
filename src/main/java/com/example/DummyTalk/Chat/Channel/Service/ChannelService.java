@@ -49,14 +49,12 @@ public class ChannelService {
 
 
 
-
-
     /* 채팅 내용 저장 (DB) */
     @Transactional
     public void saveChatData(ChatDataDto message){
-        log.info("chatDataDto : " + message);
+        log.info("SendChatDto : " + message);
         // sender, message, language, channelId
-        chatRepository.save(ChatDataEntity.toEntity(message));
+//        chatRepository.save(ChatDataEntity.toEntity(message));
     }
 
 

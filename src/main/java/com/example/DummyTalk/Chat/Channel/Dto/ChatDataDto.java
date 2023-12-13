@@ -1,8 +1,5 @@
 package com.example.DummyTalk.Chat.Channel.Dto;
 
-import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
-import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
-import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -13,7 +10,7 @@ import java.util.List;
 
 @Data
 @ToString
-@Builder(toBuilder = true)
+@Builder
 public class ChatDataDto {
 
     public enum MessageType {
@@ -21,15 +18,13 @@ public class ChatDataDto {
         ENTER,TALK,LEAVE
     }
 
-    private Long chatId;
+    private Long channelDataId;
     private String message;
     private String sender;
     private String language;
     private MessageType type;
-    private Long channelId; // 채팅 데이터 입력을 위한 채널 아이디
     private List<ImageDto> imageDtoList;
     private List<EmbeddingImageDto> embeddingImageDtoList;
-
 
 
 
