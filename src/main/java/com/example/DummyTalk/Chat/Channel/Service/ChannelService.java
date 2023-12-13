@@ -8,6 +8,7 @@ import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ public class ChannelService {
 
     private final ChannelRepository channelRepository;
     private final ChatRepository chatRepository;
+    private final ModelMapper modelMapper;
 
 
             /* DB에서 채널 list 가져오기 */
@@ -54,7 +56,7 @@ public class ChannelService {
     public void saveChatData(ChatDataDto message){
         log.info("SendChatDto : " + message);
         // sender, message, language, channelId
-//        chatRepository.save(ChatDataEntity.toEntity(message));
+        chatRepository.save(modelMapper.map(message, ChatDataEntity.class));
     }
 
 

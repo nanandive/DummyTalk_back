@@ -18,7 +18,7 @@ public class ChatDataDto {
         ENTER,TALK,LEAVE
     }
 
-    private Long channelDataId;
+    private Long chatId;
     private String message;
     private String sender;
     private String language;
