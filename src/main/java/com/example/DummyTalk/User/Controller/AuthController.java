@@ -20,10 +20,13 @@ public class AuthController {
     private final TokenProvider tokenProvider;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(UserDTO userDTO){
+    public ResponseEntity<ResponseDTO> login(UserDTO userDTO){
 
-        log.info("테스트입니다");
+//        UserDTO result =  authSerivce.createUser();
 
-        return ResponseEntity.ok().body("성공");
+//        return ResponseEntity
+//                .ok()
+//                .body(new ResponseDTO(HttpStatus.OK, "조회 성공",  result));
+        return null;
     }
 }
