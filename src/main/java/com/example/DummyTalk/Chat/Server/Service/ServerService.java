@@ -33,6 +33,7 @@ public class ServerService {
 
     private ServerDto convertToDto(ServerEntity serverEntity) {
         return ServerDto.builder()
+                .id(serverEntity.getId())
                 .serverName(serverEntity.getServerName())
                 .invitedCode(serverEntity.getInvitedCode())
                 .userName(serverEntity.getUserName())
@@ -71,6 +72,7 @@ public class ServerService {
         if (optionalServerEntity.isPresent()) {
             ServerEntity serverEntity = optionalServerEntity.get();
             return ServerDto.builder()
+                    .id(serverEntity.getId())
                     .serverName(serverEntity.getServerName())
                     .userCount(serverEntity.getUserCount())
                     .invitedCode(serverEntity.getInvitedCode())

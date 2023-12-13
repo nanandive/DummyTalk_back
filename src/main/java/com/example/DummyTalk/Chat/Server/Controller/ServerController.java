@@ -26,10 +26,9 @@ public class ServerController {
     @GetMapping("/list")
     public ResponseEntity<List<ServerDto>> serverList() {
         List<ServerDto> serverDtoList = serverService.findAllServer();
-        System.out.println(">>>>>>>>>> : " + serverDtoList);
+        System.out.println(" 리스트 불러오기 : >>>>>>>>>> : " + serverDtoList);
         return ResponseEntity.ok(serverDtoList);
     }
-
 
     /* 서버생성 */
     @GetMapping("/writeModal")
@@ -44,21 +43,18 @@ public class ServerController {
 
     /* TODO 상세보기 */
     @GetMapping("/{id}")
-    public String detail(Model model, @PathVariable Long id){
+    public ResponseEntity<ServerDto> getServerDetail(@PathVariable Long id){
 
         ServerDto serverDto = serverService.findbyId(id);
 
         // 채널 목록 가져오기
         List<ChannelDto> channelDtoList = channelService.findAllChannel(id);
-        model.addAttribute("channelList", channelDtoList);
         // 실시간 서버에 접속 중인 친구 가져오기 -> @messagemapping
 
         // 친구 목록 가져오기
 
-        model.addAttribute("server", serverDto);
-
-
-        return "/websocket/main";
+        System.out.println(" 서버에 접속 하기 >>>>>>>>> : " + serverDto);
+        return ResponseEntity.ok(serverDto);
     }
 
     /* TODO 서버 수정 */
@@ -69,8 +65,6 @@ public class ServerController {
     }
 
     /* TODO 서버 삭제 */
-
-
 
 
 
