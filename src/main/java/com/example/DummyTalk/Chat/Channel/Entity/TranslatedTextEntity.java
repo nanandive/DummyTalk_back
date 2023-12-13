@@ -11,9 +11,9 @@ import lombok.ToString;
 public class TranslatedTextEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id;        // 번역한 텍스트ID
 
-    private String translated_text;
+    private String translated_text;     // 번역된 텍스트
 
     /* 번역된 텍스트와 채널데이터의 연관관계(자식) */
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

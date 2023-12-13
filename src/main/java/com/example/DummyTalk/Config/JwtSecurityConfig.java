@@ -1,4 +1,4 @@
-package com.example.DummyTalk.Common.Config;
+package com.example.DummyTalk.Config;
 
 import com.example.DummyTalk.Jwt.JwtFilter;
 import com.example.DummyTalk.Jwt.TokenProvider;

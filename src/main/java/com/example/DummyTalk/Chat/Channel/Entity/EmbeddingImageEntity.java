@@ -18,10 +18,10 @@ public class EmbeddingImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "embedding_image_id")
-    private Long id;
+    private Long id;        // 임베딩된 이미지 ID
 
     @Column(nullable = false)
-    private String emText;
+    private String emText;      // 임베딩된 텍스트
 
     /* 임베딩 이미지와 이미지의 연관관계 (자식) */
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

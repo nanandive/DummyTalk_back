@@ -15,10 +15,10 @@ public class ImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id")
-    private Long imageId;
+    private Long imageId;       // 이미지 ID
 
 
-    private String image;
+    private String image;       // 원본 이미지
 
     /* 이미지와 채널데이터의 연관관계(자식) */
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

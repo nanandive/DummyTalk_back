@@ -1,6 +1,5 @@
 package com.example.DummyTalk.Chat.Channel.Dto;
 
-import com.example.DummyTalk.Chat.Channel.Service.ChannelService;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -8,19 +7,19 @@ import java.util.List;
 
 @Data
 @ToString
-@Builder
+@Builder(toBuilder = true)
 public class ChannelDto {
 
     private String channelName;
-    private String userCount;
+    private int channelCount;
 
     private List<ChatDataDto> chatDataDtoList;
 
 
     @Builder
-    public ChannelDto(String channelName, String userCount, List<ChatDataDto> chatDataDtoList) {
+    public ChannelDto(String channelName, int channelCount, List<ChatDataDto> chatDataDtoList) {
         this.channelName = channelName;
-        this.userCount = userCount;
+        this.channelCount = channelCount;
         this.chatDataDtoList = chatDataDtoList;
     }
 
