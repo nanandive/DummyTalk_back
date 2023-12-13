@@ -12,6 +12,7 @@ import java.util.*;
 @Builder(toBuilder = true)
 public class ServerDto {
 
+    private Long id;
     private String serverName;
     private String invitedCode;
     private String userName;
