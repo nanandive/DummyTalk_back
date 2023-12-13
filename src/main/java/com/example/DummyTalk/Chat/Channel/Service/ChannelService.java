@@ -1,15 +1,11 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
-import com.example.DummyTalk.Chat.Channel.Dto.ChatDataDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
-import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +16,7 @@ public class ChannelService {
 
 
     /* DB에서 채널 list 가져오기 */
-    public List<ChannelDto> findAllChannel() {
+    public List<ChannelDto> findAllChannel(Long id) {
         List<ChannelEntity> channelEntities = channelRepository.findAll();
 
         return channelEntities.stream()
@@ -32,6 +28,7 @@ public class ChannelService {
     private ChannelDto converToDto(ChannelEntity channelEntity) {
         return ChannelDto.builder()
                 .channelName(channelEntity.getChannelName())
+                .channelCount(channelEntity.getChannelCount())
                 .build();
     }
 

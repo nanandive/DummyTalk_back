@@ -1,25 +1,38 @@
-package com.example.DummyTalk.Common.Config;
+package com.example.DummyTalk.Config;
 
-
-import java.util.Arrays;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.DummyTalk.Jwt.JwtAccessDeniedHandler;
 import com.example.DummyTalk.Jwt.JwtAuthenticationEntryPoint;
+//import com.example.DummyTalk.Jwt.TokenProvider;
 import com.example.DummyTalk.Jwt.TokenProvider;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@CrossOrigin
 public class SecurityConfig {
 
     // 토큰 디바이더 : JWT 토큰에 관련된 암호화, 복호화, 검증 로직은 다 이곳에서 이루어진다.
@@ -46,23 +59,23 @@ public class SecurityConfig {
                 "/lib/**");
     }
 
-
-    /* HTTP요청에 대한 권한별 설정(기존 세션 인증 -> 토큰 인증으로 변경함 :> 추가적으로 코드가 더 생김) */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // 스프링부트 3.xx 버전
         http
-                .csrf((csrfConfig) ->
-                        csrfConfig.disable()
+                .csrf(AbstractHttpConfigurer::disable
                 ) // 1번
+                .cors(cors ->  cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/", "/login/**", "/websocket/**", "/app/**").permitAll()          // index와 login페이지만 허용
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // cors를 위해 허용
-//                                .anyRequest().authenticated()                               // 모든 요청의 기본 값은 사용자 인증(authenticated) 필요
+                                .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()                             // cors를 위해 허용
+                                .requestMatchers("/", "/login/**", "/websocket/**", "/app/**").permitAll()   // index와 login페이지만 허용
                                 .anyRequest().permitAll()
-                ).apply(new JwtSecurityConfig(tokenProvider));
+                );
+//                .apply(new JwtSecurityConfig(tokenProvider));
+
         return http.build();
+
 
         /* 스프링부트 2.xx 버전 */
 //        http.httpBasic().disable()
@@ -78,24 +91,27 @@ public class SecurityConfig {
 //                .apply(new JwtSecurityConfig(tokenProvider));               // apply() : 시큐리티 설정 이후 추가 설정으로 jwt토큰 방식을 쓰겠다는 설정
 //        return http.build();
     }
-    /* CORS(Cross-origin-resource-sharing) 설정용 Bean */
+
+    /* CORS(Cross-origin-resource-sharing) 설정용 Bean */ //
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
 
-        CorsConfiguration configuration = new CorsConfiguration();                                  // CORS 설정하기 위한 객체
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();             // URL 패턴을 기반으로 CORS 설정을 관리
+        CorsConfiguration configuration = new CorsConfiguration();                                     // CORS 설정하기 위한 객체
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();                // URL 패턴을 기반으로 CORS 설정을 관리
 
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));                     // setAllowedOrigins() : 요청이 허용된 도메인 목록 지정
-        configuration.setAllowedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Content-type"  // setAllowedHeaders() : 허용되는 HTTP 헤더의 목록을 지정
-                , "Access-Control-Allow-Headers", "Authorization"
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));                         // setAllowedOrigins() : 요청이 허용된 도메인 목록 지정
+        configuration.setAllowedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Content-type"    // setAllowedHeaders() : 허용되는 HTTP 헤더의 목록을 지정
+                , "Access-Control-Allow-Headers", "Authorization", "Access-Control-Allow-Credentials"
                 , "X-Requested-With"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin"));               // setExposedHeaders() : 서버에서 클라이언트로 응답할 때 노출할 수 있는 헤더의 목록을 지정
-        configuration.addAllowedMethod("*");                                                         // addAllowedMethod() : Get/Post/Delete.. 등 요청의 모든 방식을 허용
+        configuration.setExposedHeaders(List.of("Access-Control-Allow-Origin"));                   // setExposedHeaders() : 서버에서 클라이언트로 응답할 때 노출할 수 있는 헤더의 목록을 지정
+        configuration.addAllowedMethod("*");                                                           // addAllowedMethod() : Get/Post/Delete.. 등 요청의 모든 방식을 허용
 
-        source.registerCorsConfiguration("/**", configuration);                               // 특정 URL이 아닌 모든 URL에 CORS 적용
+//        configuration.setAllowCredentials(true);
+
+        source.registerCorsConfiguration("/**", configuration);                                 // 특정 URL이 아닌 모든 URL에 CORS 적용
 
         return source;
     }
+
 
 }

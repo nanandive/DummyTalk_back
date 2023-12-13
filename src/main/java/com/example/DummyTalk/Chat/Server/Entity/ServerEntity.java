@@ -23,7 +23,7 @@ import java.util.List;
 public class ServerEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long serverId;
+    private Long id;
 
     private String serverName;
     private String userName;

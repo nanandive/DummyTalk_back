@@ -31,10 +31,13 @@ public class ChannelEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "channel_id")
-    private Long channelId;
+    private Long channelId;     //채널 ID
 
     @Column(nullable = false)
-    private String ChannelName;
+    private String ChannelName;     // 채널이름
+
+    @Column(nullable = false)
+    private int channelCount;       // 채널에 접속한 유저 수
 
 
     /* 서버와의 연관관계 (자식) */
