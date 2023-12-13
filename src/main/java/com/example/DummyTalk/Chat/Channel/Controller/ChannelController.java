@@ -52,9 +52,9 @@ public class ChannelController {
 
 
     /* 채팅 데이터 삽입 */
-    @PostMapping("/chat/{message}")
-    public ResponseEntity<ResponseDTO> saveChatData(@PathVariable String message) {
-        log.info("saveChatData {}.", message);
+    @PostMapping("/chat")
+    public ResponseEntity<ResponseDTO> saveChatData(@RequestBody ChatDataDto message) {
+        log.info("ChatDataDto ============================={}.", message);
         channelService.saveChatData(message);
 
         return ResponseEntity

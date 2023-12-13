@@ -21,7 +21,6 @@ public class ChatDataEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long channelDataId;
-
     private String sender;
     private String message;
     private String language;

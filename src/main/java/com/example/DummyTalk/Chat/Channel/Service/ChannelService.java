@@ -103,15 +103,9 @@ public class ChannelService {
 
     /* 채팅 내용 저장 (DB) */
     @Transactional
-    public void saveChatData(String message){
+    public void saveChatData(ChatDataDto message){
 
-//        ChatDataDto chat = ChatDataDto.builder()
-//                .channelDataId(1L)
-//                .sender(sender)
-//                .message(message)
-//                .build();
         log.info("chatDataDto : " + message);
-
 
         chatRepository.save(modelMapper.map(message, ChatDataEntity.class));
     }

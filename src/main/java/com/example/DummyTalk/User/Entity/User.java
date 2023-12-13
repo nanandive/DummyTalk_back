@@ -51,10 +51,10 @@ public class User {
     private String userImgPath;
 
     @Column(name = "createAt")
-    private LocalDateTime createAt;
+    private String createAt;
 
     @Column(name = "updateAt")
-    private LocalDateTime updateAt;
+    private String updateAt;
 
 
 }
