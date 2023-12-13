@@ -26,6 +26,4 @@ public class AuthController {
 
         return ResponseEntity.ok().body("성공");
     }
-
-
 }

@@ -1,4 +1,4 @@
-package com.example.DummyTalk.Common.Config;
+package com.example.DummyTalk.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
