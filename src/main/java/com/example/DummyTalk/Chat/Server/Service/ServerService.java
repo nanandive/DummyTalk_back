@@ -1,24 +1,37 @@
 package com.example.DummyTalk.Chat.Server.Service;
-
+import lombok.AllArgsConstructor;
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Server.Dto.ServerDto;
+import com.example.DummyTalk.Chat.Server.Dto.ServerSettingDto;
 import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
 import com.example.DummyTalk.Chat.Server.repository.ServerRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.Server;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.print.Pageable;
-import java.io.Console;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ServerService {
+    @Value("${serverAbsolutePath.dir}")
+    private String absolutePath;
+
+    @Value("${serverResourcePath.dir}")
+    private String resourcePath;
+
     private final ServerRepository serverRepository;
     private final ChannelRepository channelRepository;
 
@@ -35,26 +48,49 @@ public class ServerService {
         return ServerDto.builder()
                 .id(serverEntity.getId())
                 .serverName(serverEntity.getServerName())
-                .invitedCode(serverEntity.getInvitedCode())
+                .invitedUser(serverEntity.getInvitedUser())
                 .userName(serverEntity.getUserName())
                 .build();
     }
 
     /* 서버 생성 */
-    public void createServer(ServerDto serverDto) {
+    public void createServer(ServerDto serverDto, MultipartFile file) throws Exception{
+        if(file != null && !file.isEmpty()){
+            String filePath = absolutePath;
+            UUID uuid = UUID.randomUUID();
+            String fileName = uuid + "_" + file.getOriginalFilename();
+
+            File saveFile = new File(filePath, fileName);
+            file.transferTo(saveFile);
+
+            serverDto.setFileName(fileName);
+            serverDto.setFilePath(resourcePath + filePath);
+        }
+            ServerEntity serverEntity = convertToEntity(serverDto);
+            serverRepository.save(serverEntity);
+            System.out.println("서버 저장 : >>>>>>>>> " + serverEntity);
+
+    }
+
+    public void createServer(ServerDto serverDto) throws Exception {
         ServerEntity serverEntity = convertToEntity(serverDto);
         serverRepository.save(serverEntity);
+        System.out.println("서버 저장 : >>>>>>>>> " + serverEntity);
     }
+
 
     private ServerEntity convertToEntity(ServerDto serverDto) {
 
         return ServerEntity.builder()
                 .serverName(serverDto.getServerName())
                 .userName(serverDto.getUserName())
-                .invitedCode(serverDto.getInvitedCode())
+                .invitedUser(serverDto.getInvitedUser())
                 .userCount(serverDto.getUserCount())
+                .filePath(serverDto.getFilePath())
+                .fileName(serverDto.getFileName())
                 .build();
     }
+
 
     /* 서버 상세보기 */
     public ServerDto findbyId(Long id) {
@@ -75,12 +111,52 @@ public class ServerService {
                     .id(serverEntity.getId())
                     .serverName(serverEntity.getServerName())
                     .userCount(serverEntity.getUserCount())
-                    .invitedCode(serverEntity.getInvitedCode())
+                    .invitedUser(serverEntity.getInvitedUser())
                     .userName(serverEntity.getUserName())
                     .channelDtoList(channelDtoList)
                     .build();
         } else {
             return null;
         }
+    }
+
+    @Transactional
+    public void updateServer(ServerSettingDto serverSettingDto,MultipartFile file) {
+
+        log.info("serverSettingDto {}", serverSettingDto);
+        try {
+            ServerEntity serverEntity = serverRepository.findById(serverSettingDto.getServerId()).orElseThrow(() -> new IOException("Error"));
+            serverEntity.setServerName(serverSettingDto.getServerName());
+            System.out.println("서버 수정 처리 완료 >>>>>>>>>>> : " + serverEntity );
+        } catch (IOException e) {
+            System.out.println("에러 발생 : 서버 수정 에러");
+            e.printStackTrace();
+        }
+    }
+
+    /* 서버 수정 및 설정 */
+//    public void updateServer(ServerSettingDto serverSettingDto,MultipartFile file) {
+//        try {
+//            ServerEntity serverEntity = updateToEntity(serverSettingDto, file);
+//            serverRepository.save(serverEntity);
+//            System.out.println("서버 수정 처리 완료 >>>>>>>>>>> : " + serverEntity );
+//        } catch (IOException e) {
+//            System.out.println("에러 발생 : 서버 수정 에러");
+//            e.printStackTrace();
+//        }
+//    }
+//    private ServerEntity updateToEntity(ServerSettingDto serverSettingDto,MultipartFile file) throws IOException {
+//
+//        return ServerEntity.builder()
+//                .serverName(serverSettingDto.getSeverName())
+//                .invitedUser(serverSettingDto.getInvitedUser())
+//                .build();
+//    }
+
+
+    /* 서버 삭제 */
+    public void serverDelete(Long id) {
+        serverRepository.deleteById(id);
+
     }
 }
