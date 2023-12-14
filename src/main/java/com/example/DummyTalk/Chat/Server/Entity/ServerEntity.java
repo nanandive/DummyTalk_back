@@ -21,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 //@ToString
 @Builder(toBuilder = true)
 @Table(name = "server")
