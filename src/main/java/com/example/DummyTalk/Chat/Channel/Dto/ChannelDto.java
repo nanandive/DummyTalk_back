@@ -10,7 +10,6 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class ChannelDto {
 
-//    private Long channelId;
     private String channelName;
     private int channelCount;
 
