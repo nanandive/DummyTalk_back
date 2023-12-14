@@ -7,7 +7,10 @@ import com.example.DummyTalk.User.Entity.UserChat;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.cglib.core.Local;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,8 +30,10 @@ public class ServerEntity extends BaseTimeEntity {
 
     private String serverName;
     private String userName;
-    private String invitedCode;
+    private String invitedUser;
     private int userCount;
+    private String filePath;
+    private String fileName;
 
 
     /* 유저와 서버의 관계 */
