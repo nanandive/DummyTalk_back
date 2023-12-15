@@ -93,17 +93,8 @@ public class ServerService {
 
 
     /* 서버 상세보기 */
-    public ServerDto findbyId(Long id) {
+    public ServerDto findById(Long id) {
         Optional<ServerEntity> optionalServerEntity = serverRepository.findById(id);
-
-        /* 채널 List 불러오기 */
-        List<ChannelEntity> channelEntities = channelRepository.findByServerEntity_Id(id);
-        List<ChannelDto> channelDtoList = channelEntities.stream()
-                .map(channelEntity -> ChannelDto.builder()
-                        .channelName(channelEntity.getChannelName())
-                        .channelCount(channelEntity.getChannelCount())
-                        .build())
-                .collect(Collectors.toList());
 
         if (optionalServerEntity.isPresent()) {
             ServerEntity serverEntity = optionalServerEntity.get();
@@ -113,15 +104,15 @@ public class ServerService {
                     .userCount(serverEntity.getUserCount())
                     .invitedUser(serverEntity.getInvitedUser())
                     .userName(serverEntity.getUserName())
-                    .channelDtoList(channelDtoList)
                     .build();
         } else {
             return null;
         }
     }
 
+    /* 서버 수정 */
     @Transactional
-    public void updateServer(ServerSettingDto serverSettingDto,MultipartFile file) {
+    public void updateServer(ServerSettingDto serverSettingDto) {
 
         log.info("serverSettingDto {}", serverSettingDto);
         try {
@@ -133,26 +124,6 @@ public class ServerService {
             e.printStackTrace();
         }
     }
-
-    /* 서버 수정 및 설정 */
-//    public void updateServer(ServerSettingDto serverSettingDto,MultipartFile file) {
-//        try {
-//            ServerEntity serverEntity = updateToEntity(serverSettingDto, file);
-//            serverRepository.save(serverEntity);
-//            System.out.println("서버 수정 처리 완료 >>>>>>>>>>> : " + serverEntity );
-//        } catch (IOException e) {
-//            System.out.println("에러 발생 : 서버 수정 에러");
-//            e.printStackTrace();
-//        }
-//    }
-//    private ServerEntity updateToEntity(ServerSettingDto serverSettingDto,MultipartFile file) throws IOException {
-//
-//        return ServerEntity.builder()
-//                .serverName(serverSettingDto.getSeverName())
-//                .invitedUser(serverSettingDto.getInvitedUser())
-//                .build();
-//    }
-
 
     /* 서버 삭제 */
     public void serverDelete(Long id) {

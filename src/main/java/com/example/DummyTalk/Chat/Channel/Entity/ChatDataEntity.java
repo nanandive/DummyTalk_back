@@ -28,6 +28,8 @@ public class ChatDataEntity extends BaseTimeEntity {
     private String language;
 
 
+
+
     /* 채널데이터와 채널의 연관관계 (자식) */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
@@ -38,6 +40,7 @@ public class ChatDataEntity extends BaseTimeEntity {
     private List<TranslatedTextEntity> translatedTextEntityList = new ArrayList<>();
 
     /* 채널 데이터와 이미지의 연관관계 (부모) */
+
     @OneToMany( mappedBy = "channelDataId", fetch = FetchType.LAZY)
     private List<ImageEntity> imageEntityList = new ArrayList<>();
 

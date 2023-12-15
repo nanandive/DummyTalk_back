@@ -30,8 +30,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app");     // 클라이언트 -> 서버로 메시지를 보낼 때 붙여줄 prefix
     }
 
-    @EventListener
-    public void onDisconnectEvent(final SessionDisconnectEvent event) {
-        System.out.println("종료 감지 : " + event.toString());
-    }
+//    @EventListener
+//    public void onDisconnectEvent(final SessionDisconnectEvent event) {
+//        System.out.println("종료 감지 : " + event.toString());
+//    }
 }
