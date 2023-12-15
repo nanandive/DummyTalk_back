@@ -21,7 +21,7 @@ class DummyTalkApplicationTests {
             user.setPassword("password" + i);
             user.setUserEmail("user" + i + "@example.com");
             user.setUserImgPath("/img/user" + i + ".jpg");
-            user.setUserName("User " + i);
+            // user.setUserName("User " + i);
             user.setUserPhone("010-000" + i + "-000" + i);
             user.setCreateAt(LocalDateTime.now());
             user.setUpdateAt(LocalDateTime.now());
