@@ -5,7 +5,9 @@ import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Service.ChannelServiceImpl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -13,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ChatListDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
-import com.example.DummyTalk.Chat.Channel.Service.ChannelService;
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -52,19 +54,11 @@ public class ChannelController {
 
 
 
-
-
-
-
-
-
-
-
     /* 채팅 데이터 삽입 */
     @PostMapping("/chat")
     public ResponseEntity<ResponseDTO> saveChatData(@RequestBody SendChatDto message) {
         log.info("saveChatData ============================={}.", message);
-        channelService.saveChatData(message);
+        channelServiceImpl.saveChatData(message);
 
         return ResponseEntity
                 .ok()
@@ -76,7 +70,7 @@ public class ChannelController {
     public ResponseEntity<ResponseDTO> getChatData(@PathVariable int channelId) {
         log.info("getChatData ============================={}", channelId);
 
-        List<ChatListDto> list = channelService.findChatData(channelId);
+        List<ChatListDto> list = channelServiceImpl.findChatData(channelId);
         log.info("getChatData list============================={}", list.size());
 
         return ResponseEntity
@@ -86,8 +80,6 @@ public class ChannelController {
     }
 
 
-
-    }
 
     /* 채널 삭제 */
     @DeleteMapping("/channel/{id}/delete")
