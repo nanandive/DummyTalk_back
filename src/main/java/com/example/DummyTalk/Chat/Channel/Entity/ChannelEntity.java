@@ -1,5 +1,8 @@
 package com.example.DummyTalk.Chat.Channel.Entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import jakarta.persistence.*;

@@ -1,19 +1,26 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
-import com.example.DummyTalk.Chat.Channel.Dto.ChatDataDto;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.example.DummyTalk.Chat.Channel.Dto.ChatListDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 import com.example.DummyTalk.Chat.Channel.Service.ChannelService;
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @Slf4j
@@ -25,10 +32,12 @@ public class ChannelController {
 
 
     private final SimpMessagingTemplate simpMessagingTemplate;
-    @MessageMapping("message")  // '/app/message'로 들어오는 메시지를 처리
-    public void handleMessage(String message) {
-        System.out.println(message);
-        simpMessagingTemplate.convertAndSend("/topic/msg", "hi");
+    @MessageMapping("/{channelId}/message")  // '/app/message'로 들어오는 메시지를 처리
+    @SendTo("/topic/msg/{channelId}")
+    public MessageResponse handleMessage(SendChatDto message, @DestinationVariable String channelId) {
+        log.info("{}", message);
+
+        return new MessageResponse();
     }
 
     @GetMapping("/chat")
