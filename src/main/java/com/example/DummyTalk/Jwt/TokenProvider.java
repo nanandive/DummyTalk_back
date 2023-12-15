@@ -42,16 +42,10 @@ public class TokenProvider {
     public TokenDTO generateTokenDTO(User user){
 
         /* 1. 회원 아이디를 "sub"이라는 클레임으로 토큰으로 추가 */
-        Claims claims = Jwts.claims().setSubject(user.getUserEmail());    // ex) { sub : memberId }
-
-        claims.put("userName", user.getUserName());
-        claims.put("userEmail", user.getUserEmail());
-        claims.put("password", user.getPassword());
-        claims.put("nickname", user.getNickname());
-        claims.put("userPhone", user.getUserPhone());
-        claims.put("userImgPath", user.getUserImgPath());
-        claims.put("createAt", user.getCreateAt());
-        claims.put("updateAt", user.getUpdateAt());
+        Claims claims = Jwts.claims().setSubject(String.valueOf(user.getUserId()));    // ex) { sub : memberId }
+        
+        // 이전 프로젝트에서는 해당 값들을 client에서 꺼내서 씀
+//        claims.put("userId", user.getUserId());
 
         long now = System.currentTimeMillis();  // 현재시간을 밀리세컨드단위로 가져옴
 
@@ -63,7 +57,7 @@ public class TokenProvider {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
-        return new TokenDTO(BEARER_TYPE, user.getUserName()
+        return new TokenDTO(BEARER_TYPE, user.getUserEmail()
                 , accessToken, accessTokenExpriesIn.getTime());
     }
 
