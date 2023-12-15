@@ -77,7 +77,7 @@ public class ChannelService {
     private ChatSenderDTO userToDto(User user) {
         return ChatSenderDTO.builder()
                 .sender((long) user.getUserId())
-                .userName(user.getUserName())
+                .userName(user.getName())
                 .nickname(user.getNickname())
                 .userImgPath(user.getUserImgPath())
                 .build();
