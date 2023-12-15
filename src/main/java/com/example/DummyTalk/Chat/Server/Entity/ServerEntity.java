@@ -4,6 +4,7 @@ import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import com.example.DummyTalk.User.Entity.UserChat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.cglib.core.Local;
@@ -17,10 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@Getter
+@Setter
+//@ToString
 @Builder(toBuilder = true)
 @Table(name = "server")
 public class ServerEntity extends BaseTimeEntity {
@@ -42,6 +44,7 @@ public class ServerEntity extends BaseTimeEntity {
 
 
     /* 채널과의 연관관계 (부모) */
+    @JsonIgnore
     @OneToMany(mappedBy = "serverEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ChannelEntity> channelEntityList = new ArrayList<>();
 

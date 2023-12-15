@@ -1,12 +1,8 @@
 package com.example.DummyTalk.User.Entity;
 
 
-import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder(toBuilder = true)
 @SequenceGenerator(
         name = "User_Id",
         sequenceName = "SEQ_User_Id",
@@ -62,6 +59,8 @@ public class User {
     /* 유저와 서버의 관계 */
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChat> userChats = new ArrayList<>();
+
+
 
 
 }
