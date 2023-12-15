@@ -1,5 +1,12 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Dto.ChatListDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
@@ -11,19 +18,14 @@ import com.example.DummyTalk.Chat.Server.repository.ServerRepository;
 import com.example.DummyTalk.User.DTO.ChatSenderDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ChannelServiceImpl implements ChannelService{
+public class ChannelServiceImpl implements ChannelService {
     private final ChannelRepository channelRepository;
     private final ServerRepository serverRepository;
     private final ChatRepository chatRepository;
@@ -54,7 +56,8 @@ public class ChannelServiceImpl implements ChannelService{
         return channelRepository.findByServerId(serverId)
                 .stream()
                 .map(channelEntity -> ChannelDto.builder()
-                        .ServerId(channelEntity.getServerId())
+                        .channelId(channelEntity.getChannelId())
+                        .serverId(channelEntity.getServerId())
                         .channelName(channelEntity.getChannelName())
                         .channelCount(channelEntity.getChannelCount())
                         .build())
@@ -66,7 +69,6 @@ public class ChannelServiceImpl implements ChannelService{
         channelRepository.deleteById(id);
     }
 
-
     /* Entity -> Dto 변환 */
     private ChannelDto converToDto(ChannelEntity channelEntity) {
         return ChannelDto.builder()
@@ -74,7 +76,6 @@ public class ChannelServiceImpl implements ChannelService{
                 .channelCount(channelEntity.getChannelCount())
                 .build();
     }
-
 
     /* 채팅 데이터에 들어가는 유저 정보 Entity -> Dto 변환 */
     private ChatSenderDTO userToDto(User user) {
@@ -86,7 +87,6 @@ public class ChannelServiceImpl implements ChannelService{
                 .build();
     }
 
-
     /* 채팅 데이터 Entity -> Dto 변환 */
     private ChatListDto chatToDto(ChatDataEntity chat) {
         return ChatListDto.builder()
@@ -97,7 +97,6 @@ public class ChannelServiceImpl implements ChannelService{
                 .sender(userToDto(chat.getSender()))
                 .build();
     }
-
 
     /* 채팅 내용 저장 (DB) */
     @Transactional
@@ -121,20 +120,16 @@ public class ChannelServiceImpl implements ChannelService{
         chatRepository.save(chatEntity);
     }
 
-
     /* 채널 아이디로 조회한 채널 리스트 */
     public List<ChatListDto> findChatData(int channelId) {
         ChannelEntity channelEntity = channelRepository.findByChannelId((long) channelId);
         log.info("findChatData channelEntity ============================={}", channelEntity);
 
-        List<ChatListDto> chatlist =
-                chatRepository.findByChannelId(channelEntity).stream()
-                        .map(this::chatToDto)
-                        .collect(Collectors.toList());
+        List<ChatListDto> chatlist = chatRepository.findByChannelId(channelEntity).stream()
+                .map(this::chatToDto)
+                .collect(Collectors.toList());
         log.info("findChatData chatlist ============================={}", chatlist);
         return chatlist;
     }
-
-
 
 }

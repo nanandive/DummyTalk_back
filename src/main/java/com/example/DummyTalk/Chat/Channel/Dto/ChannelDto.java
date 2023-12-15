@@ -1,8 +1,10 @@
 package com.example.DummyTalk.Chat.Channel.Dto;
 
-import lombok.*;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @ToString
@@ -10,8 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class ChannelDto {
-
-    private Long ServerId;
+    private Long channelId;
+    private Long serverId;
     private String channelName;
     private int channelCount;
 

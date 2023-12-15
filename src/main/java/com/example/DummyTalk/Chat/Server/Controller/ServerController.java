@@ -86,8 +86,14 @@ public class ServerController {
         System.out.println("채널 리스트 (컨트롤러) >>>>>>>>> : " + channelDtoList);
 
         return ResponseEntity.ok(channelDtoList);
+    
     }
-
+    @DeleteMapping("/{serverId}/channel/{channelId}/delete")
+    public ResponseEntity<List<ChannelDto>> deleteChannel(@PathVariable Long serverId, @PathVariable Long channelId){
+        System.out.println("채널 삭제 (컨트롤러) >>>>>> :" + channelId);
+        channelServiceImpl.channelDelete(channelId);
+        return ResponseEntity.ok().build();
+    }
 
 
 }
