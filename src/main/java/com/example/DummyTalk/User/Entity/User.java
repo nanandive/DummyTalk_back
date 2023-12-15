@@ -2,11 +2,16 @@ package com.example.DummyTalk.User.Entity;
 
 
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,8 +40,8 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "user_email")
     private String userEmail;
@@ -44,7 +49,7 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "nickname")
+    @Column(name = "nickname", nullable = true)
     private String nickname;
 
     @Column(name = "user_phone")
