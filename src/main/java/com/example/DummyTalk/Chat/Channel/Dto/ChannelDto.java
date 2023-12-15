@@ -1,26 +1,20 @@
 package com.example.DummyTalk.Chat.Channel.Dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
+
 import java.util.List;
 
 @Data
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder(toBuilder = true)
 public class ChannelDto {
 
+    private Long ServerId;
     private String channelName;
     private int channelCount;
 
-    private List<ChatDataDto> chatDataDtoList;
 
-
-    @Builder
-    public ChannelDto(String channelName, int channelCount, List<ChatDataDto> chatDataDtoList) {
-        this.channelName = channelName;
-        this.channelCount = channelCount;
-        this.chatDataDtoList = chatDataDtoList;
-    }
 
 }

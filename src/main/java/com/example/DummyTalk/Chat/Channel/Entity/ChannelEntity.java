@@ -3,17 +3,15 @@ package com.example.DummyTalk.Chat.Channel.Entity;
 import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -25,15 +23,18 @@ public class ChannelEntity extends BaseTimeEntity {
     private Long channelId;     //채널 ID
 
     @Column(nullable = false)
-    private String ChannelName;     // 채널이름
+    private String channelName;     // 채널이름
 
     @Column(nullable = false)
     private int channelCount;       // 채널에 접속한 유저 수
 
+    @Column(name = "server_id",nullable = false)
+    private long serverId;
+
 
     /* 서버와의 연관관계 (자식) */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "server_id")
+    @JoinColumn(name = "server_id", updatable = false, insertable = false)
     private ServerEntity serverEntity;
 
     /* 채널과 채널 데이터와의 연관관계 (부모) */
