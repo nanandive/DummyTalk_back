@@ -45,7 +45,7 @@ public class TokenProvider {
         Claims claims = Jwts.claims().setSubject(String.valueOf(user.getUserId()));    // ex) { sub : memberId }
         
         // 이전 프로젝트에서는 해당 값들을 client에서 꺼내서 씀
-//        claims.put("userId", user.getUserId());
+        claims.put("nickname", user.getNickname());
 
         long now = System.currentTimeMillis();  // 현재시간을 밀리세컨드단위로 가져옴
 
