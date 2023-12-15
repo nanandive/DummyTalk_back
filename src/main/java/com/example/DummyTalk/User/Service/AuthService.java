@@ -29,10 +29,12 @@ public class AuthService {
         // 기존 유저 확인 (email)
         User user =userRepository.findByUserEmail(userDTO.getUserEmail());
 
+        // 이메일(아이디) 체크
         if(user == null){
             throw new RuntimeException("존재하지 않는 이메일 입니다.");
         }
 
+        // 비밀번호 체크
         if(!passwordEncoder.matches(userDTO.getPassword(), user.getPassword())){
             throw new RuntimeException("잘못된 비밀번호를 입력하셨습니다.");
         }

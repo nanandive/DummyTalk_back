@@ -36,6 +36,8 @@ public class UserDTO implements UserDetails {
 
     private String userImgPath;
 
+    private String userSecretKey;
+
     private LocalDateTime createAt;
 
     private LocalDateTime updateAt;

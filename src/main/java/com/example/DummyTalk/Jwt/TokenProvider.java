@@ -4,9 +4,11 @@ package com.example.DummyTalk.Jwt;
 import com.example.DummyTalk.Exception.TokenException;
 import com.example.DummyTalk.User.DTO.TokenDTO;
 import com.example.DummyTalk.User.Entity.User;
+import com.example.DummyTalk.User.Service.UserService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,21 +27,25 @@ public class TokenProvider {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 8 * 60 * 60; // 8시간으로 설정
 
 
-    private final Key key;                                // java.security.Key로 imort 이후 JWT의 서명(Signature) 생성에 사용된다.
+//    private final Key key;                                // java.security.Key로 imort 이후 JWT의 서명(Signature) 생성에 사용된다.
+    private Key key;
     private final UserDetailsService userDetailsService;  // 사용자의 인증 및 권한 정보를 가져올수 있음
 
     public TokenProvider(UserDetailsService userDetailsService){
 
-        String secretKey = "ejiSfPXxOMUuMXEU932MCy0adrbtkSlKeWcVZ0app6DpenURBmjaClhGTB4hR2dzzBhbMshXio46kUOtLs3tdw==";
+//        String secretKey = "ejiSfPXxOMUuMXEU932MCy0adrbtkSlKeWcVZ0app6DpenURBmjaClhGTB4hR2dzzBhbMshXio46kUOtLs3tdw==";
 
-        byte[] keyBytest = Decoders.BASE64.decode(secretKey);      // Decoders.BASE64.decode() : 해당 메소드를 사용하여 secretKey를 디코딩
-        this.key = Keys.hmacShaKeyFor(keyBytest);                  // hmacShaKeyFor() : SecretKey를 생성
+//        byte[] keyBytest = Decoders.BASE64.decode(secretKey);      // Decoders.BASE64.decode() : 해당 메소드를 사용하여 secretKey를 디코딩
+//        this.key = Keys.hmacShaKeyFor(keyBytest);                  // hmacShaKeyFor() : SecretKey를 생성
         this.userDetailsService = userDetailsService;
     }
 
 
     /* 1. 토큰(xxxxx.yyyyy.zzzzz) 생성 메소드 */
     public TokenDTO generateTokenDTO(User user){
+
+        byte[] keyBytest = Decoders.BASE64.decode(user.getUserSecretKey());
+        this.key = Keys.hmacShaKeyFor(keyBytest);
 
         /* 1. 회원 아이디를 "sub"이라는 클레임으로 토큰으로 추가 */
         Claims claims = Jwts.claims().setSubject(String.valueOf(user.getUserId()));    // ex) { sub : memberId }
