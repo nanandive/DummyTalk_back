@@ -9,10 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.*;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,37 +21,20 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/channel")
 public class ChannelController {
+
     private final ChannelService channelService;
-
-
     private final SimpMessagingTemplate simpMessagingTemplate;
 
+    @MessageMapping("/{channelId}/message")  // '/app/message'로 들어오는 메시지를 처리
+    @SendTo("/topic/msg/{channelId}")
+    public MessageResponse handleMessage(SendChatDto message, @DestinationVariable String channelId) {
+        log.info("{}", message);
+        //채팅 데이터 저장
+        channelService.saveChatData(message);
 
-
-    @MessageMapping("/message/{channelId}")     // '/app/message/channelId'로 들어오는 메시지를 처리
-    @SendTo("/topic/{channelId}")               // '/topic/channelId'로 메시지를 반환
-    public ResponseEntity<ResponseDTO> handleMessage(@Payload SendChatDto message
-            , @DestinationVariable int channelId
-            , SimpMessageHeaderAccessor headerAccessor) {
-        log.info("handleMessage ============================={}.", channelId);
-
-        try {
-            channelService.saveChatData(message);
-            simpMessagingTemplate.convertAndSend("/topic/" + channelId, message);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new ResponseDTO(HttpStatus.OK, "채팅 메시지 전송 성공"));
-
-        } catch (Exception e) {
-            log.error("채팅 메시지 전송 실패", e);
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, "채팅 메시지 전송 실패", null ));
-        }
+        //채팅방에 메시지 전송
+        return new MessageResponse(message.getNickname(), "채팅 메시지 전송 성공");
     }
-
-
 
     @GetMapping("/chat")
     public String main() {
@@ -70,7 +51,7 @@ public class ChannelController {
 
         return ResponseEntity
                 .ok()
-                .body(new ResponseDTO(HttpStatus.OK, "업무 등록 성공"));
+                .body(new ResponseDTO(HttpStatus.OK, "채팅 저장 성공"));
     }
 
     /* 채널 아이디로 채팅 리스트 조회 */
@@ -84,6 +65,6 @@ public class ChannelController {
         return ResponseEntity
                 .ok()
                 .body(new ResponseDTO(HttpStatus.OK,
-                        "업무 등록 성공", list));
+                        "이전 채팅 불러오기 성공", list));
     }
 }

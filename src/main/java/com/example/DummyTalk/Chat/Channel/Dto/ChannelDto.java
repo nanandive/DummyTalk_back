@@ -1,9 +1,10 @@
 package com.example.DummyTalk.Chat.Channel.Dto;
 
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
-import java.util.List;
 
 @Data
 @ToString

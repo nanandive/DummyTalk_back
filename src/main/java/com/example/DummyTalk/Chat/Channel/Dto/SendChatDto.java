@@ -1,8 +1,10 @@
 package com.example.DummyTalk.Chat.Channel.Dto;
 
-import lombok.*;
-
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @ToString
@@ -13,6 +15,7 @@ public class SendChatDto {
 
     private String message;
     private int sender;
+    private String nickname;
     private String language;
     private int channelId;
 //    private List<ImageDto> imageDtoList;

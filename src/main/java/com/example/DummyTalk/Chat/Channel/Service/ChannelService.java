@@ -7,6 +7,7 @@ import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChatRepository;
+import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.User.DTO.ChatSenderDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -48,31 +50,6 @@ public class ChannelService {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /* 채팅 데이터에 들어가는 유저 정보 Entity -> Dto 변환 */
     private ChatSenderDTO userToDto(User user) {
         return ChatSenderDTO.builder()
@@ -101,27 +78,32 @@ public class ChannelService {
     public void saveChatData(SendChatDto message) {
         // sender 조회
         log.info("saveChatData message ============================== " + message);
-        User user = userResponsitory.findByUserId(message.getSender());
+        User user = Optional.ofNullable(userResponsitory.findByUserId(message.getSender()))
+                .orElseThrow(() -> new ChatFailException("유저 조회에 실패하였습니다. "));
         log.info("saveChatData user ============================== " + user);
-        ChannelEntity channel = channelRepository.findByChannelId((long) message.getChannelId());
+        ChannelEntity channel = Optional.ofNullable(channelRepository.findByChannelId((long) message.getChannelId()))
+                .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
         log.info("saveChatData channel ============================== " + channel);
 
-        ChatDataEntity chatEntity = ChatDataEntity.builder()
-                .channelId(channel)
-                .message(message.getMessage())
-                .sender(user)
-                .language("en")
-                .build();
+        try {
+            ChatDataEntity chatEntity = ChatDataEntity.builder()
+                    .channelId(channel)
+                    .message(message.getMessage())
+                    .sender(user)
+                    .language("en")
+                    .build();
 
-        log.info("saveChatData chatEntity ============================== " + chatEntity);
-
-        chatRepository.save(chatEntity);
+            log.info("saveChatData chatEntity ============================== " + chatEntity);
+            chatRepository.save(chatEntity);
+        } catch (Exception e) {
+            throw new ChatFailException("채팅 저장에 실패하였습니다.");
+        }
     }
-
 
     /* 채널 아이디로 조회한 채널 리스트 */
     public List<ChatListDto> findChatData(int channelId) {
-        ChannelEntity channelEntity = channelRepository.findByChannelId((long) channelId);
+        ChannelEntity channelEntity = Optional.ofNullable(channelRepository.findByChannelId((long) channelId))
+                .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
         log.info("findChatData channelEntity ============================={}", channelEntity);
 
         List<ChatListDto> chatlist =
