@@ -22,18 +22,19 @@ public class UserController {
     @PostMapping("/signUp")
     public ResponseEntity<ResponseDTO> signUp(@RequestBody UserDTO user){
 
-
-        UserDTO result = userService.signUp(user);
-
         try{
+            UserDTO result = userService.signUp(user);
+
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(new ResponseDTO(HttpStatus.CREATED, "회원가입 성공", result));
-
         } catch (RuntimeException e){
+
+            UserDTO empty = new UserDTO();
+
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, "중복된 이메일이 존재합니다.", null));
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), empty));
         }
     }
 }

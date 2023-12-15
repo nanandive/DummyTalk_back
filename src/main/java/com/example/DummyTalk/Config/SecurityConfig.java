@@ -1,19 +1,12 @@
 package com.example.DummyTalk.Config;
 
 
-import com.example.DummyTalk.Jwt.JwtAccessDeniedHandler;
-import com.example.DummyTalk.Jwt.JwtAuthenticationEntryPoint;
-//import com.example.DummyTalk.Jwt.TokenProvider;
-import com.example.DummyTalk.Jwt.TokenProvider;
-import jakarta.servlet.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -23,12 +16,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import com.example.DummyTalk.Jwt.JwtAccessDeniedHandler;
+import com.example.DummyTalk.Jwt.JwtAuthenticationEntryPoint;
+//import com.example.DummyTalk.Jwt.TokenProvider;
+import com.example.DummyTalk.Jwt.TokenProvider;
 
 @Configuration
 @EnableWebSecurity
@@ -69,7 +61,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()                             // cors를 위해 허용
-                                .requestMatchers("/", "/login/**", "/websocket/**", "/app/**").permitAll()   // index와 login페이지만 허용
+                                .requestMatchers("/", "/login/**", "/websocket", "/app/**").permitAll()   // index와 login페이지만 허용
                                 .anyRequest().permitAll()
                 );
 //                .apply(new JwtSecurityConfig(tokenProvider));
@@ -106,7 +98,7 @@ public class SecurityConfig {
         configuration.setExposedHeaders(List.of("Access-Control-Allow-Origin"));                   // setExposedHeaders() : 서버에서 클라이언트로 응답할 때 노출할 수 있는 헤더의 목록을 지정
         configuration.addAllowedMethod("*");                                                           // addAllowedMethod() : Get/Post/Delete.. 등 요청의 모든 방식을 허용
 
-//        configuration.setAllowCredentials(true);
+       configuration.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", configuration);                                 // 특정 URL이 아닌 모든 URL에 CORS 적용
 

@@ -17,4 +17,5 @@ public interface ChannelRepository extends JpaRepository<ChannelEntity, Long> {
     /* 서버에 맞는 채널 리스트 조회 */
     List<ChannelEntity> findByServerId(Long serverId);
 
+    ChannelEntity findByChannelId(Long channelId);
 }

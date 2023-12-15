@@ -1,5 +1,6 @@
 package com.example.DummyTalk.Chat.Channel.Dto;
 
+import com.example.DummyTalk.User.DTO.ChatSenderDTO;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -18,14 +19,16 @@ public class ChatDataDto {
         ENTER,TALK,LEAVE
     }
 
+    private Long chatId;
     private String message;
-    private String sender;
+    private ChatSenderDTO sender;
     private String language;
     private MessageType type;
-
+    private boolean isDeleted;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private List<ImageDto> imageDtoList;
     private List<EmbeddingImageDto> embeddingImageDtoList;
-
 
 
 }

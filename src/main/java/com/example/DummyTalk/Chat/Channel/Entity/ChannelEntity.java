@@ -10,8 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
 @Setter
+@Getter
+@ToString(exclude = {"serverEntity", "chatDataEntityList"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

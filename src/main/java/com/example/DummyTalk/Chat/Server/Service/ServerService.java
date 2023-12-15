@@ -128,6 +128,5 @@ public class ServerService {
     /* 서버 삭제 */
     public void serverDelete(Long id) {
         serverRepository.deleteById(id);
-
     }
 }
