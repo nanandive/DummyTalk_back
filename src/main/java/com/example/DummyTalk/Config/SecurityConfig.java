@@ -99,7 +99,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();                                     // CORS 설정하기 위한 객체
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();                // URL 패턴을 기반으로 CORS 설정을 관리
 
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));                         // setAllowedOrigins() : 요청이 허용된 도메인 목록 지정
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        // websocket 통신을 위한 설정
         configuration.setAllowedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Content-type"    // setAllowedHeaders() : 허용되는 HTTP 헤더의 목록을 지정
                 , "Access-Control-Allow-Headers", "Authorization", "Access-Control-Allow-Credentials"
                 , "X-Requested-With"));
