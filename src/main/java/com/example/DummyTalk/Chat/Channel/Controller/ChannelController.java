@@ -48,7 +48,6 @@ public class ChannelController {
     public ResponseEntity<ResponseDTO> saveChatData(@RequestBody SendChatDto message) {
         log.info("saveChatData ============================={}.", message);
         channelService.saveChatData(message);
-
         return ResponseEntity
                 .ok()
                 .body(new ResponseDTO(HttpStatus.OK, "채팅 저장 성공"));
@@ -58,13 +57,17 @@ public class ChannelController {
     @GetMapping("/chat/{channelId}")
     public ResponseEntity<ResponseDTO> getChatData(@PathVariable int channelId) {
         log.info("getChatData ============================={}", channelId);
-
-        List<ChatListDto> list = channelService.findChatData(channelId);
-        log.info("getChatData list============================={}", list.size());
-
-        return ResponseEntity
-                .ok()
-                .body(new ResponseDTO(HttpStatus.OK,
-                        "이전 채팅 불러오기 성공", list));
+        try {
+            List<ChatListDto> list = channelService.findChatData(channelId);
+            log.info("getChatData list============================={}", list.size());
+            return ResponseEntity
+                    .ok()
+                    .body(new ResponseDTO(HttpStatus.OK,
+                            "이전 채팅 불러오기 성공", list));
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+        }
     }
 }
