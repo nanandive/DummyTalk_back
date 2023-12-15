@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder(toBuilder = true)
 @SequenceGenerator(
         name = "User_Id",
         sequenceName = "SEQ_User_Id",

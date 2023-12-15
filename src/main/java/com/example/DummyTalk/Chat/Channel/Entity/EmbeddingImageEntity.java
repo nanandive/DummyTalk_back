@@ -11,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Table(name = "embedding_image")
 public class EmbeddingImageEntity {
 

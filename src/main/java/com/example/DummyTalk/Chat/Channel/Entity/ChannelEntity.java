@@ -3,17 +3,15 @@ package com.example.DummyTalk.Chat.Channel.Entity;
 import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@ToString(exclude = {"serverEntity", "chatDataEntityList"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

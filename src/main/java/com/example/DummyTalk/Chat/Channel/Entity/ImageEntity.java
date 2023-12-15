@@ -22,7 +22,7 @@ public class ImageEntity {
 
     /* 이미지와 채널데이터의 연관관계(자식) */
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "channel_data_id")
+    @JoinColumn(name = "chat_id")
     private ChatDataEntity channelDataId;
 
 
