@@ -18,11 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-//@ToString
 @Builder(toBuilder = true)
 @Table(name = "server")
 public class ServerEntity extends BaseTimeEntity {
@@ -42,8 +40,8 @@ public class ServerEntity extends BaseTimeEntity {
     @OneToMany(mappedBy = "server", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<UserChat> userChats = new ArrayList<>();
-    
-    
+
+
     /* 채널과의 연관관계 (부모) */
     @JsonIgnore
     @Builder.Default
