@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.NoSuchAlgorithmException;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +30,8 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(new ResponseDTO(HttpStatus.CREATED, "회원가입 성공", result));
-        } catch (RuntimeException e){
+
+        } catch (RuntimeException | NoSuchAlgorithmException e){
 
             UserDTO empty = new UserDTO();
 

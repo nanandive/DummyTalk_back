@@ -63,8 +63,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()                             // cors를 위해 허용
                                 .requestMatchers("/", "/login/**", "/websocket", "/app/**").permitAll()   // index와 login페이지만 허용
                                 .anyRequest().permitAll()
-                );
-//                .apply(new JwtSecurityConfig(tokenProvider));
+                ).apply(new JwtSecurityConfig(tokenProvider));
 
         return http.build();
 
