@@ -1,11 +1,13 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.example.DummyTalk.Exception.ChatFailException;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,6 +93,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     /* 채팅 데이터 Entity -> Dto 변환 */
     private ChatListDto chatToDto(ChatDataEntity chat) {
+        log.info("saveChatData chatToDto ============================== " + chat);
         return ChatListDto.builder()
                 .message(chat.getMessage())
                 .chatId(chat.getChatId())
@@ -102,7 +105,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     /* 채팅 내용 저장 */
     @Transactional
-    public void saveChatData(SendChatDto message) {
+    public int saveChatData(SendChatDto message) {
         // sender 조회
         log.info("saveChatData message ============================== " + message);
         User user = Optional.ofNullable(userRepository.findByUserId((long) message.getSender()))
@@ -119,9 +122,11 @@ public class ChannelServiceImpl implements ChannelService {
                     .sender(user)
                     .language("en")
                     .build();
-
-            log.info("saveChatData chatEntity ============================== " + chatEntity);
-            chatRepository.save(chatEntity);
+            ChatDataEntity newChat = chatRepository.save(chatEntity);
+            log.info("saveChatData newChat ============================== " + newChat);
+            
+            // 클라이언트에서 키 정렬을 하기 위한 chatId 반환입니다.
+            return Math.toIntExact(newChat.getChatId());
         } catch (Exception e) {
             throw new ChatFailException("채팅 저장에 실패하였습니다.");
         }
@@ -132,16 +137,16 @@ public class ChannelServiceImpl implements ChannelService {
         ChannelEntity channelEntity = Optional.ofNullable(channelRepository.findByChannelId((long) channelId))
                 .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
         log.info("findChatData channelEntity ============================={}", channelEntity);
-
         try {
             List<ChatListDto> chatlist =
-                    chatRepository.findByChannelId(channelEntity).stream()
+                    chatRepository.findAllByChannelId(channelEntity).stream()
                             .map(this::chatToDto)
                             .collect(Collectors.toList());
-            log.info("findChatData chatlist ============================={}", chatlist);
+            log.info("findChatData chatlist ============================={}", chatlist.size());
             return chatlist;
-        } catch (RuntimeException e) {
-            throw new ChatFailException("채널 조회에 실패하였습니다.");
+        } catch (DataAccessException e) {
+            log.error("Data access error: {}", e.getMessage());
+            throw new ChatFailException("채널 조회에 실패하였습니다.", e);
         }
     }
 }

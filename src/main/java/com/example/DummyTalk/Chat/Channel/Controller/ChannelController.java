@@ -12,6 +12,7 @@ import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.util.List;
 
@@ -28,12 +29,14 @@ public class ChannelController {
     @MessageMapping("/{channelId}/message")  // '/app/message'로 들어오는 메시지를 처리
     @SendTo("/topic/msg/{channelId}")
     public MessageResponse handleMessage(SendChatDto message, @DestinationVariable String channelId) {
-        log.info("{}", message);
-        //채팅 데이터 저장
-        channelService.saveChatData(message);
+        log.info("============message================================={}", message);
 
+        // 채팅 데이터 저장
+        int chatId = channelService.saveChatData(message);
+        message.setChatId(chatId);
+        log.info("============setChatId================================={}", message);
         //채팅방에 메시지 전송
-        return new MessageResponse(message.getNickname(), "채팅 메시지 전송 성공");
+        return new MessageResponse(message.getNickname(), "채팅 메시지 전송 성공", message);
     }
 
     @GetMapping("/chat")

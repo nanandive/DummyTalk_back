@@ -9,7 +9,7 @@ import java.util.List;
 public interface ChannelService {
     List<ChannelDto> findByChannelList(Long ServerId);
 
-    void saveChatData(SendChatDto message);
+    int saveChatData(SendChatDto message);
 
     List<ChatListDto> findChatData(int channelId);
 }

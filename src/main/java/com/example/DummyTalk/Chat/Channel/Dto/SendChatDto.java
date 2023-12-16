@@ -13,14 +13,14 @@ import lombok.ToString;
 @AllArgsConstructor
 public class SendChatDto {
 
+    private int chatId;
     private String message;
     private int sender;
     private String nickname;
     private String language;
     private int channelId;
+
 //    private List<ImageDto> imageDtoList;
 //    private List<EmbeddingImageDto> embeddingImageDtoList;
-
-
 
 }
