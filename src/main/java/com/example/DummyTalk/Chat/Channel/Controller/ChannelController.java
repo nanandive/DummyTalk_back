@@ -53,7 +53,7 @@ public class ChannelController {
                 .body(new ResponseDTO(HttpStatus.OK, "채팅 저장 성공"));
     }
 
-    /* 채널 아이디로 채팅 리스트 조회 */
+    /* 채널 아이디로 채팅 리스트조회 */
     @GetMapping("/chat/{channelId}")
     public ResponseEntity<ResponseDTO> getChatData(@PathVariable int channelId) {
         log.info("getChatData ============================={}", channelId);
