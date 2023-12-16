@@ -35,7 +35,7 @@ public class ChannelController {
         int chatId = channelService.saveChatData(message);
         message.setChatId(chatId);
         log.info("============setChatId================================={}", message);
-        //채팅방에 메시지 전송
+
         return new MessageResponse(message.getNickname(), "채팅 메시지 전송 성공", message);
     }
 
