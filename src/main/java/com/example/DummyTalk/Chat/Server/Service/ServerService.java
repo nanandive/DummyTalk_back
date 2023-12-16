@@ -9,6 +9,8 @@ import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
 import com.example.DummyTalk.Chat.Server.repository.ServerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ public class ServerService {
 
     private final ServerRepository serverRepository;
     private final ChannelRepository channelRepository;
+    private final ModelMapper modelMapper;
 
 
     /* 서버리스트 */
@@ -54,7 +57,7 @@ public class ServerService {
     }
 
     /* 서버 생성 */
-    public void createServer(ServerDto serverDto, MultipartFile file) throws Exception{
+    public ServerDto createServer(ServerDto serverDto, MultipartFile file) throws Exception{
         if(file != null && !file.isEmpty()){
             String filePath = absolutePath;
             UUID uuid = UUID.randomUUID();
@@ -70,12 +73,16 @@ public class ServerService {
             serverRepository.save(serverEntity);
             System.out.println("서버 저장 : >>>>>>>>> " + serverEntity);
 
+            return modelMapper.map(serverEntity, ServerDto.class);
+
     }
 
-    public void createServer(ServerDto serverDto) throws Exception {
+    public ServerDto createServer(ServerDto serverDto) throws Exception {
         ServerEntity serverEntity = convertToEntity(serverDto);
         serverRepository.save(serverEntity);
         System.out.println("서버 저장 : >>>>>>>>> " + serverEntity);
+
+        return modelMapper.map(serverEntity, ServerDto.class);
     }
 
 
