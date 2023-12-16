@@ -23,12 +23,8 @@ public class ChatDataEntity extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "sender")
     private User sender;
-//    private String sender;
     private String message;
     private String language;
-
-
-
 
     /* 채널데이터와 채널의 연관관계 (자식) */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,14 +40,6 @@ public class ChatDataEntity extends BaseTimeEntity {
     @OneToMany( mappedBy = "channelDataId", fetch = FetchType.LAZY)
     private List<ImageEntity> imageEntityList = new ArrayList<>();
 
-    public ChatDataEntity build() {
-        ChatDataEntity entity = new ChatDataEntity();
-        entity.channelId = this.channelId;
-        entity.message = this.message;
-        entity.sender = this.sender;
-        entity.language = this.language;
-        return entity;
-    }
 
 
 }

@@ -12,10 +12,9 @@ import lombok.ToString;
 public class ImageDto {
 
     private Long imageId;
-    private String image;
-
-
-
+    private String originalFileName;
+    private String filePath;
+    private String savedFileName;
     private List<EmbeddingImageDto> embeddingImageDtoList ;
 
 }
