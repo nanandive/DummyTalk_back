@@ -4,6 +4,9 @@ import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 import com.example.DummyTalk.Chat.Channel.Service.ChatService;
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
+import com.example.DummyTalk.Jwt.JwtFilter;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,7 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
+
     @MessageMapping("/{channelId}/message") // '/app/message'로 들어오는 메시지를 처리
     @SendTo("/topic/msg/{channelId}")
     public MessageResponse handleMessage(SendChatDto message, @DestinationVariable String channelId) {
@@ -62,5 +66,18 @@ public class ChatController {
                     .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
         }
     }
-}
 
+    @PostMapping("/trans/{nationLanguage}")
+    public MessageResponse translateMessage(@RequestBody SendChatDto message,
+            @PathVariable String nationLanguage,
+            HttpServletRequest request) {
+
+        String token = JwtFilter.resolveToken(request);
+
+        log.debug("{}", message);
+
+        // return new MessageResponse(chat.getMessage(), "TranslateMessage", chat);
+        return chatService.translateMessage(message, nationLanguage);
+    }
+
+}
