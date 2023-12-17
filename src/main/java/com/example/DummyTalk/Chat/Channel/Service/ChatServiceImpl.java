@@ -1,6 +1,6 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
-import com.example.DummyTalk.Chat.Channel.Dto.ChatListDto;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
@@ -43,9 +43,9 @@ public class ChatServiceImpl implements ChatService {
     }
 
     /* 채팅 데이터 Entity -> Dto 변환 */
-    private ChatListDto chatToDto(ChatDataEntity chat) {
+    private MessageHistoryDto chatToDto(ChatDataEntity chat) {
         log.info("saveChatData chatToDto ============================== " + chat);
-        return ChatListDto.builder()
+        return MessageHistoryDto.builder()
                 .message(chat.getMessage())
                 .chatId(chat.getChatId())
                 .createdAt(chat.getCreatedAt())
@@ -84,12 +84,12 @@ public class ChatServiceImpl implements ChatService {
     }
 
     /* 채널 아이디로 조회한 채널 리스트 */
-    public List<ChatListDto> findChatData(int channelId) {
+    public List<MessageHistoryDto> findChatData(int channelId) {
         ChannelEntity channelEntity = Optional.ofNullable(channelRepository.findByChannelId((long) channelId))
                 .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
         log.info("findChatData channelEntity ============================={}", channelEntity);
         try {
-            List<ChatListDto> chatlist =
+            List<MessageHistoryDto> chatlist =
                     chatRepository.findAllByChannelId(channelEntity).stream()
                             .map(this::chatToDto)
                             .collect(Collectors.toList());

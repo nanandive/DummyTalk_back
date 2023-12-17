@@ -1,11 +1,7 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
-import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
-import com.example.DummyTalk.Chat.Channel.Dto.ChatListDto;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
-import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
-import com.example.DummyTalk.Chat.Channel.Service.ChannelService;
-import com.example.DummyTalk.Chat.Channel.Service.ChannelServiceImpl;
 import com.example.DummyTalk.Chat.Channel.Service.ChatService;
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +50,7 @@ public class ChatController {
     public ResponseEntity<ResponseDTO> getChatData(@PathVariable int channelId) {
         log.info("getChatData ============================={}", channelId);
         try {
-            List<ChatListDto> list = chatService.findChatData(channelId);
+            List<MessageHistoryDto> list = chatService.findChatData(channelId);
             log.info("getChatData list============================={}", list.size());
             return ResponseEntity
                     .ok()

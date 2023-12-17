@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @ToString
 @Builder(toBuilder = true)
-public class ChatListDto {
+public class MessageHistoryDto {
 
     private Long chatId;
     private String message;
