@@ -6,6 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+
 @Data
 @ToString
 @Builder
@@ -19,7 +23,7 @@ public class SendChatDto {
     private String nickname;
     private String language;
     private int channelId;
-
+    private LocalDateTime timeStamp;
 //    private List<ImageDto> imageDtoList;
 //    private List<EmbeddingImageDto> embeddingImageDtoList;
 

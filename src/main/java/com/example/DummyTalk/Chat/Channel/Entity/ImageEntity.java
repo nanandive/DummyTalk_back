@@ -17,8 +17,14 @@ public class ImageEntity {
     @Column(name = "image_id")
     private Long imageId;       // 이미지 ID
 
+    @Column(name="original_file_name")
+    private String originalFileName;
 
-    private String image;       // 원본 이미지
+    @Column(name="file_path")
+    private String filePath;
+
+    @Column(name="saved_file_name")
+    private String savedFileName;
 
     /* 이미지와 채널데이터의 연관관계(자식) */
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
