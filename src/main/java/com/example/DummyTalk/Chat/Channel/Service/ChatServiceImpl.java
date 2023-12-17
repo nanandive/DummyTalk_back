@@ -1,5 +1,6 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
+import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
@@ -17,6 +18,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -99,5 +103,22 @@ public class ChatServiceImpl implements ChatService {
             log.error("Data access error: {}", e.getMessage());
             throw new ChatFailException("채널 조회에 실패하였습니다.", e);
         }
+    }
+
+    /* Chat 번역 */
+    public MessageResponse translateMessage(SendChatDto chat, String nationLanguage) {
+        
+        MessageResponse response = WebClient.create()
+        .post()
+        .uri("http://localhost:8000/api/v1/trans/" + nationLanguage)
+        .header("Content-Type", "application/json")
+        .body(BodyInserters.fromValue(chat))
+        .retrieve()
+        .bodyToMono(MessageResponse.class)
+        .block();
+
+        log.info("{}", response);
+
+        return response;
     }
 }
