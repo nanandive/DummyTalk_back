@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/chat")
 public class ChatController {
@@ -67,7 +67,7 @@ public class ChatController {
         }
     }
 
-    @PostMapping("/trans/{nationLanguage}")
+    @PostMapping("trans/{nationLanguage}")
     public MessageResponse translateMessage(@RequestBody SendChatDto message,
             @PathVariable String nationLanguage,
             HttpServletRequest request) {
