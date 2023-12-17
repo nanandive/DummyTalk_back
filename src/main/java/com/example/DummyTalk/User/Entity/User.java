@@ -69,6 +69,9 @@ public class User {
     @Column(name = "update_at")
     private LocalDateTime updateAt;
 
+    @Column(name = "nation_language")
+    private String nationalLanguage;
+
     /* 유저와 서버의 관계 */
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChat> userChats = new ArrayList<>();
