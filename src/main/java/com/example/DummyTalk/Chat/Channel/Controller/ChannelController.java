@@ -2,28 +2,38 @@ package com.example.DummyTalk.Chat.Channel.Controller;
 
 import java.util.List;
 
-import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
-import com.example.DummyTalk.Chat.Channel.Service.ChannelServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Dto.ChatListDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
+import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Service.ChannelService;
+import com.example.DummyTalk.Chat.Channel.Service.ChannelServiceImpl;
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
+import com.example.DummyTalk.Jwt.JwtFilter;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/channel")
 public class ChannelController {
@@ -62,13 +72,6 @@ public class ChannelController {
         return new MessageResponse(message.getNickname(), "채팅 메시지 전송 성공", message);
     }
 
-    /* 채널 생성 */
-    @PostMapping("/writePro")
-    public ResponseEntity<?> serverWritePro(@ModelAttribute ChannelDto channelDto) {
-        channelService.createChannel(channelDto);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/chat")
     public String main() {
         return "chat/writeForm";
@@ -102,4 +105,19 @@ public class ChannelController {
                     .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
         }
     }
+
+    @PostMapping("/chat/trans/{nationLanguage}")
+    public MessageResponse translateMessage(@RequestBody SendChatDto message,
+     @PathVariable String nationLanguage,
+     HttpServletRequest request) {
+        
+        String token = JwtFilter.resolveToken(request);
+
+        log.debug("{}", message);
+        
+        
+        // return new MessageResponse(chat.getMessage(), "TranslateMessage", chat);
+        return channelServiceImpl.translateMessage(message, nationLanguage);
+    }
+    
 }

@@ -1,16 +1,17 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.example.DummyTalk.Exception.ChatFailException;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Dto.ChatListDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
@@ -19,6 +20,7 @@ import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChatRepository;
 import com.example.DummyTalk.Chat.Server.repository.ServerRepository;
+import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.User.DTO.ChatSenderDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
@@ -148,5 +150,21 @@ public class ChannelServiceImpl implements ChannelService {
             log.error("Data access error: {}", e.getMessage());
             throw new ChatFailException("채널 조회에 실패하였습니다.", e);
         }
+    }
+
+    public MessageResponse translateMessage(SendChatDto chat, String nationLanguage) {
+        
+        MessageResponse response = WebClient.create()
+        .post()
+        .uri("http://localhost:8000/api/v1/trans/" + nationLanguage)
+        .header("Content-Type", "application/json")
+        .body(BodyInserters.fromValue(chat))
+        .retrieve()
+        .bodyToMono(MessageResponse.class)
+        .block();
+
+        log.info("{}", response);
+
+        return response;
     }
 }
