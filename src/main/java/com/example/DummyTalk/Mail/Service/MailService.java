@@ -51,8 +51,6 @@ public class MailService {
 
         javaMailSender.send(message);
 
-
-
-        return 0;
+        return number;
     }
 }
