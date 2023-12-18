@@ -22,7 +22,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO> Login(@RequestBody UserDTO userDTO){
+    public ResponseEntity<ResponseDTO> Login(@RequestBody UserDTO userDTO) throws Exception {
 
         log.info("Test============>{}", userDTO);
 
