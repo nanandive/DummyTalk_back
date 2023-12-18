@@ -78,10 +78,13 @@ public class UserService {
 
     }
 
+    // 랜덤한 JWT SecretKey 생성
     private static byte[] generateRandomBytes(int length) throws NoSuchAlgorithmException {
         SecureRandom secureRandom = SecureRandom.getInstanceStrong();
         byte[] randomBytes = new byte[length];
         secureRandom.nextBytes(randomBytes);
         return randomBytes;
     }
+
+
 }
