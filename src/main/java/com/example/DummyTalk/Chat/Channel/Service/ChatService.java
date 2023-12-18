@@ -8,4 +8,6 @@ import java.util.List;
 public interface ChatService {
     int saveChatData(SendChatDto message);
     List<MessageHistoryDto> findChatData(int channelId);
+    int saveAudioChatData(SendChatDto message);
+
 }

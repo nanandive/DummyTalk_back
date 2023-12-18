@@ -5,13 +5,12 @@ import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Setter
 @Getter
+@Setter
 @ToString(exclude = {"serverEntity", "chatDataEntityList"})
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,17 +20,16 @@ public class ChannelEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "channel_id")
-    private Long channelId;     //채널 ID
+    private Long channelId; // 채널 ID
 
     @Column(nullable = false)
-    private String channelName;     // 채널이름
+    private String channelName; // 채널 이름
 
     @Column(nullable = false)
-    private int channelCount;       // 채널에 접속한 유저 수
+    private int channelCount; // 채널에 접속한 유저 수
 
-    @Column(name = "server_id",nullable = false)
+    @Column(name = "server_id", nullable = false)
     private long serverId;
-
 
     /* 서버와의 연관관계 (자식) */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,9 +37,7 @@ public class ChannelEntity extends BaseTimeEntity {
     private ServerEntity serverEntity;
 
     /* 채널과 채널 데이터와의 연관관계 (부모) */
-    @OneToMany( mappedBy = "channelId", fetch = FetchType.LAZY)
+    @Builder.Default
+    @OneToMany(mappedBy = "channelId", fetch = FetchType.LAZY)
     private List<ChatDataEntity> chatDataEntityList = new ArrayList<>();
-
-
-
 }

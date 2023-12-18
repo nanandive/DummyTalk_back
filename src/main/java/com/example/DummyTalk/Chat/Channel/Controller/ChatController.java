@@ -28,13 +28,38 @@ public class ChatController {
     public MessageResponse handleMessage(SendChatDto message, @DestinationVariable String channelId) {
         log.info("============message================================={}", message);
 
-        // 채팅 데이터 저장
-        int chatId = chatService.saveChatData(message);
-        message.setChatId(chatId);
-        log.info("============setChatId================================={}", message);
 
-        return new MessageResponse(message.getNickname(), "채팅 메시지 전송 성공", message);
+        if (message.getAudioUrl() != null && !message.getAudioUrl().isEmpty()) {
+            // 오디오 채팅 데이터 저장
+            int audioChatId = chatService.saveAudioChatData(message);
+            message.setAudioChatId(audioChatId);
+            log.info("============setAudioChatId================================={}", message);
+
+            return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message);
+        } else {
+            // 일반 텍스트 채팅 데이터 저장
+            int chatId = chatService.saveChatData(message);
+            message.setChatId(chatId);
+            log.info("============setChatId================================={}", message);
+
+            return new MessageResponse(message.getNickname(), "일반 텍스트 채팅 메시지 전송 성공", message);
+
+        }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /* 전송된 메시지 데이터 저장 */
     public ResponseEntity<ResponseDTO> saveChatData(@RequestBody SendChatDto message) {
@@ -63,4 +88,18 @@ public class ChatController {
         }
     }
 }
+
+
+
+
+//    @PostMapping("/writePro")
+//    public ResponseEntity<?> serverWritePro(@ModelAttribute ChannelDto channelDto) {
+//        channelService.createChannel(channelDto);
+//        return ResponseEntity.noContent().build();
+//    }
+
+
+
+
+
 

@@ -24,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder(toBuilder = true)
+@Builder
 @SequenceGenerator(
         name = "User_Id",
         sequenceName = "SEQ_User_Id",
@@ -70,6 +70,7 @@ public class User {
     private LocalDateTime updateAt;
 
     /* 유저와 서버의 관계 */
+    @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChat> userChats = new ArrayList<>();
 

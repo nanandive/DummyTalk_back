@@ -36,6 +36,4 @@ public class ChannelController {
         return ResponseEntity.ok().build();
 
     }
-
-
 }
