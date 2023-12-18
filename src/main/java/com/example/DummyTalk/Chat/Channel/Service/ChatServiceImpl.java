@@ -105,7 +105,6 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Object deleteChat(int chatId) {
-
         return null;
     }
 
@@ -146,4 +145,13 @@ public class ChatServiceImpl implements ChatService {
         return response;
     }
 
+    @Override
+    public int saveAudioChatData(SendChatDto sendChatDto) {
+        // 오디오 채팅 데이터를 저장하는 로직을 여기에 구현합니다.
+        // 예시:
+        // 1. sendChatDto에서 필요한 정보를 추출합니다.
+        // 2. 채팅 데이터를 데이터베이스에 저장합니다.
+        // 3. 필요한 경우 추가적인 처리를 수행합니다.
+        return 0;
+    }
 }

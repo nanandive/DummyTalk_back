@@ -1,9 +1,17 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
+import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
+import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
+import com.example.DummyTalk.Exception.ChatFailException;
+import com.example.DummyTalk.User.DTO.ChatSenderDTO;
+import com.example.DummyTalk.User.Entity.User;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -28,7 +36,6 @@ public class ChannelServiceImpl implements ChannelService {
     private final ServerRepository serverRepository;
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
 
     @Transactional
     /* 채널 생성 */
@@ -37,6 +44,10 @@ public class ChannelServiceImpl implements ChannelService {
         channelRepository.save(channelEntity);
         System.out.println("채널 생성(서버) >>>>>>>>> : " + channelEntity);
     }
+
+
+
+
 
     private ChannelEntity convertToEntity(ChannelDto channelDto) {
         return ChannelEntity.builder()
@@ -74,5 +85,6 @@ public class ChannelServiceImpl implements ChannelService {
                 .channelCount(channelEntity.getChannelCount())
                 .build();
     }
+
 
 }
