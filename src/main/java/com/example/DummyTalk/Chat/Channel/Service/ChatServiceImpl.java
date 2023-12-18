@@ -98,9 +98,9 @@ public class ChatServiceImpl implements ChatService {
     /* 채널아이디로 참여자 정보 조회 */
     public void checkParticipant(int channelId, Long userId) {
         ChannelParticipantEntity channel = channelParticipantRepository.findByChannelIdAndUserId((long) channelId, userId);
-        if (channel == null) {
-            throw new ChatFailException("초대 된 채널이 아닙니다.");
-        }
+//        if (channel == null) {
+//            throw new ChatFailException("초대 된 채널이 아닙니다.");
+//        }
     }
 
     @Override

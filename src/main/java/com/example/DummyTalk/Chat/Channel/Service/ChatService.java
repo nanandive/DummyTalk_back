@@ -11,8 +11,7 @@ public interface ChatService {
     int saveChatData(SendChatDto message);
     List<MessageHistoryDto> findChatData(int channelId, String userId);
     MessageResponse translateMessage(SendChatDto chat, String nationLanguage);
-
     void checkParticipant(int channelId, Long userId);
-
     Object deleteChat(int chatId);
+    int saveAudioChatData(SendChatDto message);
 }
