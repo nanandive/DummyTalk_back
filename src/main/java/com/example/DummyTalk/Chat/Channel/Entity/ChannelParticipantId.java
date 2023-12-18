@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 
 @Data
@@ -22,12 +23,16 @@ public class ChannelParticipantId implements Serializable {
     private Long lastChatId; // 참여자가 마지막으로 읽은 채팅 아이디
 
     @Override
-    public int hashCode() {
-        return super.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChannelParticipantId that = (ChannelParticipantId) o;
+        return Objects.equals(userId, that.userId) &&
+                Objects.equals(channelId, that.channelId);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
+    public int hashCode() {
+        return Objects.hash(userId, channelId);
     }
 }

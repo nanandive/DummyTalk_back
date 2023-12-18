@@ -17,14 +17,14 @@ import java.util.List;
 public class ChatSenderDTO {
 
     private Long sender;
-    private String userName;
+    private String name;
     private String nickname;
     private String userImgPath;
 
     public ChatSenderDTO build() {
         ChatSenderDTO dto = new ChatSenderDTO();
         dto.sender = this.sender;
-        dto.userName = this.userName;
+        dto.name = this.name;
         dto.nickname = this.nickname;
         dto.userImgPath = this.userImgPath;
         return dto;

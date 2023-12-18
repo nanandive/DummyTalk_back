@@ -52,6 +52,7 @@ public class TokenProvider {
         
         // 이전 프로젝트에서는 해당 값들을 client에서 꺼내서 씀
         claims.put("nickname", user.getNickname());
+        claims.put("national_language", user.getNationalLanguage());
 
         long now = System.currentTimeMillis();  // 현재시간을 밀리세컨드단위로 가져옴
 
