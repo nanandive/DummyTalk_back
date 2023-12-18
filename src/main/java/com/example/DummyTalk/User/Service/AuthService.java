@@ -24,7 +24,7 @@ public class AuthService {
 
     private final ModelMapper modelMapper;
 
-    public TokenDTO login(UserDTO userDTO) {
+    public TokenDTO login(UserDTO userDTO) throws Exception {
 
         // 기존 유저 확인 (email)
         User user =userRepository.findByUserEmail(userDTO.getUserEmail());
@@ -41,4 +41,6 @@ public class AuthService {
 
         return tokenProvider.generateTokenDTO(user);
     }
+
+
 }

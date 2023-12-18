@@ -24,7 +24,7 @@ import java.util.Date;
 public class TokenProvider {
 
     private static final String BEARER_TYPE = "Bearer";   // Bearer 토큰 사용시 앞에 붙이는 prefix문자열
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 8 * 60 * 60; // 8시간으로 설정
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 8; // 8시간으로 설정
 
 
 //    private final Key key;                                // java.security.Key로 imort 이후 JWT의 서명(Signature) 생성에 사용된다.
@@ -49,8 +49,7 @@ public class TokenProvider {
 
         /* 1. 회원 아이디를 "sub"이라는 클레임으로 토큰으로 추가 */
         Claims claims = Jwts.claims().setSubject(String.valueOf(user.getUserId()));    // ex) { sub : memberId }
-        
-        // 이전 프로젝트에서는 해당 값들을 client에서 꺼내서 씀
+
         claims.put("nickname", user.getNickname());
         claims.put("national_language", user.getNationalLanguage());
 

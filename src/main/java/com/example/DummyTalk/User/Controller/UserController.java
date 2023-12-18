@@ -31,7 +31,7 @@ public class UserController {
                     .status(HttpStatus.CREATED)
                     .body(new ResponseDTO(HttpStatus.CREATED, "회원가입 성공", result));
 
-        } catch (RuntimeException | NoSuchAlgorithmException e){
+        } catch (Exception e){
 
             UserDTO empty = new UserDTO();
 
