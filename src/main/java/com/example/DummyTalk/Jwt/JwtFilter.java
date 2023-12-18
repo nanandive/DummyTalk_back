@@ -41,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
     /* Request Header에서 토큰 정보 꺼내기(여기서 위에서 선언한 두개의 static변수를 사용할꺼)*/
-    private String resolveToken(HttpServletRequest request){
+    public static String resolveToken(HttpServletRequest request){
 
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)){

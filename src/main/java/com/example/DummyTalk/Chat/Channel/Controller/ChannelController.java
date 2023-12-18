@@ -1,18 +1,24 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
-import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
-import com.example.DummyTalk.Chat.Channel.Service.ChannelServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
+import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Service.ChannelService;
+import com.example.DummyTalk.Chat.Channel.Service.ChannelServiceImpl;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/channel")
 public class ChannelController {
