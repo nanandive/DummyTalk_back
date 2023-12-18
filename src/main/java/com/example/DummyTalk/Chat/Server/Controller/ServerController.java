@@ -1,17 +1,28 @@
 package com.example.DummyTalk.Chat.Server.Controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Service.ChannelServiceImpl;
 import com.example.DummyTalk.Chat.Server.Dto.ServerDto;
 import com.example.DummyTalk.Chat.Server.Dto.ServerSettingDto;
 import com.example.DummyTalk.Chat.Server.Service.ServerService;
+import com.example.DummyTalk.Common.DTO.ResponseDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -37,21 +48,24 @@ public class ServerController {
     }
 
     @PostMapping("/writePro")
-    public String serverWritePro(@ModelAttribute ServerDto serverDto,
-                                 @RequestParam(value = "file", required = false) MultipartFile file) throws Exception {
-        if (file !=null  && !file.isEmpty()  ) {
-            System.out.println("서버 생성 (컨트롤러) >>>>>>>>>> " + serverDto + file);
-            serverService.createServer(serverDto, file);
+    public ResponseEntity<?> serverWritePro(@ModelAttribute ServerDto serverDto,
+            @RequestParam(value = "file", required = false) MultipartFile file) throws Exception {
 
-        }else {
-            serverService.createServer(serverDto);
+        ServerDto responseServerDto = null;
+        if (file != null && !file.isEmpty()) {
+            System.out.println("서버 생성 (컨트롤러) >>>>>>>>>> " + serverDto + file);
+            responseServerDto = serverService.createServer(serverDto, file);
+
+        } else {
+            responseServerDto = serverService.createServer(serverDto);
         }
-        return "/wesocket/server";
+
+        return ResponseEntity.ok().body(new ResponseDTO(HttpStatus.OK, "서버 생성", responseServerDto));
     }
 
     /* TODO 상세보기 */
     @GetMapping("/{id}")
-    public ResponseEntity<ServerDto> getServerDetail(@PathVariable Long id){
+    public ResponseEntity<ServerDto> getServerDetail(@PathVariable Long id) {
         ServerDto serverDto = serverService.findById(id);
 
         /* 채널 리스트 */
@@ -66,10 +80,10 @@ public class ServerController {
 
     /* TODO 서버 수정 */
     @PostMapping("/setting")
-    public ResponseEntity<ServerSettingDto> serverSetting (@ModelAttribute ServerSettingDto serverSettingDto) {
-            serverService.updateServer(serverSettingDto);
-            System.out.println("서버 수정 (컨트롤러): >>>>>>>>>>>>> " + serverSettingDto);
-            return ResponseEntity.ok(serverSettingDto);
+    public ResponseEntity<ServerSettingDto> serverSetting(@ModelAttribute ServerSettingDto serverSettingDto) {
+        serverService.updateServer(serverSettingDto);
+        System.out.println("서버 수정 (컨트롤러): >>>>>>>>>>>>> " + serverSettingDto);
+        return ResponseEntity.ok(serverSettingDto);
     }
 
     /* TODO 서버 삭제 */
@@ -81,19 +95,19 @@ public class ServerController {
 
     /* 서버에 해당하는 채널 리스트 */
     @GetMapping("/{serverId}/channel/list")
-    public ResponseEntity<List<ChannelDto>> channelList(@PathVariable Long serverId){
+    public ResponseEntity<List<ChannelDto>> channelList(@PathVariable Long serverId) {
         List<ChannelDto> channelDtoList = channelServiceImpl.findByChannelList(serverId);
         System.out.println("채널 리스트 (컨트롤러) >>>>>>>>> : " + channelDtoList);
 
         return ResponseEntity.ok(channelDtoList);
-    
+
     }
+
     @DeleteMapping("/{serverId}/channel/{channelId}/delete")
-    public ResponseEntity<List<ChannelDto>> deleteChannel(@PathVariable Long serverId, @PathVariable Long channelId){
+    public ResponseEntity<List<ChannelDto>> deleteChannel(@PathVariable Long serverId, @PathVariable Long channelId) {
         System.out.println("채널 삭제 (컨트롤러) >>>>>> :" + channelId);
         channelServiceImpl.channelDelete(channelId);
         return ResponseEntity.ok().build();
     }
-
 
 }
