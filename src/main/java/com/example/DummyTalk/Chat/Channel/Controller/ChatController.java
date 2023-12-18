@@ -61,14 +61,12 @@ public class ChatController {
             int audioChatId = chatService.saveAudioChatData(message);
             message.setAudioChatId(audioChatId);
             log.info("============setAudioChatId================================={}", message);
-
             return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message);
         } else {
             // 일반 텍스트 채팅 데이터 저장
             int chatId = chatService.saveChatData(message);
             message.setChatId(chatId);
             log.info("============setChatId================================={}", message);
-
             return new MessageResponse(message.getNickname(), "일반 텍스트 채팅 메시지 전송 성공", message);
         }
     }
