@@ -56,11 +56,32 @@ public class ChatController {
             ) {
         log.info("============message================================={}", message);
         // 채팅 데이터 저장
-        int chatId = chatService.saveChatData(message);
-        message.setChatId(chatId);
-        log.info("============setChatId================================={}", message);
+        if (message.getAudioUrl() != null && !message.getAudioUrl().isEmpty()) {
+            // 오디오 채팅 데이터 저장
+            int audioChatId = chatService.saveAudioChatData(message);
+            message.setAudioChatId(audioChatId);
+            log.info("============setAudioChatId================================={}", message);
 
-        return new MessageResponse(message.getNickname(), "채팅 메시지 전송 성공", message);
+            return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message);
+        } else {
+            // 일반 텍스트 채팅 데이터 저장
+            int chatId = chatService.saveChatData(message);
+            message.setChatId(chatId);
+            log.info("============setChatId================================={}", message);
+
+            return new MessageResponse(message.getNickname(), "일반 텍스트 채팅 메시지 전송 성공", message);
+        }
+    }
+
+
+
+    /* 전송된 메시지 데이터 저장 */
+    public ResponseEntity<ResponseDTO> saveChatData(@RequestBody SendChatDto message) {
+        log.info("saveChatData ============================={}.", message);
+        chatService.saveChatData(message);
+        return ResponseEntity
+                .ok()
+                .body(new ResponseDTO(HttpStatus.OK, "채팅 저장 성공"));
     }
 
     /* 채널 아이디로 채팅 데이터 리스트 조회 */
@@ -154,3 +175,16 @@ public class ChatController {
 //        return new ObjectMapper().writeValueAsString(obj);
 //    }
 //    }
+
+
+//    @PostMapping("/writePro")
+//    public ResponseEntity<?> serverWritePro(@ModelAttribute ChannelDto channelDto) {
+//        channelService.createChannel(channelDto);
+//        return ResponseEntity.noContent().build();
+//    }
+
+
+
+
+
+
