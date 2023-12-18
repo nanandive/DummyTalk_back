@@ -1,6 +1,7 @@
 package com.example.DummyTalk.Jwt;
 
 
+import com.example.DummyTalk.AES.AESUtil;
 import com.example.DummyTalk.Exception.TokenException;
 import com.example.DummyTalk.User.DTO.TokenDTO;
 import com.example.DummyTalk.User.Entity.User;
@@ -21,7 +22,7 @@ import java.util.Date;
 
 @Component
 @Slf4j
-public class TokenProvider {
+public class TokenProvider extends AESUtil {
 
     private static final String BEARER_TYPE = "Bearer";   // Bearer 토큰 사용시 앞에 붙이는 prefix문자열
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 8; // 8시간으로 설정
