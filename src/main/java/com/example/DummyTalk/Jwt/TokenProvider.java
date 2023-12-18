@@ -43,9 +43,13 @@ public class TokenProvider extends AESUtil {
 
 
     /* 1. 토큰(xxxxx.yyyyy.zzzzz) 생성 메소드 */
-    public TokenDTO generateTokenDTO(User user){
-
-        byte[] keyBytest = Decoders.BASE64.decode(user.getUserSecretKey());
+    public TokenDTO generateTokenDTO(User user) throws Exception {
+        
+        // AES키를 활용한 복호화
+        String decryptJWT = AESUtil.decrypt(user.getUserSecretKey(), AESUtil.getKey());
+                
+        
+        byte[] keyBytest = Decoders.BASE64.decode(decryptJWT);
         this.key = Keys.hmacShaKeyFor(keyBytest);
 
         /* 1. 회원 아이디를 "sub"이라는 클레임으로 토큰으로 추가 */

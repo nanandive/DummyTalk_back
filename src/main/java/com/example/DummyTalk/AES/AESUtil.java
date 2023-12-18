@@ -1,10 +1,19 @@
 package com.example.DummyTalk.AES;
 
+import lombok.Getter;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import java.security.Key;
 
 public class AESUtil {
+
+    private static SecretKey key;
+
+    protected static SecretKey getKey() {
+        return key;
+    }
 
     // 랜덤한 AES Key 생성 (128 bit key size)
     protected static SecretKey generateAESKey() throws Exception {

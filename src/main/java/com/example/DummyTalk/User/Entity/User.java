@@ -61,7 +61,7 @@ public class User {
     private String userImgPath;
 
     @Column(name = "user_secret_key")
-    private String userSecretKey;
+    private byte[] userSecretKey;
 
     @Column(name = "create_at")
     private LocalDateTime createAt;
