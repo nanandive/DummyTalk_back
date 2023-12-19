@@ -78,10 +78,8 @@ public class ChatController {
     public ResponseEntity<ResponseDTO> getChatData(@PathVariable int channelId, @PathVariable String userId) {
         log.info("\n getChatData channelId=============================\n{}", channelId);
         chatService.checkParticipant(channelId, Long.parseLong(userId));
-        log.info("\n getChatData userId ==============check 완료 userId===============\n{}", userId);
         try {
             List<MessageHistoryDto> list = chatService.findChatData(channelId, userId);
-            log.info("getChatData list============================={}", list.size());
             return ResponseEntity
                     .ok()
                     .body(new ResponseDTO(HttpStatus.OK,

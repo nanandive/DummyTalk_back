@@ -13,8 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder(toBuilder = true)
 public class ImageDto {
     private Long imageId;
-    private String userId;          // 받을 때 string
+    private int userId;          // 받을 때 string
     private String nickname;        // 받을 때 string
+    private int channelId;
     private String originalFileName;
     private String filePath;
     private String savedFileName;

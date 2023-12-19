@@ -19,5 +19,6 @@ public class MessageHistoryDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
     private ChatSenderDTO sender;
+    private String type;
 
 }

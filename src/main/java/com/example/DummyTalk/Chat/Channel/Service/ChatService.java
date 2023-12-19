@@ -15,7 +15,4 @@ public interface ChatService {
     void checkParticipant(int channelId, Long userId);
     Object deleteChat(int chatId);
     int saveAudioChatData(SendChatDto message);
-    void saveImage(String userId, String nickname, MultipartFile[] image);
-
-    void saveImage(ImageDto imageDto);
 }

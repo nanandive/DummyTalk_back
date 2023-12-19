@@ -3,6 +3,7 @@ package com.example.DummyTalk.Chat.Channel.Controller;
 import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 import com.example.DummyTalk.Chat.Channel.Service.ChatService;
+import com.example.DummyTalk.Chat.Channel.Service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,21 +20,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ImageUploadController {
 
-    private final ChatService chatService;
+    private final ImageService imageService;
 
     @PostMapping("/save")
     public void saveImage(@ModelAttribute ImageDto imageDto) {
         /*
-         *  @param image : 클라이언트에서 전송된 이미지 파일
-         *  => ( file.name, file )
-         *  @param message : 클라이언트에서 전송된 채팅 메시지 데이터
-         *  => ( userId, nickname )
+         *  @param imageDto : 클라이언트에서 전송된 이미지 파일
+         *  imageDto => fileInfo : Multipart[] , userId, channelId, nickname
          *  1. 로컬에 저장
          *  2. DB에 값 저장
          *  3. 추후 성공적으로 저장되면 로컬은 삭제
-         *  @param message : channelId, userId, imageUrl, Multipart */
+         * */
         log.info("============saveImage================================={}", imageDto);
-        chatService.saveImage(imageDto);
+        imageService.saveImage(imageDto);
 //        return new MessageResponse(message.getNickname(), "이미지 저장 성공", );
     }
 }
