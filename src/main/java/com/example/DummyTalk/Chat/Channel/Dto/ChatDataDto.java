@@ -16,7 +16,7 @@ public class ChatDataDto {
 
     public enum MessageType {
         // 메시지 타입 : 입장, 채팅
-        ENTER,TALK,LEAVE
+        ENTER,TALK,LEAVE,IMAGE,AUDIO
 }
     private Long chatId;
     private String message;

@@ -20,6 +20,7 @@ import java.util.Collection;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class UserDTO implements UserDetails {
 
     private Long userId;

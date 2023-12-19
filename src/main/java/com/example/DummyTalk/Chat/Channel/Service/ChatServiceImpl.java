@@ -34,11 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatServiceImpl implements ChatService {
-    @Value("${chatAbsolutePath.dir}")
-    private String absolutePath;
 
-    @Value("${chatResourcePath.dir}")
-    private String resourcePath;
 
     private final ChannelRepository channelRepository;
     private final ChatRepository chatRepository;
@@ -62,9 +58,10 @@ public class ChatServiceImpl implements ChatService {
         return MessageHistoryDto.builder()
                 .message(chat.getMessage())
                 .chatId(chat.getChatId())
-                .createdAt(chat.getCreatedAt())
-                .updatedAt(chat.getUpdatedAt())
                 .sender(userToDto(chat.getSender()))
+                .type(chat.getType())
+                // 수정 시간이 없으면 생성 시간으로 대체
+                .timestamp(chat.getUpdatedAt() == null ? chat.getCreatedAt() : chat.getUpdatedAt())
                 .build();
     }
 
@@ -94,6 +91,7 @@ public class ChatServiceImpl implements ChatService {
                     .message(message.getMessage())
                     .sender(user)
                     .language("en")
+                    .type("TEXT")
                     .build();
             ChatDataEntity newChat = chatRepository.save(chatEntity);
             log.info("saveChatData newChat ============================== " + newChat);
@@ -121,17 +119,15 @@ public class ChatServiceImpl implements ChatService {
 
     /* 채널 아이디로 조회한 채널 리스트 */
     public List<MessageHistoryDto> findChatData(int channelId, String userId) {
-        Long user = Long.valueOf(userId);
 
         ChannelEntity channelEntity = Optional.ofNullable(channelRepository.findByChannelId((long) channelId))
                 .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
-        log.info("findChatData channelEntity ============================={}", channelEntity);
+
         try {
             List<MessageHistoryDto> chatlist =
                     chatRepository.findAllByChannelId(channelEntity).stream()
                             .map(this::chatToDto)
                             .collect(Collectors.toList());
-            // log.info("findChatData chatlist ============================={}", chatlist.get(0).getCreatedAt());
             return chatlist;
         } catch (DataAccessException e) {
             log.error("Data access error: {}", e.getMessage());
@@ -164,42 +160,4 @@ public class ChatServiceImpl implements ChatService {
         return 0;
     }
 
-    @Override
-    public void saveImage(String userId, String nickname, MultipartFile[] file) {
-
-        log.info("\nChatServiceImpl saveImage message ============================== \n" + userId);
-//        User user = Optional.ofNullable(userRepository.findByUserId((long) message.getSender()))
-//                .orElseThrow(() -> new ChatFailException("유저 조회에 실패하였습니다. "));
-//        log.info("\nsaveImage user ============================== \n" + user);
-//        ChannelEntity channel = Optional.ofNullable(channelRepository.findByChannelId((long) message.getChannelId()))
-//                .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
-//        log.info("\nsaveImage channel ============================== \n" + channel);
-
-        /* 경로 빌드 */
-        String fileName = UUID.randomUUID().toString();
-        File saveFile = new File(absolutePath, fileName);
-
-        try {
-            log.info("\nsaveImage saveFile ============================== \n" + saveFile);
-//            file.transferTo(saveFile);
-        } catch (Exception e) {
-            throw new ChatFailException("파일 저장에 실패하였습니다.");
-        }
-
-//            try {
-//                ImageEntity imageEntity = ImageEntity.builder()
-//                        .chatId()
-//                        .type("image")
-//                        .message(file.getOriginalFilename())
-//                        .sender(user)
-//                    .language(user.getNationalLanguage())
-//                    .build();
-//            ChatDataEntity newChat = chatRepository.save(chatEntity);
-//            log.info("saveChatData newChat ============================== " + newChat);
-//            message.setChatId(chatId);
-        // 클라이언트에서 키 정렬을 하기 위한 chatId 반환입니다.
-//        } catch (Exception e) {
-//            throw new ChatFailException("채팅 저장에 실패하였습니다.");
-//        }
-    }
 }
