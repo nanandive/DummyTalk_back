@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatRepository extends JpaRepository<ChatDataEntity, Long> {
-        ChatDataEntity findByChannelId(ChannelEntity channelEntity);
-        List<ChatDataEntity> findAllByChannelId(ChannelEntity channelEntity);
-
-//    ChatSenderDTO findBySender(ChatSenderDTO sender);
-        }
+    ChatDataEntity findByChannelId(ChannelEntity channelEntity);
+    List<ChatDataEntity> findAllByChannelId(ChannelEntity channelEntity);
+    Object findByChatId(long channelId);
+}

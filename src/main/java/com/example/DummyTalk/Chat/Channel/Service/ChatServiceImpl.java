@@ -16,20 +16,30 @@ import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ChatServiceImpl implements ChatService {
+    @Value("${chatAbsolutePath.dir}")
+    private String absolutePath;
+
+    @Value("${chatResourcePath.dir}")
+    private String resourcePath;
+
     private final ChannelRepository channelRepository;
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
@@ -97,7 +107,8 @@ public class ChatServiceImpl implements ChatService {
 
     /* 채널아이디로 참여자 정보 조회 */
     public void checkParticipant(int channelId, Long userId) {
-        ChannelParticipantEntity channel = channelParticipantRepository.findByChannelIdAndUserId((long) channelId, userId);
+        ChannelParticipantEntity channel =
+                channelParticipantRepository.findByChannelIdAndUserId((long) channelId, userId);
 //        if (channel == null) {
 //            throw new ChatFailException("초대 된 채널이 아닙니다.");
 //        }
@@ -139,9 +150,7 @@ public class ChatServiceImpl implements ChatService {
                 .retrieve()
                 .bodyToMono(MessageResponse.class)
                 .block();
-
         log.info("{}", response);
-
         return response;
     }
 
@@ -153,5 +162,44 @@ public class ChatServiceImpl implements ChatService {
         // 2. 채팅 데이터를 데이터베이스에 저장합니다.
         // 3. 필요한 경우 추가적인 처리를 수행합니다.
         return 0;
+    }
+
+    @Override
+    public void saveImage(String userId, String nickname, MultipartFile[] file) {
+
+        log.info("\nChatServiceImpl saveImage message ============================== \n" + userId);
+//        User user = Optional.ofNullable(userRepository.findByUserId((long) message.getSender()))
+//                .orElseThrow(() -> new ChatFailException("유저 조회에 실패하였습니다. "));
+//        log.info("\nsaveImage user ============================== \n" + user);
+//        ChannelEntity channel = Optional.ofNullable(channelRepository.findByChannelId((long) message.getChannelId()))
+//                .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
+//        log.info("\nsaveImage channel ============================== \n" + channel);
+
+        /* 경로 빌드 */
+        String fileName = UUID.randomUUID().toString();
+        File saveFile = new File(absolutePath, fileName);
+
+        try {
+            log.info("\nsaveImage saveFile ============================== \n" + saveFile);
+//            file.transferTo(saveFile);
+        } catch (Exception e) {
+            throw new ChatFailException("파일 저장에 실패하였습니다.");
+        }
+
+//            try {
+//                ImageEntity imageEntity = ImageEntity.builder()
+//                        .chatId()
+//                        .type("image")
+//                        .message(file.getOriginalFilename())
+//                        .sender(user)
+//                    .language(user.getNationalLanguage())
+//                    .build();
+//            ChatDataEntity newChat = chatRepository.save(chatEntity);
+//            log.info("saveChatData newChat ============================== " + newChat);
+//            message.setChatId(chatId);
+        // 클라이언트에서 키 정렬을 하기 위한 chatId 반환입니다.
+//        } catch (Exception e) {
+//            throw new ChatFailException("채팅 저장에 실패하였습니다.");
+//        }
     }
 }

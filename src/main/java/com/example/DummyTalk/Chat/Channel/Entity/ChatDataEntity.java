@@ -32,6 +32,10 @@ public class ChatDataEntity extends BaseTimeEntity {
     @JoinColumn(name = "channel_id")
     private ChannelEntity channelId;
 
+    private String type;      // 추가: 메시지 타입 (text, image, audio)
+
+    private String audioUrl;  // 추가: 오디오 URL
+    private int audioChatId;  // 추가: 오디오 채팅 ID
 
 
     @Builder.Default
@@ -44,9 +48,6 @@ public class ChatDataEntity extends BaseTimeEntity {
     @OneToMany( mappedBy = "channelDataId", fetch = FetchType.LAZY)
     private List<ImageEntity> imageEntityList = new ArrayList<>();
 
-    private String audioUrl;  // 추가: 오디오 URL
-
-    private int audioChatId;  // 추가: 오디오 채팅 ID
 
 
 

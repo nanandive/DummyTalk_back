@@ -17,8 +17,7 @@ public class ChatDataDto {
     public enum MessageType {
         // 메시지 타입 : 입장, 채팅
         ENTER,TALK,LEAVE
-    }
-
+}
     private Long chatId;
     private String message;
     private ChatSenderDTO sender;
@@ -29,6 +28,4 @@ public class ChatDataDto {
     private LocalDateTime updatedAt;
     private List<ImageDto> imageDtoList;
     private List<EmbeddingImageDto> embeddingImageDtoList;
-
-
 }
