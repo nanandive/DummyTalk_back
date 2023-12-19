@@ -20,4 +20,9 @@ public class MessageHistoryDto {
     private LocalDateTime updatedAt;
     private ChatSenderDTO sender;
 
+    // Fields related to audio messages
+    private String audioUrl; // URL of the audio file
+    private int audioChatId; // Unique ID for the audio chat
+
+
 }
