@@ -1,12 +1,13 @@
 package com.example.DummyTalk.Chat.Server.Service;
-import lombok.AllArgsConstructor;
-import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
-import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Server.Dto.ServerDto;
 import com.example.DummyTalk.Chat.Server.Dto.ServerSettingDto;
 import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
 import com.example.DummyTalk.Chat.Server.repository.ServerRepository;
+import com.example.DummyTalk.User.Entity.User;
+import com.example.DummyTalk.User.Entity.UserChat;
+import com.example.DummyTalk.User.Repository.UserChatRepository;
+import com.example.DummyTalk.User.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,9 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,14 +36,17 @@ public class ServerService {
     private final ServerRepository serverRepository;
     private final ChannelRepository channelRepository;
     private final ModelMapper modelMapper;
-
+    private final UserRepository userRepository;
+    private final UserChatRepository userChatRepository;
 
     /* 서버리스트 */
-    public List<ServerDto> findAllServer() {
-        List<ServerEntity> serverEntityList = serverRepository.findAll();
+    public List<ServerDto> findServerIdByUserId(Long userId) {
+        List<ServerEntity> serverEntityList = serverRepository.findServersByUserId(userId);
+        System.out.println("서버 리스트 불러오기 성공 (서비스) >>>>>>>>> : " + serverEntityList );
         return serverEntityList.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+
     }
 
     private ServerDto convertToDto(ServerEntity serverEntity) {
@@ -56,13 +58,16 @@ public class ServerService {
                 .build();
     }
 
+    @Transactional
     /* 서버 생성 */
-    public ServerDto createServer(ServerDto serverDto, MultipartFile file) throws Exception{
+    public ServerDto createServer(ServerDto serverDto, MultipartFile file, Long userId) throws Exception{
+        System.out.println(">>>>>>>>> userInfoDto (서비스)" );
         if(file != null && !file.isEmpty()){
             String filePath = absolutePath;
             UUID uuid = UUID.randomUUID();
             String fileName = uuid + "_" + file.getOriginalFilename();
 
+            //Files.createDirectories(filePath,);
             File saveFile = new File(filePath, fileName);
             file.transferTo(saveFile);
 
@@ -70,24 +75,44 @@ public class ServerService {
             serverDto.setFilePath(resourcePath + filePath);
         }
             ServerEntity serverEntity = convertToEntity(serverDto);
-            serverRepository.save(serverEntity);
+            ServerEntity serverEntity1 = serverRepository.save(serverEntity);
+
+            // UserChat에 insert
+            UserChat userChat = new UserChat();
+            User savedUser = userRepository.findByUserId(userId);
+
+
+            System.out.println("savedUser  " + savedUser);
+            System.out.println("serverEntity1   " +serverEntity1);
+            userChat.setUser(savedUser);
+            userChat.setServer(serverEntity1);
+
+            userChatRepository.save(userChat);
             System.out.println("서버 저장 : >>>>>>>>> " + serverEntity);
+            System.out.println("서버 저장 : >>>>>>>>> " + userChat);
 
             return modelMapper.map(serverEntity, ServerDto.class);
 
     }
 
+    @Transactional
     public ServerDto createServer(ServerDto serverDto) throws Exception {
         ServerEntity serverEntity = convertToEntity(serverDto);
-        serverRepository.save(serverEntity);
+        User user = userRepository.findByUserId(serverDto.getUserId());
+        serverEntity = serverRepository.save(serverEntity);
+
+        UserChat userChat = new UserChat();
+        userChat.setServer(serverEntity);
+        userChat.setUser(user);
+
+        userChatRepository.save(userChat);
+
         System.out.println("서버 저장 : >>>>>>>>> " + serverEntity);
 
         return modelMapper.map(serverEntity, ServerDto.class);
     }
 
-
     private ServerEntity convertToEntity(ServerDto serverDto) {
-
         return ServerEntity.builder()
                 .serverName(serverDto.getServerName())
                 .userName(serverDto.getUserName())
