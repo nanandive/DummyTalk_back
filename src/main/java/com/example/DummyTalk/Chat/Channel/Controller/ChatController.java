@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -22,10 +23,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -51,28 +54,17 @@ public class ChatController {
      */
     @MessageMapping("/{channelId}/message")
     @SendTo("/topic/msg/{channelId}")
-    public MessageResponse handleMessage(SendChatDto message
-            , @DestinationVariable String channelId
-            ) {
-        log.info("============message================================={}", message);
-        // 채팅 데이터 저장
-        if (message.getAudioUrl() != null && !message.getAudioUrl().isEmpty()) {
-            // 오디오 채팅 데이터 저장
-            int audioChatId = chatService.saveAudioChatData(message);
-            message.setAudioChatId(audioChatId);
-            log.info("============setAudioChatId================================={}", message);
+    public MessageResponse handleMessage(SendChatDto message, @DestinationVariable String channelId
+    ) {
+//
 
-            return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message);
-        } else {
-            // 일반 텍스트 채팅 데이터 저장
-            int chatId = chatService.saveChatData(message);
-            message.setChatId(chatId);
-            log.info("============setChatId================================={}", message);
+        // 일반 텍스트 채팅 데이터 저장
+        int chatId = chatService.saveChatData(message);
+        message.setChatId(chatId);
+        log.info("============setChatId================================={}", message);
 
-            return new MessageResponse(message.getNickname(), "일반 텍스트 채팅 메시지 전송 성공", message);
-        }
+        return new MessageResponse(message.getNickname(), "일반 텍스트 채팅 메시지 전송 성공", message);
     }
-
 
 
     /* 전송된 메시지 데이터 저장 */
@@ -107,8 +99,8 @@ public class ChatController {
 
     @PostMapping("trans/{nationLanguage}")
     public MessageResponse translateMessage(@RequestBody SendChatDto message,
-            @PathVariable String nationLanguage,
-            HttpServletRequest request) {
+                                            @PathVariable String nationLanguage,
+                                            HttpServletRequest request) {
 
         String token = JwtFilter.resolveToken(request);
 
@@ -120,7 +112,7 @@ public class ChatController {
 
 
     @PostMapping("del/{chatId}")
-    public ResponseEntity<ResponseDTO> deleteChat(@PathVariable int chatId){
+    public ResponseEntity<ResponseDTO> deleteChat(@PathVariable int chatId) {
         try {
             return ResponseEntity
                     .ok()
@@ -132,8 +124,39 @@ public class ChatController {
                     .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
         }
     }
-
 }
+
+
+
+//    @MessageMapping("/{channelId}/audioMessage")
+//    public ResponseEntity<MessageResponse> handleAudioMessage(@DestinationVariable String channelId, AudioMessageRequest message) {
+//        // Handle and save the audio message
+//        int audioChatId = chatService.saveAudioChatData(message);
+//        message.setAudioChatId(audioChatId);
+//
+//        // Broadcast the audio message to all subscribers in the channel
+//        messagingTemplate.convertAndSend("/topic/msg/" + channelId, message);
+//
+//        return ResponseEntity.ok(new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message));
+//    }
+//
+//    // Endpoint to handle audio file upload
+//    @PostMapping("/channel/audioMessage")
+//    public ResponseEntity<String> handleAudioFileUpload(@RequestParam("audio") MultipartFile audioFile) {
+//        try {
+//            // Save the audio file and return its URL
+//            String audioUrl = chatService.saveAudioFile(audioFile);
+//            return ResponseEntity.ok(audioUrl);
+//        } catch (IOException e) {
+//            return ResponseEntity.status(500).body("오디오 파일 업로드 실패");
+//        }
+//    }
+
+
+
+
+
+
 
 
 //public class ChatController extends TextWebSocketHandler {
@@ -183,6 +206,22 @@ public class ChatController {
 //        return ResponseEntity.noContent().build();
 //    }
 
+
+
+
+
+//
+//
+//  log.info("============message================================={}", message);
+//        // 채팅 데이터 저장
+//        if (message.getAudioUrl() != null && !message.getAudioUrl().isEmpty()) {
+//            // 오디오 채팅 데이터 저장
+//            int audioChatId = chatService.saveAudioChatData(message);
+//            message.setAudioChatId(audioChatId);
+//            log.info("============setAudioChatId================================={}", message);
+//
+//            return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message); //분리해야함
+//
 
 
 

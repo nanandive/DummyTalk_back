@@ -4,13 +4,16 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Controller
+@RestController
+@RequestMapping("/audio")
 public class AudioController {
 
     private final SimpMessageSendingOperations messagingTemplate;
@@ -21,12 +24,12 @@ public class AudioController {
 
     @MessageMapping("/audioMessage")
     public void receiveAudio(@Payload byte[] audioData) {
-        String directoryPath = "YOUR_SERVER_AUDIO_DIRECTORY_PATH";
+        String directoryPath = "C:\\Users\\82106\\ee\\바탕 화면\\Audio";
         Path path = Paths.get(directoryPath, "audioFile.wav");
         try (FileOutputStream out = new FileOutputStream(path.toFile())) {
             out.write(audioData);
 
-            String fileUrl = "YOUR_SERVER_AUDIO_URL";
+            String fileUrl = "http://localhost:9999/voice/audioFile.wav";
             messagingTemplate.convertAndSend("/topic/audioPath", fileUrl);
         } catch (IOException e) {
             e.printStackTrace();
