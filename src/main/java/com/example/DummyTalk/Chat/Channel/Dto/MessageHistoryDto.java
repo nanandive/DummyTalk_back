@@ -15,10 +15,13 @@ public class MessageHistoryDto {
     private Long chatId;
     private String message;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updatedAt;
+    private LocalDateTime timestamp;
     private ChatSenderDTO sender;
     private String type;
+
+    // Fields related to audio messages
+    private String audioUrl; // URL of the audio file
+    private int audioChatId; // Unique ID for the audio chat
+
 
 }

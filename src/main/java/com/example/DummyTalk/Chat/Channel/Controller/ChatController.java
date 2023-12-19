@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -28,6 +29,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -93,8 +95,8 @@ public class ChatController {
 
     @PostMapping("trans/{nationLanguage}")
     public MessageResponse translateMessage(@RequestBody SendChatDto message,
-            @PathVariable String nationLanguage,
-            HttpServletRequest request) {
+                                            @PathVariable String nationLanguage,
+                                            HttpServletRequest request) {
 
         String token = JwtFilter.resolveToken(request);
 
@@ -107,7 +109,7 @@ public class ChatController {
 
     /* 채팅 삭제 */
     @PostMapping("del/{chatId}")
-    public ResponseEntity<ResponseDTO> deleteChat(@PathVariable int chatId){
+    public ResponseEntity<ResponseDTO> deleteChat(@PathVariable int chatId) {
         try {
             return ResponseEntity
                     .ok()
@@ -121,27 +123,6 @@ public class ChatController {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //public class ChatController extends TextWebSocketHandler {
@@ -191,6 +172,22 @@ public class ChatController {
 //        return ResponseEntity.noContent().build();
 //    }
 
+
+
+
+
+//
+//
+//  log.info("============message================================={}", message);
+//        // 채팅 데이터 저장
+//        if (message.getAudioUrl() != null && !message.getAudioUrl().isEmpty()) {
+//            // 오디오 채팅 데이터 저장
+//            int audioChatId = chatService.saveAudioChatData(message);
+//            message.setAudioChatId(audioChatId);
+//            log.info("============setAudioChatId================================={}", message);
+//
+//            return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message); //분리해야함
+//
 
 
 

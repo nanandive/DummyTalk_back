@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -72,13 +75,31 @@ public class ImageServiceImpl implements ImageService {
         if (imageDto.getFileInfo() == null || imageDto.getFileInfo().length == 0)
             throw new ChatFailException("이미지 파일이 없습니다.");
 
+        try {
+            Path uploadPath = Paths.get("chat.dir");
+
+            /* 업로드 경로가 존재하지 않을 경우 경로를 먼저 생성한다. */
+            if(!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+        } catch (Exception e) {
+            throw new ChatFailException("파일 저장에 실패하였습니다.");
+        }
+
         for (MultipartFile file : imageDto.getFileInfo()) {
 
             String fileName = UUID.randomUUID().toString();
             fileName = fileName + "_" + Objects.requireNonNull(file.getOriginalFilename()).replace("_", "");
             log.info("\nsaveImage fileName : \n" + fileName);
 
-            File saveFile = new File(absolutePath, fileName);       // 저장할 파일 경로
+            File saveFile = new File(resourcePath, fileName);       // 저장할 파일 경로
+            if(!saveFile.exists()) {
+                try {
+                    saveFile.mkdirs();
+                } catch (Exception e) {
+                    throw new ChatFailException("파일 저장에 실패하였습니다.");
+                }
+            }
             log.info("\nsaveImage saveFile : \n" + saveFile);
 
             try {

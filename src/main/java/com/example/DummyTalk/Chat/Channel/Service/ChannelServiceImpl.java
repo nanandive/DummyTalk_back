@@ -1,23 +1,11 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
-import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
-import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
-import com.example.DummyTalk.Exception.ChatFailException;
-import com.example.DummyTalk.User.DTO.ChatSenderDTO;
-import com.example.DummyTalk.User.Entity.User;
-import org.modelmapper.ModelMapper;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
@@ -44,8 +32,6 @@ public class ChannelServiceImpl implements ChannelService {
         channelRepository.save(channelEntity);
         System.out.println("채널 생성(서버) >>>>>>>>> : " + channelEntity);
     }
-
-
 
 
 
@@ -87,4 +73,11 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
 
+    /* 채널명 조회 */
+    public ChannelDto getChannelName(Long channelId) {
+        ChannelEntity channelEntity = channelRepository.findByChannelId(channelId);
+        return ChannelDto.builder()
+                .channelName(channelEntity.getChannelName())
+                .build();
+    }
 }

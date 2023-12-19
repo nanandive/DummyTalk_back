@@ -31,16 +31,17 @@ public class ServerEntity extends BaseTimeEntity {
     private String serverName;
     private String userName;
     private String invitedUser;
+
+    @Column(length = 6)
     private int userCount;
+
     private String filePath;
     private String fileName;
 
 
     /* 유저와 서버의 관계 */
     @OneToMany(mappedBy = "server", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Builder.Default
     private List<UserChat> userChats = new ArrayList<>();
-
 
     /* 채널과의 연관관계 (부모) */
     @JsonIgnore

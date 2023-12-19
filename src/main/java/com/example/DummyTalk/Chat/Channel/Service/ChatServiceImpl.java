@@ -2,17 +2,14 @@ package com.example.DummyTalk.Chat.Channel.Service;
 
 import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelParticipantDto;
-import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelParticipantEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
-import com.example.DummyTalk.Chat.Channel.Entity.ImageEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelParticipantRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChatRepository;
-import com.example.DummyTalk.Chat.Channel.Repository.ImageRepository;
 import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.User.DTO.ChatSenderDTO;
 import com.example.DummyTalk.User.Entity.User;
@@ -29,7 +26,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,7 +39,6 @@ public class ChatServiceImpl implements ChatService {
     private final ChannelRepository channelRepository;
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
-    private final ImageRepository imageRepository;
     private final ChannelParticipantRepository channelParticipantRepository;
 
 
@@ -63,10 +58,10 @@ public class ChatServiceImpl implements ChatService {
         return MessageHistoryDto.builder()
                 .message(chat.getMessage())
                 .chatId(chat.getChatId())
-                .createdAt(chat.getCreatedAt())
-                .updatedAt(chat.getUpdatedAt())
                 .sender(userToDto(chat.getSender()))
                 .type(chat.getType())
+                // 수정 시간이 없으면 생성 시간으로 대체
+                .timestamp(chat.getUpdatedAt() == null ? chat.getCreatedAt() : chat.getUpdatedAt())
                 .build();
     }
 
@@ -77,8 +72,6 @@ public class ChatServiceImpl implements ChatService {
                 .lastChatId(channelParticipant.getLastChatId())
                 .build();
     }
-
-
 
     /* 채팅 내용 저장 */
     @Transactional
@@ -135,7 +128,6 @@ public class ChatServiceImpl implements ChatService {
                     chatRepository.findAllByChannelId(channelEntity).stream()
                             .map(this::chatToDto)
                             .collect(Collectors.toList());
-            log.info("\nfindChatData chatlist \n{}", chatlist.get(0).getCreatedAt());
             return chatlist;
         } catch (DataAccessException e) {
             log.error("Data access error: {}", e.getMessage());

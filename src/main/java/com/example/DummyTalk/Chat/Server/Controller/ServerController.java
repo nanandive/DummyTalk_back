@@ -2,8 +2,11 @@ package com.example.DummyTalk.Chat.Server.Controller;
 
 import java.util.List;
 
+import com.example.DummyTalk.User.Entity.UserChat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,9 +37,9 @@ public class ServerController {
     private final ChannelServiceImpl channelServiceImpl;
 
     /* 서버리스트 */
-    @GetMapping("/list")
-    public ResponseEntity<List<ServerDto>> serverList() {
-        List<ServerDto> serverDtoList = serverService.findAllServer();
+    @GetMapping("/list/{userId}")
+    public ResponseEntity<List<ServerDto>> serverList(@PathVariable Long userId) {
+        List<ServerDto> serverDtoList = serverService.findServerIdByUserId(userId);
         System.out.println(" 서버 리스트 불러오기 : >>>>>>>>>> : " + serverDtoList);
         return ResponseEntity.ok(serverDtoList);
     }
@@ -49,12 +52,14 @@ public class ServerController {
 
     @PostMapping("/writePro")
     public ResponseEntity<?> serverWritePro(@ModelAttribute ServerDto serverDto,
-            @RequestParam(value = "file", required = false) MultipartFile file) throws Exception {
+            @RequestParam(value = "file", required = false) MultipartFile file,Long userId) throws Exception {
+
+        log.info("file {}, serverDTO {}, userId {}", file, serverDto, userId);
 
         ServerDto responseServerDto = null;
         if (file != null && !file.isEmpty()) {
-            System.out.println("서버 생성 (컨트롤러) >>>>>>>>>> " + serverDto + file);
-            responseServerDto = serverService.createServer(serverDto, file);
+            System.out.println("서버 생성 (컨트롤러) >>>>>>>>>> " + serverDto + file );
+            responseServerDto = serverService.createServer(serverDto, file, userId);
 
         } else {
             responseServerDto = serverService.createServer(serverDto);
@@ -72,7 +77,6 @@ public class ServerController {
 
         // 실시간 서버에 접속 중인 친구 가져오기 -> @messagemapping
 
-        // 친구 목록 가져오기
 
         System.out.println(" 서버에 접속 하기(컨트롤러) >>>>>>>>> : " + serverDto);
         return ResponseEntity.ok(serverDto);
@@ -109,5 +113,7 @@ public class ServerController {
         channelServiceImpl.channelDelete(channelId);
         return ResponseEntity.ok().build();
     }
+
+
 
 }
