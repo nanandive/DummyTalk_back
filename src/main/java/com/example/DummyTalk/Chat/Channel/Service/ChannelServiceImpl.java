@@ -47,8 +47,6 @@ public class ChannelServiceImpl implements ChannelService {
 
 
 
-
-
     private ChannelEntity convertToEntity(ChannelDto channelDto) {
         return ChannelEntity.builder()
                 .serverId(channelDto.getServerId())

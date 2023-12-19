@@ -19,6 +19,8 @@ public class ServerDto {
     private String userName;
     private int userCount;
 
+    private Long userId;
+
     private String fileName;
     private String filePath;
 

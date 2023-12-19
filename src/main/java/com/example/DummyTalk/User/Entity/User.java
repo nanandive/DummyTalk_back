@@ -73,7 +73,6 @@ public class User {
     private String nationalLanguage;
 
     /* 유저와 서버의 관계 */
-    @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChat> userChats = new ArrayList<>();
 
