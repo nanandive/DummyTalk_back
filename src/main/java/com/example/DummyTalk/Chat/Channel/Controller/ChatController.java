@@ -7,6 +7,7 @@ import com.example.DummyTalk.Chat.Channel.Entity.ChannelParticipantEntity;
 import com.example.DummyTalk.Chat.Channel.Service.ChannelService;
 import com.example.DummyTalk.Chat.Channel.Service.ChatService;
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
+import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.Jwt.JwtFilter;
 import com.example.DummyTalk.User.Entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -84,10 +86,9 @@ public class ChatController {
 
     /* 채널 아이디로 채팅 데이터 리스트 조회 */
     @GetMapping("/{channelId}/{userId}")
-    public ResponseEntity<ResponseDTO> getChatData(@PathVariable int channelId, @PathVariable String userId) throws UnsupportedEncodingException {
+    public ResponseEntity<ResponseDTO> getChatData(@PathVariable int channelId, @PathVariable String userId) {
         log.info("\n getChatData channelId=============================\n{}", channelId);
-        Long user = Long.parseLong(userId);
-        chatService.checkParticipant(channelId, user);
+        chatService.checkParticipant(channelId, Long.parseLong(userId));
         log.info("\n getChatData userId ==============check 완료 userId===============\n{}", userId);
         try {
             List<MessageHistoryDto> list = chatService.findChatData(channelId, userId);
@@ -117,13 +118,14 @@ public class ChatController {
     }
 
 
+    /* 채팅 삭제 */
     @PostMapping("del/{chatId}")
     public ResponseEntity<ResponseDTO> deleteChat(@PathVariable int chatId){
         try {
             return ResponseEntity
                     .ok()
                     .body(new ResponseDTO(HttpStatus.OK,
-                            "이전 채팅 불러오기 성공", chatService.deleteChat(chatId)));
+                            "채팅 삭제 성공", chatService.deleteChat(chatId)));
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -131,7 +133,40 @@ public class ChatController {
         }
     }
 
+    @PostMapping("img")
+    public void saveImage(@RequestBody SendChatDto message
+            , @RequestPart  MultipartFile image){
+                /* 1. 로컬에 저장
+                 *  2. DB에 값 저장
+                 *  3. 추후 성공적으로 저장되면 로컬은 삭제
+                 *  @param message : channelId, userId, imageUrl, Multipart */
+                // 파일이 null인지는 클라이언트에서 판단
+                log.info("============setAudioChatId================================={}", message);
+                chatService.saveImage(message, image);
+//        return new MessageResponse(message.getNickname(), "이미지 저장 성공", );
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //public class ChatController extends TextWebSocketHandler {

@@ -1,5 +1,6 @@
 package com.example.DummyTalk;
 
+import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelParticipantRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChatRepository;
@@ -37,6 +38,7 @@ class DummyTalkApplicationTests {
     }
     @Autowired
     ChatRepository chatRepository;
+
     @Test
     void 채널_참여자_조회(){
         channelParticipantRepository.findAll();
@@ -45,7 +47,7 @@ class DummyTalkApplicationTests {
     @Test
     void 채팅_조회(){
         List<ChatDataEntity> chat = chatRepository.findAll();
-//        chat
     }
+
 
 }

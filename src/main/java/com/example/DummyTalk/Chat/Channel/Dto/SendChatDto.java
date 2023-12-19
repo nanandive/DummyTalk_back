@@ -22,13 +22,17 @@ public class SendChatDto {
     private String message;
     private int sender;
     private String nickname;
-    private String language;
     private int channelId;
+    private LocalDateTime timeStamp;
+
+    /* 오디오 저장 */
+    private String language;
     private String audioUrl;
     private int audioChatId;
 
-    private LocalDateTime timeStamp;
-//    private List<ImageDto> imageDtoList;
-//    private List<EmbeddingImageDto> embeddingImageDtoList;
-
+    /* 이미지 저장 */
+    private Long imageId;
+    private String originalFileName;
+    private String filePath;
+    private String savedFileName;
 }

@@ -8,13 +8,11 @@ import lombok.ToString;
 
 @Data
 @ToString
-@Builder
+@Builder(toBuilder = true)
 public class ImageDto {
-
     private Long imageId;
     private String originalFileName;
     private String filePath;
     private String savedFileName;
     private List<EmbeddingImageDto> embeddingImageDtoList ;
-
 }
