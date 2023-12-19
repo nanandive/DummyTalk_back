@@ -73,17 +73,6 @@ public class ChatController {
         }
     }
 
-
-
-    /* 전송된 메시지 데이터 저장 */
-    public ResponseEntity<ResponseDTO> saveChatData(@RequestBody SendChatDto message) {
-        log.info("saveChatData ============================={}.", message);
-        chatService.saveChatData(message);
-        return ResponseEntity
-                .ok()
-                .body(new ResponseDTO(HttpStatus.OK, "채팅 저장 성공"));
-    }
-
     /* 채널 아이디로 채팅 데이터 리스트 조회 */
     @GetMapping("/{channelId}/{userId}")
     public ResponseEntity<ResponseDTO> getChatData(@PathVariable int channelId, @PathVariable String userId) {
@@ -133,18 +122,6 @@ public class ChatController {
         }
     }
 
-    @PostMapping("img")
-    public void saveImage(@RequestBody SendChatDto message
-            , @RequestPart  MultipartFile image){
-                /* 1. 로컬에 저장
-                 *  2. DB에 값 저장
-                 *  3. 추후 성공적으로 저장되면 로컬은 삭제
-                 *  @param message : channelId, userId, imageUrl, Multipart */
-                // 파일이 null인지는 클라이언트에서 판단
-                log.info("============setAudioChatId================================={}", message);
-                chatService.saveImage(message, image);
-//        return new MessageResponse(message.getNickname(), "이미지 저장 성공", );
-    }
 }
 
 

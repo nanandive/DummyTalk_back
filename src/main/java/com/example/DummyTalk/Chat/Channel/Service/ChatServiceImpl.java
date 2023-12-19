@@ -7,7 +7,6 @@ import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelParticipantEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
-import com.example.DummyTalk.Chat.Channel.Entity.ImageEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelParticipantRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChatRepository;
@@ -166,15 +165,15 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void saveImage(SendChatDto message, MultipartFile file) {
+    public void saveImage(String userId, String nickname, MultipartFile[] file) {
 
-        log.info("\nsaveImage message ============================== \n" + message);
-        User user = Optional.ofNullable(userRepository.findByUserId((long) message.getSender()))
-                .orElseThrow(() -> new ChatFailException("유저 조회에 실패하였습니다. "));
-        log.info("\nsaveImage user ============================== \n" + user);
-        ChannelEntity channel = Optional.ofNullable(channelRepository.findByChannelId((long) message.getChannelId()))
-                .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
-        log.info("\nsaveImage channel ============================== \n" + channel);
+        log.info("\nChatServiceImpl saveImage message ============================== \n" + userId);
+//        User user = Optional.ofNullable(userRepository.findByUserId((long) message.getSender()))
+//                .orElseThrow(() -> new ChatFailException("유저 조회에 실패하였습니다. "));
+//        log.info("\nsaveImage user ============================== \n" + user);
+//        ChannelEntity channel = Optional.ofNullable(channelRepository.findByChannelId((long) message.getChannelId()))
+//                .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
+//        log.info("\nsaveImage channel ============================== \n" + channel);
 
         /* 경로 빌드 */
         String fileName = UUID.randomUUID().toString();
@@ -182,7 +181,7 @@ public class ChatServiceImpl implements ChatService {
 
         try {
             log.info("\nsaveImage saveFile ============================== \n" + saveFile);
-            file.transferTo(saveFile);
+//            file.transferTo(saveFile);
         } catch (Exception e) {
             throw new ChatFailException("파일 저장에 실패하였습니다.");
         }
