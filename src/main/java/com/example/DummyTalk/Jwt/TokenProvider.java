@@ -44,11 +44,12 @@ public class TokenProvider extends AESUtil {
 
     /* 1. 토큰(xxxxx.yyyyy.zzzzz) 생성 메소드 */
     public TokenDTO generateTokenDTO(User user) throws Exception {
+
+        log.info("AESUtil.getKey() ==>{}", AESUtil.getKey());
         
         // AES키를 활용한 복호화
         String decryptJWT = AESUtil.decrypt(user.getUserSecretKey(), AESUtil.getKey());
-                
-        
+
         byte[] keyBytest = Decoders.BASE64.decode(decryptJWT);
         this.key = Keys.hmacShaKeyFor(keyBytest);
 

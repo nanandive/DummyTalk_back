@@ -12,6 +12,7 @@ public class AESUtil {
     private static SecretKey key;
 
     protected static SecretKey getKey() {
+
         return key;
     }
 
@@ -19,7 +20,8 @@ public class AESUtil {
     protected static SecretKey generateAESKey() throws Exception {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(128);
-        return keyGenerator.generateKey();
+        key =  keyGenerator.generateKey();
+        return key;
     }
 
     // 암호화

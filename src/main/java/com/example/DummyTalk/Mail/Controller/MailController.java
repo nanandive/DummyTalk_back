@@ -20,11 +20,38 @@ public class MailController {
     @PostMapping("/userEmail")
     public ResponseEntity<ResponseDTO> authMail(@RequestBody String userEmail){
 
-        int number = mailService.sendMail(userEmail);
+        try {
+            String result = mailService.sendMail(userEmail);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ResponseDTO(HttpStatus.OK, "발급 성공", null));
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDTO(HttpStatus.OK, "발급 성공", result));
+        } catch (RuntimeException e){
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, "발급 실패", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/checkNum")
+    public ResponseEntity<ResponseDTO> checkNum(@RequestBody int checkNum){
+
+        try {
+
+            String result = mailService.checkNum(checkNum);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDTO(HttpStatus.OK, "인증 성공", result));
+        } catch (RuntimeException e){
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), "다시 입력해주시길 바랍니다."));
+        }
+
+
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.DummyTalk.Mail.Service;
 
 
+import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -45,12 +48,40 @@ public class MailService {
         return message;
     }
 
-    public int sendMail(String mail){
+    public String sendMail(String userEmail){
 
-        MimeMessage message = CreateMail(mail);
+        List<User> userList = userRepository.findAll();
 
-        javaMailSender.send(message);
+        // 이메일 중복 체크
+        for(User user : userList){
+            if(user.getUserEmail().equals(userEmail.replace("\"", ""))){
+                throw new RuntimeException("이미 중복된 이메일이 존재합니다.");
+            }
+        }
+        try{
+            MimeMessage message = CreateMail(userEmail);
+            javaMailSender.send(message);
 
-        return number;
+            return "해당 이메일로 인증번호가 전송되었습니다.";
+        } catch (RuntimeException e){
+
+            throw new RuntimeException("인증번호 전송에 실패하였습니다.");
+        }
+
+    }
+
+    public String checkNum(int checkNum) {
+
+
+        log.info("checkNum===========>{}", checkNum);
+        log.info("number===========>{}", number);
+
+        if(number == checkNum){
+
+            return "인증에 성공하였습니다.";
+        } else{
+
+            throw new RuntimeException("인증번호 체크 오류");
+        }
     }
 }
