@@ -120,7 +120,7 @@ public class ChatServiceImpl implements ChatService {
                     chatRepository.findAllByChannelId(channelEntity).stream()
                             .map(this::chatToDto)
                             .collect(Collectors.toList());
-            log.info("findChatData chatlist ============================={}", chatlist.get(0).getCreatedAt());
+            // log.info("findChatData chatlist ============================={}", chatlist.get(0).getCreatedAt());
             return chatlist;
         } catch (DataAccessException e) {
             log.error("Data access error: {}", e.getMessage());
