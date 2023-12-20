@@ -56,22 +56,28 @@ public class ChatController {
     @MessageMapping("/{channelId}/message")
     @SendTo("/topic/msg/{channelId}")
     public MessageResponse handleMessage(SendChatDto message
-            , @DestinationVariable String channelId
-            ) {
-        log.info("============message================================={}", message);
-        // 채팅 데이터 저장
+            , @DestinationVariable String channelId) {
+        log.info("\n handleMessage message   : {}", message);
+
         if (message.getAudioUrl() != null && !message.getAudioUrl().isEmpty()) {
-            // 오디오 채팅 데이터 저장
             int audioChatId = chatService.saveAudioChatData(message);
             message.setAudioChatId(audioChatId);
-            log.info("============setAudioChatId================================={}", message);
             return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message);
-        } else {
-            // 일반 텍스트 채팅 데이터 저장
+        }
+
+        if (message.getType() != null && message.getType().equals("IMAGE")) {
+            log.info("\n handleMessage IMAGE   : {}", message);
+            return new MessageResponse(message.getNickname(), "이미지 전송 성공", message);
+        }
+
+        if (message.getMessage() != null && !message.getMessage().isEmpty()) {
             int chatId = chatService.saveChatData(message);
-            message.setChatId(chatId);
-            log.info("============setChatId================================={}", message);
+            message.setChatId((long) chatId);
+            message.setType("TEXT");
+            log.info("\n handleMessage TEXT   : {}", message);
             return new MessageResponse(message.getNickname(), "일반 텍스트 채팅 메시지 전송 성공", message);
+        } else {
+            throw new ChatFailException("메시지를 입력해주세요.");
         }
     }
 
@@ -141,7 +147,7 @@ public class ChatController {
 //
 //    @Override
 //    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // 메시지의 내용을 가져옵니다.
+// 메시지의 내용을 가져옵니다.
 //        String content = message.getPayload();
 //
 //        // 메시지의 내용을 파싱합니다.
@@ -171,9 +177,6 @@ public class ChatController {
 //        channelService.createChannel(channelDto);
 //        return ResponseEntity.noContent().build();
 //    }
-
-
-
 
 
 //
