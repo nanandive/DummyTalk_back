@@ -9,6 +9,7 @@ import com.example.DummyTalk.User.Repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,18 +21,19 @@ class DummyTalkApplicationTests {
     @Autowired
     private ChannelParticipantRepository channelParticipantRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Test
     void createUserTest() {
         for (int i = 1; i <= 10; i++) {
             User user = new User();
-            user.setNickname("user" + i);
-            user.setPassword("password" + i);
-            user.setUserEmail("user" + i + "@example.com");
-            user.setUserImgPath("/img/user" + i + ".jpg");
-            // user.setUserName("User " + i);
-            user.setUserPhone("010-000" + i + "-000" + i);
+            user.setNickname("유저닉네임" + i);
+            user.setPassword(passwordEncoder.encode("1234"));
+            user.setUserEmail("user" + i + "@test.com");
+            user.setName("User " + i);
+            user.setUserPhone("111"+i);
             user.setCreateAt(LocalDateTime.now());
-            user.setUpdateAt(LocalDateTime.now());
 
             userRepository.save(user);
         }

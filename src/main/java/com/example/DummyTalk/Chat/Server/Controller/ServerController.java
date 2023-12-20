@@ -2,19 +2,13 @@ package com.example.DummyTalk.Chat.Server.Controller;
 
 import java.util.List;
 
+import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Entity.UserChat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
@@ -52,7 +46,8 @@ public class ServerController {
 
     @PostMapping("/writePro")
     public ResponseEntity<?> serverWritePro(@ModelAttribute ServerDto serverDto,
-            @RequestParam(value = "file", required = false) MultipartFile file,Long userId) throws Exception {
+            @RequestParam(value = "file", required = false) MultipartFile file, Long userId
+           ) throws Exception {
 
         log.info("file {}, serverDTO {}, userId {}", file, serverDto, userId);
 
@@ -72,11 +67,7 @@ public class ServerController {
     @GetMapping("/{id}")
     public ResponseEntity<ServerDto> getServerDetail(@PathVariable Long id) {
         ServerDto serverDto = serverService.findById(id);
-
-        /* 채널 리스트 */
-
-        // 실시간 서버에 접속 중인 친구 가져오기 -> @messagemapping
-
+        //serverService.updateMaxUser(id);
 
         System.out.println(" 서버에 접속 하기(컨트롤러) >>>>>>>>> : " + serverDto);
         return ResponseEntity.ok(serverDto);
@@ -113,6 +104,8 @@ public class ServerController {
         channelServiceImpl.channelDelete(channelId);
         return ResponseEntity.ok().build();
     }
+
+
 
 
 
