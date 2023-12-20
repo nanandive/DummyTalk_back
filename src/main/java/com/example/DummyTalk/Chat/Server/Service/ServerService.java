@@ -1,4 +1,5 @@
 package com.example.DummyTalk.Chat.Server.Service;
+import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Server.Dto.ServerDto;
 import com.example.DummyTalk.Chat.Server.Dto.ServerSettingDto;
@@ -8,9 +9,11 @@ import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Entity.UserChat;
 import com.example.DummyTalk.User.Repository.UserChatRepository;
 import com.example.DummyTalk.User.Repository.UserRepository;
+import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.catalina.Server;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -55,6 +58,8 @@ public class ServerService {
                 .serverName(serverEntity.getServerName())
                 .invitedUser(serverEntity.getInvitedUser())
                 .userName(serverEntity.getUserName())
+                .maxUsers(serverEntity.getMaxUsers())
+                .currentUsers(serverEntity.getCurrentUsers())
                 .build();
     }
 
@@ -62,6 +67,8 @@ public class ServerService {
     /* 서버 생성 */
     public ServerDto createServer(ServerDto serverDto, MultipartFile file, Long userId) throws Exception{
         System.out.println(">>>>>>>>> userInfoDto (서비스)" );
+
+        // 파일존재시
         if(file != null && !file.isEmpty()){
             String filePath = absolutePath;
             UUID uuid = UUID.randomUUID();
@@ -74,38 +81,61 @@ public class ServerService {
             serverDto.setFileName(fileName);
             serverDto.setFilePath(resourcePath + filePath);
         }
-            ServerEntity serverEntity = convertToEntity(serverDto);
-            ServerEntity serverEntity1 = serverRepository.save(serverEntity);
 
-            // UserChat에 insert
-            UserChat userChat = new UserChat();
-            User savedUser = userRepository.findByUserId(userId);
+        // 파일 존재 후 그 이후 생성
+        ServerEntity serverEntity = convertToEntity(serverDto);
+        ServerEntity serverEntity1 = serverRepository.save(serverEntity);
 
 
-            System.out.println("savedUser  " + savedUser);
-            System.out.println("serverEntity1   " +serverEntity1);
-            userChat.setUser(savedUser);
-            userChat.setServer(serverEntity1);
+        /* 서버 생성시 채널 생성 */
+        List<String> channelNames = Arrays.asList("일반", "1:1 음성 번역");
+        for (String channelName : channelNames) {
+            ChannelEntity channelEntity = new ChannelEntity();
+            channelEntity.setChannelName(channelName);
+            channelEntity.setServerId(serverEntity1.getId());
+            channelRepository.save(channelEntity);
+        }
 
-            userChatRepository.save(userChat);
-            System.out.println("서버 저장 : >>>>>>>>> " + serverEntity);
-            System.out.println("서버 저장 : >>>>>>>>> " + userChat);
+        // UserChat 테이블에 insert
+        UserChat userChat = new UserChat();
+        User savedUser = userRepository.findByUserId(userId);
 
-            return modelMapper.map(serverEntity, ServerDto.class);
+
+        System.out.println("savedUser  " + savedUser);
+        System.out.println("serverEntity1   " +serverEntity1);
+        userChat.setUser(savedUser);
+        userChat.setServer(serverEntity1);
+
+        userChatRepository.save(userChat);
+        System.out.println("서버 저장 : 이미지 존재 (서비스) : >>>>>>>>> " + serverEntity);
+        System.out.println("서버 저장 : 이미지 존재 (서비스)  : >>>>>>>>> " + userChat);
+
+        return modelMapper.map(serverEntity, ServerDto.class);
 
     }
 
+    // 파일이 존재하지 않을시 서버 생성
     @Transactional
     public ServerDto createServer(ServerDto serverDto) throws Exception {
         ServerEntity serverEntity = convertToEntity(serverDto);
         User user = userRepository.findByUserId(serverDto.getUserId());
         serverEntity = serverRepository.save(serverEntity);
 
+        List<String> channelNames = Arrays.asList("일반", "1:1 음성 번역");
+        for (String channelName : channelNames) {
+            ChannelEntity channelEntity = new ChannelEntity();
+            channelEntity.setChannelName(channelName);
+            channelEntity.setServerId(serverEntity.getId());
+            channelRepository.save(channelEntity);
+        }
+
+
         UserChat userChat = new UserChat();
         userChat.setServer(serverEntity);
         userChat.setUser(user);
 
         userChatRepository.save(userChat);
+
 
         System.out.println("서버 저장 : >>>>>>>>> " + serverEntity);
 
@@ -117,12 +147,12 @@ public class ServerService {
                 .serverName(serverDto.getServerName())
                 .userName(serverDto.getUserName())
                 .invitedUser(serverDto.getInvitedUser())
-                .userCount(serverDto.getUserCount())
                 .filePath(serverDto.getFilePath())
                 .fileName(serverDto.getFileName())
+                .maxUsers(serverDto.getMaxUsers())
+                .currentUsers(serverDto.getCurrentUsers())
                 .build();
     }
-
 
     /* 서버 상세보기 */
     public ServerDto findById(Long id) {
@@ -133,9 +163,10 @@ public class ServerService {
             return ServerDto.builder()
                     .id(serverEntity.getId())
                     .serverName(serverEntity.getServerName())
-                    .userCount(serverEntity.getUserCount())
+                    .maxUsers(serverEntity.getMaxUsers())
                     .invitedUser(serverEntity.getInvitedUser())
                     .userName(serverEntity.getUserName())
+                    .currentUsers(serverEntity.getCurrentUsers())
                     .build();
         } else {
             return null;
@@ -157,8 +188,25 @@ public class ServerService {
         }
     }
 
+    @Transactional
     /* 서버 삭제 */
     public void serverDelete(Long id) {
         serverRepository.deleteById(id);
     }
+
+//    /* 서버에 접속중인 유저 수 제한 */
+//    public void updateMaxUser(Long id) {
+//        ServerEntity serverEntity = serverRepository.findById(id).orElseThrow(()->
+//                new RuntimeException(">>>>>>>>>>>>>>>>>>>>>>>(서비스)서버를 찾을수 없다"));
+//        int currentUsers = serverEntity.getcurrentUsers();
+//        int maxUser = serverEntity.getMaxUsers();
+//
+//        if(currentUsers < maxUser) {
+//            serverEntity.setcurrentUsers(currentUsers + 1);
+//            serverRepository.save(serverEntity);
+//        }else {
+//            throw new RuntimeException(">>>>>>>>>>>>>>>>(서비스) 서버 최대 사용자 수 초과");
+//        }
+//    }
+
 }

@@ -21,9 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ChannelServiceImpl implements ChannelService {
     private final ChannelRepository channelRepository;
-    private final ServerRepository serverRepository;
-    private final ChatRepository chatRepository;
-    private final UserRepository userRepository;
 
     @Transactional
     /* 채널 생성 */
@@ -39,7 +36,6 @@ public class ChannelServiceImpl implements ChannelService {
         return ChannelEntity.builder()
                 .serverId(channelDto.getServerId())
                 .channelName(channelDto.getChannelName())
-                .channelCount(channelDto.getChannelCount())
                 .build();
     }
 
@@ -54,7 +50,6 @@ public class ChannelServiceImpl implements ChannelService {
                         .channelId(channelEntity.getChannelId())
                         .serverId(channelEntity.getServerId())
                         .channelName(channelEntity.getChannelName())
-                        .channelCount(channelEntity.getChannelCount())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -68,10 +63,8 @@ public class ChannelServiceImpl implements ChannelService {
     private ChannelDto converToDto(ChannelEntity channelEntity) {
         return ChannelDto.builder()
                 .channelName(channelEntity.getChannelName())
-                .channelCount(channelEntity.getChannelCount())
                 .build();
     }
-
 
     /* 채널명 조회 */
     public ChannelDto getChannelName(Long channelId) {

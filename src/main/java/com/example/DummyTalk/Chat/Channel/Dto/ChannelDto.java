@@ -15,7 +15,6 @@ public class ChannelDto {
     private Long channelId;
     private Long serverId;
     private String channelName;
-    private int channelCount;
 
 
 

@@ -4,6 +4,7 @@ import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.boot.CommandLineRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +26,6 @@ public class ChannelEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private String channelName; // 채널 이름
 
-    @Column(nullable = false)
-    private int channelCount; // 채널에 접속한 유저 수
-
     @Column(name = "server_id", nullable = false)
     private long serverId;
 
@@ -40,4 +38,7 @@ public class ChannelEntity extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "channelId", fetch = FetchType.LAZY)
     private List<ChatDataEntity> chatDataEntityList = new ArrayList<>();
+
+
+
 }
