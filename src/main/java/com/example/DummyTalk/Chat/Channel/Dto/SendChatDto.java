@@ -21,6 +21,7 @@ public class SendChatDto {
     private String message;
     private int sender;
     private String nickname;
+    private String profileImage;
     private int channelId;
     private LocalDateTime timeStamp;
     private String type;
@@ -31,9 +32,4 @@ public class SendChatDto {
     private String audioUrl;
     private int audioChatId;
 
-    /* 이미지 저장 */
-//    private Long imageId;
-//    private String originalFileName;
-//    private String filePath;
-//    private String savedFileName;
 }

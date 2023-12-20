@@ -14,9 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 public class MessageResponse {
 
+    private SendChatDto chat;
     private String nickname;
     private String status;
-    private SendChatDto chat;
     private List<SendChatDto> chatList;
 
     public MessageResponse(String nickname, String status, SendChatDto chat) {

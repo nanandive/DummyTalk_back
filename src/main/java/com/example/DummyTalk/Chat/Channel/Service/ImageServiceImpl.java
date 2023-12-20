@@ -1,6 +1,6 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
-import com.example.DummyTalk.Chat.Channel.Dto.ChatDataDto;
+import com.example.DummyTalk.Chat.Channel.Dto.ImageChatDto;
 import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
@@ -38,16 +38,15 @@ public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
     private final ChannelRepository channelRepository;
     private final ChatRepository chatRepository;
-    private final FileUploadUtils fileUploadUtils;
 
-    private UserDTO convertToUserDto(User user) {
-        return UserDTO.builder()
-                .userId(user.getUserId())
-                .nickname(user.getNickname())
-                .build();
-    }
+//    private UserDTO convertToUserDto(User user) {
+//        return UserDTO.builder()
+//                .userId(user.getUserId())
+//                .nickname(user.getNickname())
+//                .build();
+//    }
 
-    private ImageEntity convertToImageEntity(ImageDto img, String fileName, String originFileName, String path) {
+    private ImageEntity convertToImageEntity(ImageChatDto img, String fileName, String originFileName, String path) {
         return ImageEntity.builder()
                 .channelId((long) img.getChannelId())
                 .originalFileName(originFileName)
@@ -56,7 +55,7 @@ public class ImageServiceImpl implements ImageService {
                 .build();
     }
 
-    private ChatDataEntity convertToChatEntity(User user, ChannelEntity channel, ImageDto imageDto) {
+    private ChatDataEntity convertToChatEntity(User user, ChannelEntity channel, ImageChatDto imageDto) {
         return ChatDataEntity.builder()
                 .sender(user)
                 .channelId(channel)
@@ -65,12 +64,24 @@ public class ImageServiceImpl implements ImageService {
                 .build();
     }
 
-    private SendChatDto convertToChatDto(ChatDataEntity dto) {
+    private SendChatDto convertToChatDto(ChatDataEntity chat) {
         return SendChatDto.builder()
-                .chatId(dto.getChatId())
-                .nickname(dto.getSender().getNickname())
-                .type(dto.getType())
-                .message(dto.getMessage())
+                .chatId(chat.getChatId())
+                .nickname(chat.getSender().getNickname())
+                .type(chat.getType())
+                .profileImage(chat.getSender().getUserImgPath())
+                .timeStamp(chat.getCreatedAt())
+                .channelId(chat.getChannelId().getChannelId().intValue())
+                .message(chat.getMessage())
+                .build();
+    }
+
+    private ImageChatDto convertToImageDto(ImageEntity imageEntity, ImageChatDto imageDto) {
+        return ImageChatDto.builder()
+                .channelId(imageEntity.getChannelId().intValue())
+                .userId(imageDto.getUserId())
+                .nickname(imageDto.getNickname())
+                .filePath(imageEntity.getFilePath())
                 .build();
     }
 
@@ -91,39 +102,45 @@ public class ImageServiceImpl implements ImageService {
      * @return SendChatDto
      */
     @Override
-    public List<SendChatDto> saveImage(ImageDto imageDto) {
+    public List<SendChatDto> saveImage(ImageChatDto imageDto) {
 
         if (imageDto.getFileInfo() == null || imageDto.getFileInfo().length == 0)
             throw new ChatFailException("이미지 파일이 없습니다.");
 
-        List<SendChatDto> imageChatList = new ArrayList<>();
+        List<SendChatDto> imageChatList;
 
         try {
 
+            imageChatList = new ArrayList<>();
             for (MultipartFile file : imageDto.getFileInfo()) {
                 String saveFilePath = FileUploadUtils.saveFile(absolutePath, file.getOriginalFilename(), file);
-                log.info("\nsaveImage saveFile : \n" + saveFilePath);
 
                 ImageEntity imageEntity = convertToImageEntity(imageDto, saveFilePath, file.getOriginalFilename(), absolutePath);
                 imageRepository.save(imageEntity);
-                imageChatList.add(saveImageToChat(imageDto));
+
+                ImageChatDto saveImageDto = convertToImageDto(imageEntity, imageDto);
+                imageChatList.add(saveImageToChat(saveImageDto));
+                log.info("\nsaveImage imageChatList 귀신잡아라 !: \n" + imageChatList);
             }
         } catch (Exception e) {
             throw new ChatFailException( "파일 저장에 실패하였습니다.");
         }
+        log.info("\nsaveImage 배열 반환값 : \n" + imageChatList);
 
         return imageChatList.isEmpty() ? null : imageChatList;
     }   // 이미지 저장 후 채팅 데이터로 저장
 
 
-    // 이미지 -> 채팅 데이터로 저장 (채팅 데이터에 이미지 정보 저장)
-    public SendChatDto saveImageToChat(ImageDto imageDto) {
 
-        User user = findUserById(imageDto.getUserId());
-        ChannelEntity channel = findChannelById(imageDto.getChannelId());
+
+    // 이미지 -> 채팅 데이터로 저장 (채팅 데이터에 이미지 정보 저장)
+    public SendChatDto saveImageToChat(ImageChatDto image) {
+
+        User user = findUserById(image.getUserId());
+        ChannelEntity channel = findChannelById(image.getChannelId());
 
         try {
-            ChatDataEntity chatEntity = convertToChatEntity(user, channel, imageDto);
+            ChatDataEntity chatEntity = convertToChatEntity(user, channel, image);
             chatRepository.save(chatEntity);
             return convertToChatDto(chatEntity);
         } catch (Exception e) {

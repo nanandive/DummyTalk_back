@@ -1,5 +1,6 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
+import com.example.DummyTalk.Chat.Channel.Dto.ImageChatDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 import io.netty.channel.ChannelId;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -44,9 +45,9 @@ public class ImageUploadController {
      * 3. 추후 성공적으로 저장되면 로컬은 삭제
      */
     @PostMapping("/save")
-    public MessageResponse saveImage(@ModelAttribute ImageDto imageDto) throws IOException {
-        log.info("\n saveImage \n" + imageDto);
+    public MessageResponse saveImage(@ModelAttribute ImageChatDto imageDto) throws IOException {
         List<SendChatDto> saveImageToChat = imageService.saveImage(imageDto);
+        log.info("\n saveImageToChat \n" + saveImageToChat);
         return new MessageResponse(saveImageToChat.get(0).getNickname(), "이미지 전송 성공", saveImageToChat);
     }
 }
