@@ -29,14 +29,6 @@ public class ImageUploadController {
 
     private final ImageService imageService;
 
-//    @MessageMapping("/image/{channelId}")
-//    @SendTo("/topic/media/{channelId}")
-//    public MessageResponse handleMessage(SendChatDto message
-//            ,@DestinationVariable int channelId) {
-//        log.info("============message================================={}", message);
-//        return new MessageResponse(message.getNickname(), "이미지 전송 성공", message);
-//    }
-
     /***
      * 이미지 저장
      * @param imageDto : channelId, userId, imageUrl, Multipart[], nickname

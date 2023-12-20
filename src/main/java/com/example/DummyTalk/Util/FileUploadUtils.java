@@ -1,5 +1,6 @@
 package com.example.DummyTalk.Util;
 
+import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.hibernate.annotations.Comment;
@@ -26,7 +27,7 @@ public class FileUploadUtils {
      *
      * @return : 저장된 파일명
      */
-    public static String saveFile(String uploadDir, String fileName, MultipartFile multipartFile) throws IOException {
+    public static ImageDto saveFile(String uploadDir, String fileName, MultipartFile multipartFile) throws IOException {
 
         Path uploadPath = Paths.get(uploadDir);
 
@@ -37,21 +38,22 @@ public class FileUploadUtils {
 
         /* 파일명 리네임 */
         String uuid = UUID.randomUUID().toString();
-        fileName = Objects.requireNonNull(fileName.replace("_", ""));
-        String replaceFileName = uuid+ "_"+ fileName + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename());
+        fileName = Objects.requireNonNull(fileName.replace("_", "")).split("\\.")[0];
+        String replaceFileName = uuid + "_" + fileName + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename());
 
         log.info("\nsaveImage fileName : \n" + fileName);
 
         /* 파일 저장 */
+        Path filePath;
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            Path filePath = uploadPath.resolve(replaceFileName);
+            filePath = uploadPath.resolve(replaceFileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
             throw new IOException("파일을 저장하지 못하였습니다. filename : " + fileName);
         }
 
-        return replaceFileName;
+        return new ImageDto(null, 0, fileName, filePath.toString() , replaceFileName, null, null);
     }
 
     public static void deleteFile(String uploadDir, String fileName) throws IOException {

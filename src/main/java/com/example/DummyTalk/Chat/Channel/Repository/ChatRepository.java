@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface ChatRepository extends JpaRepository<ChatDataEntity, Long> {
     ChatDataEntity findByChannelId(ChannelEntity channelEntity);
     List<ChatDataEntity> findAllByChannelId(ChannelEntity channelEntity);
-    Object findByChatId(long channelId);
+    ChatDataEntity findByChatId(long channelId);
 }

@@ -49,6 +49,8 @@ public class ChatDataEntity extends BaseTimeEntity {
     private List<ImageEntity> imageEntityList = new ArrayList<>();
 
 
-
-
+    public Long delete() {
+        this.type = "DELETED";
+        return getChatId();
+    }
 }

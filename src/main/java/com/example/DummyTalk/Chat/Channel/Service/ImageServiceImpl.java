@@ -46,12 +46,12 @@ public class ImageServiceImpl implements ImageService {
 //                .build();
 //    }
 
-    private ImageEntity convertToImageEntity(ImageChatDto img, String fileName, String originFileName, String path) {
+    private ImageEntity convertToImageEntity(int channelId, ImageDto imageDto) {
         return ImageEntity.builder()
-                .channelId((long) img.getChannelId())
-                .originalFileName(originFileName)
-                .savedFileName(fileName)
-                .filePath(path + "/" + fileName)
+                .channelId((long) channelId)
+                .originalFileName(imageDto.getOriginalFileName())
+                .savedFileName(imageDto.getSavedFileName())
+                .filePath(imageDto.getFilePath())
                 .build();
     }
 
@@ -113,14 +113,15 @@ public class ImageServiceImpl implements ImageService {
 
             imageChatList = new ArrayList<>();
             for (MultipartFile file : imageDto.getFileInfo()) {
-                String saveFilePath = FileUploadUtils.saveFile(absolutePath, file.getOriginalFilename(), file);
 
-                ImageEntity imageEntity = convertToImageEntity(imageDto, saveFilePath, file.getOriginalFilename(), absolutePath);
+                ImageDto saveFile = FileUploadUtils.saveFile(resourcePath, file.getOriginalFilename(), file);
+                log.info("\nsaveImage file.getOriginalFilename() 귀신잡아라 !: \n" + saveFile);
+
+                ImageEntity imageEntity = convertToImageEntity(imageDto.getChannelId(), saveFile);
                 imageRepository.save(imageEntity);
 
                 ImageChatDto saveImageDto = convertToImageDto(imageEntity, imageDto);
                 imageChatList.add(saveImageToChat(saveImageDto));
-                log.info("\nsaveImage imageChatList 귀신잡아라 !: \n" + imageChatList);
             }
         } catch (Exception e) {
             throw new ChatFailException( "파일 저장에 실패하였습니다.");
