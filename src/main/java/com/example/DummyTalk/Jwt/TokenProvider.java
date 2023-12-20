@@ -1,6 +1,7 @@
 package com.example.DummyTalk.Jwt;
 
 
+import com.example.DummyTalk.AES.AESUtil;
 import com.example.DummyTalk.Exception.TokenException;
 import com.example.DummyTalk.User.DTO.TokenDTO;
 import com.example.DummyTalk.User.Entity.User;
@@ -21,7 +22,7 @@ import java.util.Date;
 
 @Component
 @Slf4j
-public class TokenProvider {
+public class TokenProvider extends AESUtil {
 
     private static final String BEARER_TYPE = "Bearer";   // Bearer 토큰 사용시 앞에 붙이는 prefix문자열
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 8; // 8시간으로 설정
@@ -42,9 +43,14 @@ public class TokenProvider {
 
 
     /* 1. 토큰(xxxxx.yyyyy.zzzzz) 생성 메소드 */
-    public TokenDTO generateTokenDTO(User user){
+    public TokenDTO generateTokenDTO(User user) throws Exception {
 
-        byte[] keyBytest = Decoders.BASE64.decode(user.getUserSecretKey());
+        log.info("AESUtil.getKey() ==>{}", AESUtil.getKey());
+        
+        // AES키를 활용한 복호화
+        String decryptJWT = AESUtil.decrypt(user.getUserSecretKey(), AESUtil.getKey());
+
+        byte[] keyBytest = Decoders.BASE64.decode(decryptJWT);
         this.key = Keys.hmacShaKeyFor(keyBytest);
 
         /* 1. 회원 아이디를 "sub"이라는 클레임으로 토큰으로 추가 */

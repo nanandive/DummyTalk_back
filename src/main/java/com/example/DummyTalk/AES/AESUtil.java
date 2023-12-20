@@ -1,16 +1,27 @@
-package com.example.DummyTalk.ASE;
+package com.example.DummyTalk.AES;
+
+import lombok.Getter;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import java.security.Key;
 
-public class ASEUtil {
+public class AESUtil {
 
-    // 랜덤한 ASE Key 생성 (128 bit key size)
+    private static SecretKey key;
+
+    protected static SecretKey getKey() {
+
+        return key;
+    }
+
+    // 랜덤한 AES Key 생성 (128 bit key size)
     protected static SecretKey generateAESKey() throws Exception {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(128);
-        return keyGenerator.generateKey();
+        key =  keyGenerator.generateKey();
+        return key;
     }
 
     // 암호화

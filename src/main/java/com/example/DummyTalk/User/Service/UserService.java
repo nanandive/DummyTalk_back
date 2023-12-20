@@ -1,5 +1,6 @@
 package com.example.DummyTalk.User.Service;
 
+import com.example.DummyTalk.AES.AESUtil;
 import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
@@ -9,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -21,21 +23,17 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserService {
+public class UserService extends AESUtil {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserDTO signUp(UserDTO userDTO) throws NoSuchAlgorithmException {
-
-
+    public UserDTO signUp(UserDTO userDTO) throws Exception {
 
         String email = userDTO.getUserEmail();
 
         boolean isExists =  userRepository.existsByUserEmail(email);
-
-
 
         if (!isExists){
 
@@ -47,7 +45,10 @@ public class UserService {
             // Base64로 인코딩하여 JWT 시크릿 키 생성
             String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
 
+            // 랜덤한 AES키 생성
+            SecretKey aesKey = AESUtil.generateAESKey();
 
+            byte[] encrtptJWT = AESUtil.encrypt(jwtKey, aesKey);
 
             // 서울시간으로 가져오기 위해 + 9시간
             LocalDateTime currentDateTime = LocalDateTime.now();
@@ -62,7 +63,7 @@ public class UserService {
             }
 
             // jwt secret key
-            userDTO.setUserSecretKey(jwtKey);
+            userDTO.setUserSecretKey(encrtptJWT);
             
             // 비밀번호 인코딩
             userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
