@@ -12,6 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -20,6 +23,7 @@ import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.*;
 
 @Service
 @Slf4j
@@ -86,13 +90,10 @@ public class UserService extends AESUtil {
 
     public Object googleLogin(String credential) throws Exception {
 
-        User result =  userRepository.findByCredential(credential);
-
-        log.info("Test=====>{}", result);
+        User result =  userRepository.findByCredential(credential.substring(0, 500));
 
         if(result == null){
 
-            log.info("여기인가");
 
             int keyLength = 64;
 
@@ -111,20 +112,20 @@ public class UserService extends AESUtil {
             LocalDateTime currentDateTime = LocalDateTime.now();
             LocalDateTime plus9Hours = currentDateTime.plusHours(9);
 
+
             UserDTO userDTO = new UserDTO();
             userDTO.setNickname("기본 닉네임");
-            userDTO.setCredential(credential);
+            userDTO.setCredential(credential.substring(0, 500));
             userDTO.setCreateAt(plus9Hours);
             userDTO.setUserSecretKey(encrtptJWT);
 
             User user = modelMapper.map(userDTO, User.class);
-            log.info("테스트 입니다{}", credential);
 
             User resultUser = userRepository.save(user);
 
             return modelMapper.map(resultUser, UserDTO.class);
         } else {
-            log.info("여기로 와야함");
+
             tokenProvider.generateTokenDTO(result);
 
             return tokenProvider.generateTokenDTO(result);
@@ -139,6 +140,12 @@ public class UserService extends AESUtil {
         byte[] randomBytes = new byte[length];
         secureRandom.nextBytes(randomBytes);
         return randomBytes;
+    }
+
+    public static String shortenString(String input) {
+        byte[] inputBytes = input.getBytes();
+        String base64Encoded = Base64.getEncoder().encodeToString(inputBytes);
+        return base64Encoded;
     }
 
 }
