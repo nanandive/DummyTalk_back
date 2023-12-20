@@ -40,4 +40,16 @@ public class UserController {
                     .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), empty));
         }
     }
+
+    @PostMapping("googleLogin")
+    public ResponseEntity<ResponseDTO> googleLogin(@RequestBody  String credential) throws Exception {
+
+        Object result = userService.googleLogin(credential);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ResponseDTO(HttpStatus.CREATED, "회원가입 성공", result));
+
+
+    }
 }

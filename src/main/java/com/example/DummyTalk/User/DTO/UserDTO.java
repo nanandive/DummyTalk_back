@@ -34,6 +34,8 @@ public class UserDTO implements UserDetails {
 
     private String userPhone;
 
+    private String credential;
+
     private String userImgPath;
 
     private  byte[] userSecretKey;

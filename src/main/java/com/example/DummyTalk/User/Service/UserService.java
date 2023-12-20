@@ -1,6 +1,7 @@
 package com.example.DummyTalk.User.Service;
 
 import com.example.DummyTalk.AES.AESUtil;
+import com.example.DummyTalk.Jwt.TokenProvider;
 import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
@@ -28,7 +29,9 @@ public class UserService extends AESUtil {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
+    // 회원가입
     public UserDTO signUp(UserDTO userDTO) throws Exception {
 
         String email = userDTO.getUserEmail();
@@ -80,6 +83,56 @@ public class UserService extends AESUtil {
 
     }
 
+
+    public Object googleLogin(String credential) throws Exception {
+
+        User result =  userRepository.findByCredential(credential);
+
+        log.info("Test=====>{}", result);
+
+        if(result == null){
+
+            log.info("여기인가");
+
+            int keyLength = 64;
+
+            // 안전한 랜덤 바이트 생성
+            byte[] keyBytes = generateRandomBytes(keyLength);
+
+            // Base64로 인코딩하여 JWT 시크릿 키 생성
+            String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
+
+            // 랜덤한 AES키 생성
+            SecretKey aesKey = AESUtil.generateAESKey();
+
+            byte[] encrtptJWT = AESUtil.encrypt(jwtKey, aesKey);
+
+            // 서울시간으로 가져오기 위해 + 9시간
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime plus9Hours = currentDateTime.plusHours(9);
+
+            UserDTO userDTO = new UserDTO();
+            userDTO.setNickname("기본 닉네임");
+            userDTO.setCredential(credential);
+            userDTO.setCreateAt(plus9Hours);
+            userDTO.setUserSecretKey(encrtptJWT);
+
+            User user = modelMapper.map(userDTO, User.class);
+            log.info("테스트 입니다{}", credential);
+
+            User resultUser = userRepository.save(user);
+
+            return modelMapper.map(resultUser, UserDTO.class);
+        } else {
+            log.info("여기로 와야함");
+            tokenProvider.generateTokenDTO(result);
+
+            return tokenProvider.generateTokenDTO(result);
+        }
+
+
+    }
+
     // 랜덤한 JWT SecretKey 생성
     private static byte[] generateRandomBytes(int length) throws NoSuchAlgorithmException {
         SecureRandom secureRandom = SecureRandom.getInstanceStrong();
@@ -87,6 +140,5 @@ public class UserService extends AESUtil {
         secureRandom.nextBytes(randomBytes);
         return randomBytes;
     }
-
 
 }

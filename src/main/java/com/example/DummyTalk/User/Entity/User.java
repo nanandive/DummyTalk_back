@@ -57,6 +57,9 @@ public class User {
     @Column(name = "user_phone")
     private String userPhone;
 
+    @Column(name= "credential")
+    private String credential;
+
     @Column(name = "user_img_path")
     private String userImgPath;
 
