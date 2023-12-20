@@ -2,6 +2,7 @@ package com.example.DummyTalk.User.Service;
 
 import com.example.DummyTalk.AES.AESUtil;
 import com.example.DummyTalk.Jwt.TokenProvider;
+import com.example.DummyTalk.User.DTO.TokenDTO;
 import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
@@ -87,13 +88,13 @@ public class UserService extends AESUtil {
 
     }
 
-
-    public Object googleLogin(String credential) throws Exception {
+    // 구글 로그인
+    public TokenDTO googleLogin(String credential) throws Exception {
 
         User result =  userRepository.findByCredential(credential.substring(0, 500));
 
+        // 등록된 계정이 아닐 경우 등록
         if(result == null){
-
 
             int keyLength = 64;
 
@@ -123,10 +124,9 @@ public class UserService extends AESUtil {
 
             User resultUser = userRepository.save(user);
 
-            return modelMapper.map(resultUser, UserDTO.class);
-        } else {
+            return tokenProvider.generateTokenDTO(resultUser);
 
-            tokenProvider.generateTokenDTO(result);
+        } else {
 
             return tokenProvider.generateTokenDTO(result);
         }
@@ -142,10 +142,5 @@ public class UserService extends AESUtil {
         return randomBytes;
     }
 
-    public static String shortenString(String input) {
-        byte[] inputBytes = input.getBytes();
-        String base64Encoded = Base64.getEncoder().encodeToString(inputBytes);
-        return base64Encoded;
-    }
 
 }

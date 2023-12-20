@@ -1,6 +1,7 @@
 package com.example.DummyTalk.User.Controller;
 
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
+import com.example.DummyTalk.User.DTO.TokenDTO;
 import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Service.UserService;
@@ -44,11 +45,11 @@ public class UserController {
     @PostMapping("googleLogin")
     public ResponseEntity<ResponseDTO> googleLogin(@RequestBody  String credential) throws Exception {
 
-        Object result = userService.googleLogin(credential);
+        TokenDTO result = userService.googleLogin(credential);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new ResponseDTO(HttpStatus.CREATED, "회원가입 성공", result));
+                .status(HttpStatus.OK)
+                .body(new ResponseDTO(HttpStatus.OK, "구글 로그인에 성공하셨습니다.", result));
 
 
     }
