@@ -41,37 +41,42 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @RequestMapping("/chat")
 public class ChatController {
+
     private final ChatService chatService;
 
-    /*****   웹소켓으로 들어온 메시지 수신 및 발신
-     * /topic/msg/{channelId} 경로로 들어온 메시지를 수신하고, 동일한 경로로 MessageResponse를 반환합니다.
-     *
+
+    /*** 웹소켓으로 들어온 메시지 수신 및 발신
      * @param message SendChatDto: 클라이언트에서 전송된 채팅 메시지 데이터
      * @param channelId String: 메시지가 속한 채널의 ID
-     *
      * @return MessageResponse: 닉네임, 상태, 메시지 등을 포함한 응답 객체
-     *
-     * 채팅 데이터를 데이터베이스에 저장한 후, 저장된 데이터의 채팅 ID를 설정하고 응답을 반환합니다.
+     * '/topic/msg/{channelId}' 경로로 들어온 메시지를 수신하고, 동일한 경로로 MessageResponse를 반환합니다.
+     * type에 따라 오디오, 이미지, 텍스트 메시지를 구분합니다.
      */
     @MessageMapping("/{channelId}/message")
     @SendTo("/topic/msg/{channelId}")
     public MessageResponse handleMessage(SendChatDto message
-            , @DestinationVariable String channelId
-            ) {
-        log.info("============message================================={}", message);
-        // 채팅 데이터 저장
+            , @DestinationVariable String channelId) {
+        log.info("\n handleMessage message   : {}", message);
+
         if (message.getAudioUrl() != null && !message.getAudioUrl().isEmpty()) {
-            // 오디오 채팅 데이터 저장
             int audioChatId = chatService.saveAudioChatData(message);
             message.setAudioChatId(audioChatId);
-            log.info("============setAudioChatId================================={}", message);
             return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message);
-        } else {
-            // 일반 텍스트 채팅 데이터 저장
+        }
+
+        if (message.getType() != null && message.getType().equals("IMAGE")) {
+            log.info("\n handleMessage IMAGE   : {}", message);
+            return new MessageResponse(message.getNickname(), "이미지 전송 성공", message);
+        }
+
+        if (message.getMessage() != null && !message.getMessage().isEmpty()) {
             int chatId = chatService.saveChatData(message);
-            message.setChatId(chatId);
-            log.info("============setChatId================================={}", message);
+            message.setChatId((long) chatId);
+            message.setType("TEXT");
+            log.info("\n handleMessage TEXT   : {}", message);
             return new MessageResponse(message.getNickname(), "일반 텍스트 채팅 메시지 전송 성공", message);
+        } else {
+            throw new ChatFailException("메시지를 입력해주세요.");
         }
     }
 
@@ -81,7 +86,7 @@ public class ChatController {
         log.info("\n getChatData channelId=============================\n{}", channelId);
         chatService.checkParticipant(channelId, Long.parseLong(userId));
         try {
-            List<MessageHistoryDto> list = chatService.findChatData(channelId, userId);
+            List<MessageHistoryDto> list = chatService.findChatData(channelId);
             return ResponseEntity
                     .ok()
                     .body(new ResponseDTO(HttpStatus.OK,
@@ -112,9 +117,8 @@ public class ChatController {
     public ResponseEntity<ResponseDTO> deleteChat(@PathVariable int chatId) {
         try {
             return ResponseEntity
-                    .ok()
-                    .body(new ResponseDTO(HttpStatus.OK,
-                            "채팅 삭제 성공", chatService.deleteChat(chatId)));
+                    .ok().body(new ResponseDTO(HttpStatus.OK
+                            ,"채팅 삭제 성공", chatService.deleteChat(chatId)));
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -141,7 +145,7 @@ public class ChatController {
 //
 //    @Override
 //    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // 메시지의 내용을 가져옵니다.
+// 메시지의 내용을 가져옵니다.
 //        String content = message.getPayload();
 //
 //        // 메시지의 내용을 파싱합니다.
@@ -171,9 +175,6 @@ public class ChatController {
 //        channelService.createChannel(channelDto);
 //        return ResponseEntity.noContent().build();
 //    }
-
-
-
 
 
 //

@@ -1,6 +1,7 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,8 @@ public class ChannelController {
 
     /* 채널명 조회 */
     @GetMapping("/{channelId}")
-    public ResponseEntity<ChannelDto> getChannelName(@PathVariable int channelId) {
-        return ResponseEntity.ok(channelService.getChannelName((long)channelId));
+    public ResponseEntity<ResponseDTO> getChannelName(@PathVariable int channelId) {
+        return ResponseEntity.ok()
+                .body(new ResponseDTO(HttpStatus.OK,"서버 이름 조회 ",channelService.getChannelName((long)channelId)));
     }
 }

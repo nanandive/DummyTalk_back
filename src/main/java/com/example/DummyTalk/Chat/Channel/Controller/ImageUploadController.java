@@ -1,5 +1,11 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
+import com.example.DummyTalk.Chat.Channel.Dto.ImageChatDto;
+import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
+import io.netty.channel.ChannelId;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +18,9 @@ import com.example.DummyTalk.Chat.Channel.Service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.util.List;
+
 @RequestMapping("/img")
 @RestController
 @Slf4j
@@ -20,19 +29,17 @@ public class ImageUploadController {
 
     private final ImageService imageService;
 
+    /***
+     * 이미지 저장
+     * @param imageDto : channelId, userId, imageUrl, Multipart[], nickname
+     * 1. 로컬에 저장
+     * 2. DB에 값 저장
+     * 3. 추후 성공적으로 저장되면 로컬은 삭제
+     */
     @PostMapping("/save")
-    public void saveImage(@ModelAttribute ImageDto imageDto) {
-        /*
-         *  @param image : 클라이언트에서 전송된 이미지 파일
-         *  => ( file.name, file )
-         *  @param message : 클라이언트에서 전송된 채팅 메시지 데이터
-         *  => ( userId, nickname )
-         *  1. 로컬에 저장
-         *  2. DB에 값 저장
-         *  3. 추후 성공적으로 저장되면 로컬은 삭제
-         *  @param message : channelId, userId, imageUrl, Multipart */
-        log.info("============saveImage================================={}", imageDto);
-        imageService.saveImage(imageDto);
-//        return new MessageResponse(message.getNickname(), "이미지 저장 성공", );
+    public MessageResponse saveImage(@ModelAttribute ImageChatDto imageDto) throws IOException {
+        List<SendChatDto> saveImageToChat = imageService.saveImage(imageDto);
+        log.info("\n saveImageToChat \n" + saveImageToChat);
+        return new MessageResponse(saveImageToChat.get(0).getNickname(), "이미지 전송 성공", saveImageToChat);
     }
 }
