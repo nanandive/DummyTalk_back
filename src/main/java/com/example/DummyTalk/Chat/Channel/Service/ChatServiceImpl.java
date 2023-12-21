@@ -1,5 +1,16 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelParticipantDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
@@ -14,21 +25,9 @@ import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.User.DTO.ChatSenderDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import java.io.File;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -138,15 +137,27 @@ public class ChatServiceImpl implements ChatService {
     /* Chat 번역 */
     public MessageResponse translateMessage(SendChatDto chat, String nationLanguage) {
 
-        MessageResponse response = WebClient.create()
+        CountDownLatch cdl = new CountDownLatch(1);
+        MessageResponse response = new MessageResponse();
+        WebClient.create()
                 .post()
                 .uri("http://localhost:8000/api/v1/trans/" + nationLanguage)
                 .header("Content-Type", "application/json")
                 .body(BodyInserters.fromValue(chat))
                 .retrieve()
                 .bodyToMono(MessageResponse.class)
-                .block();
+                .doOnTerminate(() -> cdl.countDown())
+                .subscribe((res) -> response.setMessageResponse(res.getNickname(), res.getStatus(), res.getChat()));
+        
+
         log.info("{}", response);
+
+        try {
+            cdl.await();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return response;
     }
 
