@@ -3,6 +3,7 @@ package com.example.DummyTalk.Chat.Channel.Controller;
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelParticipantDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
 import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
+import com.example.DummyTalk.Chat.Channel.Dto.ChatDataDto.MessageType;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelParticipantEntity;
 import com.example.DummyTalk.Chat.Channel.Service.ChannelService;
 import com.example.DummyTalk.Chat.Channel.Service.ChatService;
@@ -58,9 +59,9 @@ public class ChatController {
             , @DestinationVariable String channelId) {
         log.info("\n handleMessage message   : {}", message);
 
-        if (message.getAudioUrl() != null && !message.getAudioUrl().isEmpty()) {
-            int audioChatId = chatService.saveAudioChatData(message);
-            message.setAudioChatId(audioChatId);
+        if (message.getType().equals(MessageType.AUDIO.toString())) {
+            // int audioChatId = chatService.saveAudioChatData(message);
+            // message.setAudioChatId(audioChatId);
             return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message);
         }
 
