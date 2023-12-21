@@ -6,6 +6,9 @@ import com.example.DummyTalk.User.DTO.TokenDTO;
 import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.json.gson.GsonFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -21,9 +24,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.zip.*;
 
 @Service
@@ -96,6 +97,12 @@ public class UserService extends AESUtil {
         // 등록된 계정이 아닐 경우 등록
         if(result == null){
 
+            // 구글에서 받아온 IdToken으로 GoolgeToken 생성
+            GoogleIdToken idToken = GoogleIdToken.parse(new GsonFactory(), credential);
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            // Token에서 email 추출
+            String email = payload.getEmail();
+
             int keyLength = 64;
 
             // 안전한 랜덤 바이트 생성
@@ -119,6 +126,7 @@ public class UserService extends AESUtil {
             userDTO.setCredential(credential.substring(0, 500));
             userDTO.setCreateAt(plus9Hours);
             userDTO.setUserSecretKey(encrtptJWT);
+            userDTO.setUserEmail(email);
 
             User user = modelMapper.map(userDTO, User.class);
 
@@ -130,9 +138,40 @@ public class UserService extends AESUtil {
 
             return tokenProvider.generateTokenDTO(result);
         }
+    }
 
+    public UserDTO  findByUser(String userId){
+
+        User user = userRepository.findById(Long.parseLong(userId)).get();
+
+        return modelMapper.map(user, UserDTO.class);
+    }
+
+    public UserDTO  saveFriend(String userId, Map<String,String> email){
+
+        String result =  email.get("email");
+
+        User friend = userRepository.findByUserEmail(result);
+        User user = userRepository.findByUserId(Long.parseLong(userId));
+
+        if(friend == null){
+            throw new RuntimeException("존재하지 않은 회원입니다.");
+        } else{
+            if(friend.getUserId() == user.getUserId()){
+                throw new RuntimeException("본인은 친구로 추가할 수 없습니다.");
+            }  else{
+
+            }
+        }
+
+        return null;
 
     }
+
+
+
+
+
 
     // 랜덤한 JWT SecretKey 생성
     private static byte[] generateRandomBytes(int length) throws NoSuchAlgorithmException {
@@ -141,6 +180,4 @@ public class UserService extends AESUtil {
         secureRandom.nextBytes(randomBytes);
         return randomBytes;
     }
-
-
 }

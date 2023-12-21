@@ -44,6 +44,8 @@ public class UserDTO implements UserDetails {
 
     private LocalDateTime updateAt;
 
+    private String nationalLanguage;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
