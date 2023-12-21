@@ -114,7 +114,7 @@ public class ImageServiceImpl implements ImageService {
             imageChatList = new ArrayList<>();
             for (MultipartFile file : imageDto.getFileInfo()) {
 
-                ImageDto saveFile = FileUploadUtils.saveFile(resourcePath, file.getOriginalFilename(), file);
+                ImageDto saveFile = FileUploadUtils.saveFile(absolutePath, file.getOriginalFilename(), file);
                 log.info("\nsaveImage file.getOriginalFilename() 귀신잡아라 !: \n" + saveFile);
 
                 ImageEntity imageEntity = convertToImageEntity(imageDto.getChannelId(), saveFile);
