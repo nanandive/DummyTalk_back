@@ -53,7 +53,6 @@ public class FileUploadUtils {
         }
         log.info("\nsaveImage fileName : \n" + replaceFileName);
 
-
         return new ImageDto(null, 0, fileName, filePath.toString() , replaceFileName, null, null);
     }
 

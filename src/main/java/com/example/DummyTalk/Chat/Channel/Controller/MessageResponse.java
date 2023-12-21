@@ -1,11 +1,9 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
-import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
-import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 
 import java.util.List;
 
@@ -14,21 +12,25 @@ import java.util.List;
 @AllArgsConstructor
 public class MessageResponse {
 
-    private SendChatDto chat;
+    private MessageRequest chat;
     private String nickname;
     private String status;
-    private List<SendChatDto> chatList;
+    private List<MessageRequest> chatList;
 
-    public MessageResponse(String nickname, String status, SendChatDto chat) {
+    public MessageResponse(String nickname, String status, MessageRequest chat) {
         this.nickname = nickname;
         this.status = status;
         this.chat = chat;
     }
 
-    public MessageResponse(String nickname, String status, List<SendChatDto> chatList) {
+    public MessageResponse(String nickname, String status, List<MessageRequest> chatList) {
         this.nickname = nickname;
         this.status = status;
         this.chatList = chatList;
+    }
+
+    public MessageResponse(String status) {
+        this.status = status;
     }
 
 }

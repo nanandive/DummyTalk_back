@@ -4,19 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-import java.util.Collection;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SendChatDto {
+public class MessageRequest {
     private Long chatId;
     private String message;
     private int sender;
@@ -25,7 +22,10 @@ public class SendChatDto {
     private int channelId;
     private LocalDateTime timeStamp;
     private String type;
-    private List<SendChatDto> chatList;
+    private String filePath;
+    private Long imageId;
+    private MultipartFile fileInfo;
+    private List<MessageRequest> chatList;
 
     /* 오디오 저장 */
     private String language;

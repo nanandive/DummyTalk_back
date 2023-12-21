@@ -2,7 +2,7 @@ package com.example.DummyTalk.Chat.Channel.Service;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ImageChatDto;
 import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
-import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ImageEntity;
@@ -10,7 +10,6 @@ import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChatRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ImageRepository;
 import com.example.DummyTalk.Exception.ChatFailException;
-import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
 import com.example.DummyTalk.Util.FileUploadUtils;
@@ -66,8 +65,8 @@ public class ImageServiceImpl implements ImageService {
                 .build();
     }
 
-    private SendChatDto convertToChatDto(ChatDataEntity chat) {
-        return SendChatDto.builder()
+    private MessageRequest convertToChatDto(ChatDataEntity chat) {
+        return MessageRequest.builder()
                 .chatId(chat.getChatId())
                 .nickname(chat.getSender().getNickname())
                 .type(chat.getType())
@@ -105,12 +104,12 @@ public class ImageServiceImpl implements ImageService {
      * @return SendChatDto
      */
     @Override
-    public List<SendChatDto> saveImage(ImageChatDto imageDto) {
+    public List<MessageRequest> saveImage(ImageChatDto imageDto) {
 
         if (imageDto.getFileInfo() == null || imageDto.getFileInfo().length == 0)
             throw new ChatFailException("이미지 파일이 없습니다.");
 
-        List<SendChatDto> imageChatList;
+        List<MessageRequest> imageChatList;
 
         try {
 
@@ -136,7 +135,7 @@ public class ImageServiceImpl implements ImageService {
 
 
     // 이미지 -> 채팅 데이터로 저장 (채팅 데이터에 이미지 정보 저장)
-    public SendChatDto saveImageToChat(ImageChatDto image) {
+    public MessageRequest saveImageToChat(ImageChatDto image) {
 
         User user = findUserById(image.getUserId());
         ChannelEntity channel = findChannelById(image.getChannelId());

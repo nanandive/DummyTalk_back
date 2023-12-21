@@ -1,24 +1,15 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ImageChatDto;
-import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
-import io.netty.channel.ChannelId;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
-import com.example.DummyTalk.Chat.Channel.Service.ChatService;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.DummyTalk.Chat.Channel.Service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("/img")
@@ -37,9 +28,43 @@ public class ImageUploadController {
      * 3. 추후 성공적으로 저장되면 로컬은 삭제
      */
     @PostMapping("/save")
-    public MessageResponse saveImage(@ModelAttribute ImageChatDto imageDto) throws IOException {
-        List<SendChatDto> saveImageToChat = imageService.saveImage(imageDto);
-        log.info("\n saveImageToChat \n" + saveImageToChat);
-        return new MessageResponse(saveImageToChat.get(0).getNickname(), "이미지 전송 성공", saveImageToChat);
+    public MessageResponse saveImage(@ModelAttribute ImageChatDto imageDto) {
+
+        List<MessageRequest> saveImageToChat = imageService.saveImage(imageDto);
+
+        log.info("imageEmbedded saveImageToChat    : {}", saveImageToChat);
+
+        String response = imageEmbedded(saveImageToChat);
+
+        if (response.equals("200")) {
+            return new MessageResponse(saveImageToChat.get(0).getNickname(), "이미지 전송 성공", saveImageToChat);
+        }
+
+        return new MessageResponse("이미지 임베딩 실패");
+    }
+
+
+    /***
+     * 이미지 전송
+     * @param chat : channelId, userId, filePath, Multipart[]
+     * 1. 이미지 저장
+     * 2. 이미지 저장 성공 시, 채팅방에 이미지 전송
+     */
+    public static String imageEmbedded(List<MessageRequest> chat) {
+        log.info("imageEmbedded     : {}", chat);
+
+        String response = WebClient.create()
+                .post()
+                .uri("http://localhost:8000/uploadImage")
+                .header("Content-Type", "application/json")
+                .body(BodyInserters.fromValue(chat))
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        log.info("{}", response);
+
+        return response;
     }
 }
+

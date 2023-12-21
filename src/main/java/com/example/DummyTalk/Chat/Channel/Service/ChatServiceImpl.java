@@ -1,36 +1,29 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
 import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
-import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelParticipantDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
-import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelParticipantEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelParticipantRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Channel.Repository.ChatRepository;
-import com.example.DummyTalk.Common.DTO.ResponseDTO;
 import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.User.DTO.ChatSenderDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,7 +67,7 @@ public class ChatServiceImpl implements ChatService {
                 .build();
     }
 
-    private ChatDataEntity convertToChannelEntity(User user, ChannelEntity channel, SendChatDto message) {
+    private ChatDataEntity convertToChannelEntity(User user, ChannelEntity channel, MessageRequest message) {
         return ChatDataEntity.builder()
                 .channelId(channel)
                 .message(message.getMessage())
@@ -90,7 +83,7 @@ public class ChatServiceImpl implements ChatService {
      *  @return : 채팅 아이디
      */
     @Transactional
-    public int saveChatData(SendChatDto message) {
+    public int saveChatData(MessageRequest message) {
 
         User user = Optional.ofNullable(userRepository.findByUserId((long) message.getSender()))
                 .orElseThrow(() -> new ChatFailException("유저 조회에 실패하였습니다. "));
@@ -153,7 +146,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     /* Chat 번역 */
-    public MessageResponse translateMessage(SendChatDto chat, String nationLanguage) {
+    public MessageResponse translateMessage(MessageRequest chat, String nationLanguage) {
 
         MessageResponse response = WebClient.create()
                 .post()
@@ -168,7 +161,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public int saveAudioChatData(SendChatDto sendChatDto) {
+    public int saveAudioChatData(MessageRequest messageRequest) {
         // 오디오 채팅 데이터를 저장하는 로직을 여기에 구현합니다.
         // 예시:
         // 1. sendChatDto에서 필요한 정보를 추출합니다.
