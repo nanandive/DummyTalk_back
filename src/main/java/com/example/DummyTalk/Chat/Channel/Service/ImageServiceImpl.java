@@ -47,6 +47,7 @@ public class ImageServiceImpl implements ImageService {
 //    }
 
     private ImageEntity convertToImageEntity(int channelId, ImageDto imageDto) {
+
         return ImageEntity.builder()
                 .channelId((long) channelId)
                 .originalFileName(imageDto.getOriginalFileName())
@@ -56,10 +57,11 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private ChatDataEntity convertToChatEntity(User user, ChannelEntity channel, ImageChatDto imageDto) {
+
         return ChatDataEntity.builder()
                 .sender(user)
                 .channelId(channel)
-                .message(imageDto.getFilePath())
+                .message(imageDto.getSavedFileName())
                 .type("IMAGE")
                 .build();
     }
@@ -82,6 +84,7 @@ public class ImageServiceImpl implements ImageService {
                 .userId(imageDto.getUserId())
                 .nickname(imageDto.getNickname())
                 .filePath(imageEntity.getFilePath())
+                .savedFileName(imageEntity.getSavedFileName())
                 .build();
     }
 
@@ -115,7 +118,6 @@ public class ImageServiceImpl implements ImageService {
             for (MultipartFile file : imageDto.getFileInfo()) {
 
                 ImageDto saveFile = FileUploadUtils.saveFile(absolutePath, file.getOriginalFilename(), file);
-                log.info("\nsaveImage file.getOriginalFilename() 귀신잡아라 !: \n" + saveFile);
 
                 ImageEntity imageEntity = convertToImageEntity(imageDto.getChannelId(), saveFile);
                 imageRepository.save(imageEntity);
@@ -126,7 +128,6 @@ public class ImageServiceImpl implements ImageService {
         } catch (Exception e) {
             throw new ChatFailException( "파일 저장에 실패하였습니다.");
         }
-        log.info("\nsaveImage 배열 반환값 : \n" + imageChatList);
 
         return imageChatList.isEmpty() ? null : imageChatList;
     }   // 이미지 저장 후 채팅 데이터로 저장
@@ -143,6 +144,8 @@ public class ImageServiceImpl implements ImageService {
         try {
             ChatDataEntity chatEntity = convertToChatEntity(user, channel, image);
             chatRepository.save(chatEntity);
+            log.info("\nsaveImage 배열 반환값 : \n" + image);
+
             return convertToChatDto(chatEntity);
         } catch (Exception e) {
             throw new ChatFailException("이미지 저장에 실패하였습니다.");
