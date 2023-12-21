@@ -21,6 +21,7 @@ import com.example.DummyTalk.Jwt.JwtAccessDeniedHandler;
 import com.example.DummyTalk.Jwt.JwtAuthenticationEntryPoint;
 //import com.example.DummyTalk.Jwt.TokenProvider;
 import com.example.DummyTalk.Jwt.TokenProvider;
+import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 
 @Configuration
 @EnableWebSecurity
@@ -104,6 +105,7 @@ public class SecurityConfig {
 
         return source;
     }
+
 
 
 }

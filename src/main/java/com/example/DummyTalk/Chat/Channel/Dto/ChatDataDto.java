@@ -15,8 +15,7 @@ import java.util.List;
 public class ChatDataDto {
 
     public enum MessageType {
-        // 메시지 타입 : 입장, 채팅
-        ENTER,TALK,LEAVE,IMAGE,AUDIO
+        ENTER,LEAVE,TALK,MEDIA,AUDIO  // 메시지 타입 : 입장, 채팅
 }
     private Long chatId;
     private String message;
