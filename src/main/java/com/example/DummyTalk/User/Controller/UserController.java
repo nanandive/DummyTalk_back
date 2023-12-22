@@ -1,6 +1,7 @@
 package com.example.DummyTalk.User.Controller;
 
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
+import com.example.DummyTalk.User.DTO.FriendDTO;
 import com.example.DummyTalk.User.DTO.TokenDTO;
 import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Entity.User;
@@ -83,10 +84,10 @@ public class UserController {
     public ResponseEntity<ResponseDTO> findByUser(@PathVariable String userId,
                                                   @RequestBody Map<String, String> email){
 
-        UserDTO result = userService.saveFriend(userId, email);
+        FriendDTO result = userService.saveFriend(userId, email);
 
         return  ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ResponseDTO(HttpStatus.OK, "유저 조회에 성공하였습니다.", result));
+                .body(new ResponseDTO(HttpStatus.OK, "친구 추가에 성공하셨습니다.", result));
     }
 }

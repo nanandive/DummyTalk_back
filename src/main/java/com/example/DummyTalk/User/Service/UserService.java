@@ -2,10 +2,12 @@ package com.example.DummyTalk.User.Service;
 
 import com.example.DummyTalk.AES.AESUtil;
 import com.example.DummyTalk.Jwt.TokenProvider;
+import com.example.DummyTalk.User.DTO.FriendDTO;
 import com.example.DummyTalk.User.DTO.TokenDTO;
 import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Entity.Friend;
 import com.example.DummyTalk.User.Entity.User;
+import com.example.DummyTalk.User.Repository.FriendRepository;
 import com.example.DummyTalk.User.Repository.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -34,7 +36,7 @@ import java.util.zip.*;
 public class UserService extends AESUtil {
 
     private final UserRepository userRepository;
-//    private final FriendRepository friendRepository;
+    private final FriendRepository friendRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
@@ -149,25 +151,31 @@ public class UserService extends AESUtil {
         return modelMapper.map(user, UserDTO.class);
     }
 
-    public UserDTO  saveFriend(String userId, Map<String,String> email){
+    public FriendDTO  saveFriend(String userId, Map<String,String> email){
+
+        Long LuserId = Long.parseLong(userId);
 
         String result =  email.get("email");
 
         User friend = userRepository.findByUserEmail(result);
-        User user = userRepository.findByUserId(Long.parseLong(userId));
+        User user = userRepository.findByUserId(LuserId);
 
         if(friend == null){
             throw new RuntimeException("존재하지 않은 회원입니다.");
-        } else{
-            if(friend.getUserId() == user.getUserId()){
+        } else {
+            if (friend.getUserId() == user.getUserId()) {
                 throw new RuntimeException("본인은 친구로 추가할 수 없습니다.");
-            }  else{
+            } else {
+                Friend addFriend = new Friend();
+                addFriend.setUserId(LuserId); // 친구요청을 보낸 사람
+                addFriend.setFriendId(friend.getUserId()); // 친구요청을 받은 사람
+                addFriend.setAccept("N");  // 수락 대기중
 
+                Friend resultFriend = friendRepository.save(addFriend);
+
+                return modelMapper.map(resultFriend, FriendDTO.class);
             }
         }
-
-        return null;
-
     }
 
 

@@ -14,7 +14,7 @@ public class Friend {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "friendId")
+    @Column(name = "friend_id")
     private Long friendId;
 
     @Column(name = "user_id")
@@ -27,7 +27,7 @@ public class Friend {
     private String accept; // 수락 여부 Y / N
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user; // 수락 여부 Y / N
 
 }
