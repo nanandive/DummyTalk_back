@@ -24,5 +24,4 @@ public class Friend {
 
     @Column(name = "accept")
     private String accept; // 수락 여부 Y / N
-
 }
