@@ -29,13 +29,9 @@ public class UserService {
 
     public UserDTO signUp(UserDTO userDTO) throws NoSuchAlgorithmException {
 
-
-
         String email = userDTO.getUserEmail();
 
         boolean isExists =  userRepository.existsByUserEmail(email);
-
-
 
         if (!isExists){
 
@@ -46,7 +42,6 @@ public class UserService {
 
             // Base64로 인코딩하여 JWT 시크릿 키 생성
             String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
-
 
 
             // 서울시간으로 가져오기 위해 + 9시간
