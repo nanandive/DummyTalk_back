@@ -74,8 +74,7 @@ public class UserController {
     public ResponseEntity<ResponseDTO> findByUser(@PathVariable String userId){
 
         UserDTO result = userService.findByUser(userId);
-        log.error("result=====>{}", result);
-        
+
         return  ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseDTO(HttpStatus.OK, "유저 조회에 성공하였습니다.", result));

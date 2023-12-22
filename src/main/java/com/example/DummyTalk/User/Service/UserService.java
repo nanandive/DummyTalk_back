@@ -147,7 +147,6 @@ public class UserService extends AESUtil {
     public UserDTO  findByUser(String userId){
 
         User user = userRepository.findById(Long.parseLong(userId)).get();
-        log.error("user=====>{}", user);
 
         return modelMapper.map(user, UserDTO.class);
     }
