@@ -1,10 +1,10 @@
 package com.example.DummyTalk.Jwt;
 
 
+import com.example.DummyTalk.AES.AESUtil;
 import com.example.DummyTalk.Exception.TokenException;
 import com.example.DummyTalk.User.DTO.TokenDTO;
 import com.example.DummyTalk.User.Entity.User;
-import com.example.DummyTalk.User.Service.UserService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -21,13 +21,11 @@ import java.util.Date;
 
 @Component
 @Slf4j
-public class TokenProvider {
+public class TokenProvider extends AESUtil {
 
     private static final String BEARER_TYPE = "Bearer";   // Bearer 토큰 사용시 앞에 붙이는 prefix문자열
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 8; // 8시간으로 설정
 
-
-//    private final Key key;                                // java.security.Key로 imort 이후 JWT의 서명(Signature) 생성에 사용된다.
     private Key key;
     private final UserDetailsService userDetailsService;  // 사용자의 인증 및 권한 정보를 가져올수 있음
 
@@ -42,10 +40,16 @@ public class TokenProvider {
 
 
     /* 1. 토큰(xxxxx.yyyyy.zzzzz) 생성 메소드 */
-    public TokenDTO generateTokenDTO(User user){
+    public TokenDTO generateTokenDTO(User user) throws Exception {
 
-        byte[] keyBytest = Decoders.BASE64.decode(user.getUserSecretKey());
-        this.key = Keys.hmacShaKeyFor(keyBytest);
+//        log.info("AESUtil.getKey() ==>{}", AESUtil.getKey());
+        
+        // AES키를 활용한 복호화
+//        String decryptJWT = AESUtil.decrypt(user.getUserSecretKey(), AESUtil.getKey());
+
+//        byte[] keyBytest = Decoders.BASE64.decode(decryptJWT);
+//        this.key = Keys.hmacShaKeyFor(keyBytest);
+        this.key = Keys.hmacShaKeyFor(user.getUserSecretKey());
 
         /* 1. 회원 아이디를 "sub"이라는 클레임으로 토큰으로 추가 */
         Claims claims = Jwts.claims().setSubject(String.valueOf(user.getUserId()));    // ex) { sub : memberId }

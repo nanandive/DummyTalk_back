@@ -35,13 +35,17 @@ public class UserDTO implements UserDetails {
 
     private String userPhone;
 
+    private String credential;
+
     private String userImgPath;
 
-    private String userSecretKey;
+    private  byte[] userSecretKey;
 
     private LocalDateTime createAt;
 
     private LocalDateTime updateAt;
+
+    private String nationalLanguage;
 
 
     @Override
