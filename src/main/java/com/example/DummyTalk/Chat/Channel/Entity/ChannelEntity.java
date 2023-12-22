@@ -31,6 +31,16 @@ public class ChannelEntity extends BaseTimeEntity {
     @Column(name = "server_id", nullable = false)
     private long serverId;
 
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ChannelType channelType; // 채널 타입 필드
+
+    public enum ChannelType {
+        VOICE, TEXT // 채널 타입: 음성, 텍스트
+    }
+
+
     /* 서버와의 연관관계 (자식) */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "server_id", updatable = false, insertable = false)
@@ -40,4 +50,5 @@ public class ChannelEntity extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "channelId", fetch = FetchType.LAZY)
     private List<ChatDataEntity> chatDataEntityList = new ArrayList<>();
+
 }

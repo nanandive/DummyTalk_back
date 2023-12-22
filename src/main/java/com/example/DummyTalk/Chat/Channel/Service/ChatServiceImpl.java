@@ -117,6 +117,8 @@ public class ChatServiceImpl implements ChatService {
         return null;
     }
 
+
+
     /* 채널 아이디로 조회한 채널 리스트 */
     public List<MessageHistoryDto> findChatData(int channelId, String userId) {
 
@@ -150,14 +152,9 @@ public class ChatServiceImpl implements ChatService {
         return response;
     }
 
-    @Override
-    public int saveAudioChatData(SendChatDto sendChatDto) {
-        // 오디오 채팅 데이터를 저장하는 로직을 여기에 구현합니다.
-        // 예시:
-        // 1. sendChatDto에서 필요한 정보를 추출합니다.
-        // 2. 채팅 데이터를 데이터베이스에 저장합니다.
-        // 3. 필요한 경우 추가적인 처리를 수행합니다.
-        return 0;
-    }
 
+    @Override
+    public int saveAudioChatData(SendChatDto message) {
+        return 0;
+    }//나중에 다 지우기
 }

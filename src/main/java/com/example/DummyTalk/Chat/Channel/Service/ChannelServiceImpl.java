@@ -34,7 +34,6 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
 
-
     private ChannelEntity convertToEntity(ChannelDto channelDto) {
         return ChannelEntity.builder()
                 .serverId(channelDto.getServerId())
@@ -80,4 +79,58 @@ public class ChannelServiceImpl implements ChannelService {
                 .channelName(channelEntity.getChannelName())
                 .build();
     }
+
+
+
+
+    /*채널 타입 로직추가 */
+    public void createChannelType(ChannelDto channelDto) {
+        ChannelEntity.ChannelType type = channelDto.getChannelType();
+        if (type == null) {
+            type = ChannelEntity.ChannelType.TEXT; // 기본값 설정
+        }
+
+        ChannelEntity channelEntity = ChannelEntity.builder()
+                .channelName(channelDto.getChannelName())
+                .serverId(channelDto.getServerId())
+                .channelType(type)
+                .build();
+
+        channelRepository.save(channelEntity);
+    }
+
+
+
+    /*채널타입 라우터 불러오기*/
+    public ChannelDto getChannelType(Long channelId) {
+        ChannelEntity channelEntity = channelRepository.findById(channelId).orElse(null);
+        if (channelEntity != null) {
+            return new ChannelDto(channelEntity.getChannelId(),
+                    channelEntity.getServerId(),
+                    channelEntity.getChannelName(),
+                    channelEntity.getChannelCount(),
+                    channelEntity.getChannelType());
+        }
+        return null;
+    }
+
 }
+
+
+
+
+
+//    public void createChannel(ChannelDto channelDto) {
+//        ChannelEntity channelEntity = ChannelEntity.builder()
+//                .channelId(channelDto.getChannelId())
+//                .serverId(channelDto.getServerId())
+//                .channelName(channelDto.getChannelName())
+//                .channelCount(channelDto.getChannelCount())
+//                .channelType(channelDto.getChannelType()) // channelType 설정
+//                .build();
+//
+//        channelRepository.save(channelEntity);
+//    }
+
+
+

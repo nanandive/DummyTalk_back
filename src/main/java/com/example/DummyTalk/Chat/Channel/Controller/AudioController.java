@@ -32,7 +32,7 @@ public class AudioController {
     @SendTo("/topic/audio/{channelId}")
     public void receiveAudio(@Payload byte[] data) {
         
-        String directoryPath = "C:\\Audio";
+        String directoryPath = "C:\\Users\\82106\\ee\\바탕 화면\\Audio";
         Path path = Paths.get(directoryPath, "audioFile.wav");
         try (FileOutputStream out = new FileOutputStream(path.toFile())) {
             out.write(data);
@@ -46,15 +46,16 @@ public class AudioController {
 
     @PostMapping("/upload")
     public void postMethodName(@ModelAttribute MultipartFile file) {
-        String uploadPath = "C:\\Audio";
+        String uploadPath = "C:\\Users\\82106\\ee\\바탕 화면\\Audio\\";
         String fileName = file.getOriginalFilename();
 
         try {
             // 파일 저장
-            file.transferTo(new File(uploadPath + fileName));
+            file.transferTo(new File(uploadPath + fileName + ".webm"));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     
 }
+
