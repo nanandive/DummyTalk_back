@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+
+
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByUserEmail(String email);
@@ -16,4 +18,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByUserId(Long sender);
 
+    User findByCredential(String credential);
 }
