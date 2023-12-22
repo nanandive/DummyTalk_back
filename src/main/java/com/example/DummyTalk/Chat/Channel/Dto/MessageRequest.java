@@ -24,8 +24,9 @@ public class MessageRequest {
     private String type;
     private String filePath;
     private Long imageId;
-    private MultipartFile fileInfo;
     private List<MessageRequest> chatList;
+    private MultipartFile[] fileInfo;
+    private MultipartFile file;
 
     /* 오디오 저장 */
     private String language;

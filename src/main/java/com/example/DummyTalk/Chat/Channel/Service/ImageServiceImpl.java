@@ -19,9 +19,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -55,17 +57,17 @@ public class ImageServiceImpl implements ImageService {
                 .build();
     }
 
-    private ChatDataEntity convertToChatEntity(User user, ChannelEntity channel, ImageChatDto imageDto) {
-
+    private ChatDataEntity convertToChatEntity(User user, ChannelEntity channel, MessageRequest imageDto) {
         return ChatDataEntity.builder()
                 .sender(user)
                 .channelId(channel)
-                .message(imageDto.getSavedFileName())
+                .message(imageDto.getMessage())
                 .type("IMAGE")
                 .build();
     }
 
-    private MessageRequest convertToChatDto(ChatDataEntity chat) {
+    private MessageRequest convertToChatDto(ChatDataEntity chat, MessageRequest imageDto, int index) {
+        log.info("\n!!!!!!!!!!!convertToChatDto : \n" + imageDto);
         return MessageRequest.builder()
                 .chatId(chat.getChatId())
                 .nickname(chat.getSender().getNickname())
@@ -74,16 +76,21 @@ public class ImageServiceImpl implements ImageService {
                 .timeStamp(chat.getCreatedAt())
                 .channelId(chat.getChannelId().getChannelId().intValue())
                 .message(chat.getMessage())
+                .filePath(imageDto.getFilePath())
+                .file(imageDto.getFileInfo()[index])
+                .imageId(imageDto.getImageId())
                 .build();
     }
 
-    private ImageChatDto convertToImageDto(ImageEntity imageEntity, ImageChatDto imageDto) {
-        return ImageChatDto.builder()
+    private MessageRequest convertToImageDto(ImageEntity imageEntity, ImageChatDto imageDto) {
+        return MessageRequest.builder()
                 .channelId(imageEntity.getChannelId().intValue())
-                .userId(imageDto.getUserId())
                 .nickname(imageDto.getNickname())
                 .filePath(imageEntity.getFilePath())
-                .savedFileName(imageEntity.getSavedFileName())
+                .message(imageEntity.getSavedFileName())
+                .imageId(imageEntity.getImageId())
+                .sender(imageDto.getUserId())
+                .fileInfo(imageDto.getFileInfo())
                 .build();
     }
 
@@ -103,6 +110,34 @@ public class ImageServiceImpl implements ImageService {
      * uuid_기존파일명.확장자
      * @return SendChatDto
      */
+//    @Override
+//    public List<MessageRequest> saveImage(ImageChatDto imageDto) {
+//
+//        if (imageDto.getFileInfo() == null || imageDto.getFileInfo().length == 0)
+//            throw new ChatFailException("이미지 파일이 없습니다.");
+//
+//        List<MessageRequest> imageChatList;
+//
+//        try {
+//            imageChatList = new ArrayList<>();
+//            for (MultipartFile file : imageDto.getFileInfo()) {
+//
+//                ImageDto saveFile = FileUploadUtils.saveFile(absolutePath, file.getOriginalFilename(), file);
+//
+//                ImageEntity imageEntity = imageRepository.save(convertToImageEntity(imageDto.getChannelId(), saveFile));
+//
+//                MessageRequest saveImageDto = convertToImageDto(imageEntity, imageDto);
+//                imageChatList.add(saveImageToChat(saveImageDto, index));
+//                log.info("\n귀신 saveImageDto : \n" + saveImageDto);
+//            }
+//                log.info("\n귀신 saveImageDto : \n" + imageChatList);
+//        } catch (Exception e) {
+//            throw new ChatFailException( "파일 저장에 실패하였습니다.");
+//        }
+//
+//        return imageChatList.isEmpty() ? null : imageChatList;
+//    }   // 이미지 저장 후 채팅 데이터로 저장
+
     @Override
     public List<MessageRequest> saveImage(ImageChatDto imageDto) {
 
@@ -112,40 +147,45 @@ public class ImageServiceImpl implements ImageService {
         List<MessageRequest> imageChatList;
 
         try {
-
             imageChatList = new ArrayList<>();
-            for (MultipartFile file : imageDto.getFileInfo()) {
 
-                ImageDto saveFile = FileUploadUtils.saveFile(absolutePath, file.getOriginalFilename(), file);
+            IntStream.range(0, imageDto.getFileInfo().length)
+                    .forEach(index -> {
+                        MultipartFile file = imageDto.getFileInfo()[index];
+                        ImageDto saveFile = null;
+                        try {
+                            saveFile = FileUploadUtils.saveFile(absolutePath, file.getOriginalFilename(), file);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        ImageEntity imageEntity = imageRepository.save(convertToImageEntity(imageDto.getChannelId(), saveFile));
+                        MessageRequest saveImageDto = convertToImageDto(imageEntity, imageDto);
+                        imageChatList.add(saveImageToChat(saveImageDto, index));
+//                        log.info("\n귀신 saveImageDto : \n" + saveImageDto);
+                    });
 
-                ImageEntity imageEntity = convertToImageEntity(imageDto.getChannelId(), saveFile);
-                imageRepository.save(imageEntity);
-
-                ImageChatDto saveImageDto = convertToImageDto(imageEntity, imageDto);
-                imageChatList.add(saveImageToChat(saveImageDto));
-            }
+            log.info("\n귀신 saveImageDto : \n" + imageChatList);
         } catch (Exception e) {
-            throw new ChatFailException( "파일 저장에 실패하였습니다.");
+            throw new ChatFailException("파일 저장에 실패하였습니다.");
         }
 
         return imageChatList.isEmpty() ? null : imageChatList;
-    }   // 이미지 저장 후 채팅 데이터로 저장
-
+    }
 
 
 
     // 이미지 -> 채팅 데이터로 저장 (채팅 데이터에 이미지 정보 저장)
-    public MessageRequest saveImageToChat(ImageChatDto image) {
+    public MessageRequest saveImageToChat(MessageRequest image, int index) {
 
-        User user = findUserById(image.getUserId());
+        User user = findUserById(image.getSender());
         ChannelEntity channel = findChannelById(image.getChannelId());
 
         try {
             ChatDataEntity chatEntity = convertToChatEntity(user, channel, image);
             chatRepository.save(chatEntity);
-            log.info("\nsaveImage 배열 반환값 : \n" + image);
+//            log.info("\nsaveImage 배열 반환값 : \n" + image);
 
-            return convertToChatDto(chatEntity);
+            return convertToChatDto(chatEntity, image, index);
         } catch (Exception e) {
             throw new ChatFailException("이미지 저장에 실패하였습니다.");
         }
