@@ -70,7 +70,7 @@ public class UserController {
                 .body(new ResponseDTO(HttpStatus.OK, "구글 로그인에 성공하셨습니다.", result));
     }
 
-    @GetMapping("user/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<ResponseDTO> findByUser(@PathVariable String userId){
 
         UserDTO result = userService.findByUser(userId);
@@ -80,14 +80,23 @@ public class UserController {
                 .body(new ResponseDTO(HttpStatus.OK, "유저 조회에 성공하였습니다.", result));
     }
 
-    @GetMapping("friend/{userId}")
+    @PostMapping("/friend/{userId}")
     public ResponseEntity<ResponseDTO> findByUser(@PathVariable String userId,
                                                   @RequestBody Map<String, String> email){
 
-        FriendDTO result = userService.saveFriend(userId, email);
+        log.info("TEST");
 
-        return  ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ResponseDTO(HttpStatus.OK, "친구 추가에 성공하셨습니다.", result));
+        try{
+            FriendDTO result = userService.saveFriend(userId, email);
+
+            return  ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDTO(HttpStatus.OK, "친구 추가에 성공하셨습니다.", result));
+
+        } catch (RuntimeException e){
+            return  ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null));
+        }
     }
 }

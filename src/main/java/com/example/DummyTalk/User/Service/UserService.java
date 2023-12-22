@@ -168,8 +168,9 @@ public class UserService extends AESUtil {
             } else {
                 Friend addFriend = new Friend();
                 addFriend.setUserId(LuserId); // 친구요청을 보낸 사람
-                addFriend.setFriendId(friend.getUserId()); // 친구요청을 받은 사람
-                addFriend.setAccept("N");  // 수락 대기중
+                addFriend.setFriendUserId(friend.getUserId()); // 친구요청을 받은 사람
+//                addFriend.setAccept("N");  // 수락 대기중
+                addFriend.setAccept("Y");  // 자동 수락
 
                 Friend resultFriend = friendRepository.save(addFriend);
 

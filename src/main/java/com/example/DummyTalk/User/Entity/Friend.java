@@ -28,6 +28,6 @@ public class Friend {
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private User user; // 수락 여부 Y / N
+    private User user;
 
 }
