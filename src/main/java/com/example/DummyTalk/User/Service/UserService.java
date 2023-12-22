@@ -4,6 +4,7 @@ import com.example.DummyTalk.AES.AESUtil;
 import com.example.DummyTalk.Jwt.TokenProvider;
 import com.example.DummyTalk.User.DTO.TokenDTO;
 import com.example.DummyTalk.User.DTO.UserDTO;
+import com.example.DummyTalk.User.Entity.Friend;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -33,6 +34,7 @@ import java.util.zip.*;
 public class UserService extends AESUtil {
 
     private final UserRepository userRepository;
+//    private final FriendRepository friendRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
