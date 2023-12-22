@@ -34,7 +34,6 @@ import java.util.Map;
 public class ImageUploadController {
 
     private final ImageService imageService;
-    private final ObjectMapper objectMapper;
 
     /***
      * 이미지 저장
@@ -75,21 +74,21 @@ public class ImageUploadController {
 
 
         try {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        Map<String, String> map = objectMapper.convertValue(chat, new TypeReference<Map<String, String>>() {}); // (3)
-        params.setAll(map); // (4)
-        log.info("\n귀신 !!!! imageEmbedded    : {}", params);
-
-//            log.info("\n귀신 !!!! imageEmbedded    : {}", body);
-
-            WebClient.create()
-                    .post()
-                    .uri("http://localhost:8000/uploadImage")
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-                    .body(BodyInserters.fromMultipartData(params))
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .subscribe(response -> System.out.println("Response: " + response));
+//        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+//        Map<String, String> map = objectMapper.convertValue(chat, new TypeReference<Map<String, String>>() {}); // (3)
+//        params.setAll(map); // (4)
+//        log.info("\n귀신 !!!! imageEmbedded    : {}", params);
+//
+////            log.info("\n귀신 !!!! imageEmbedded    : {}", body);
+//
+//            WebClient.create()
+//                    .post()
+//                    .uri("http://localhost:8000/uploadImage")
+//                    .contentType(MediaType.MULTIPART_FORM_DATA)
+//                    .body(BodyInserters.fromMultipartData(params))
+//                    .retrieve()
+//                    .bodyToMono(String.class)
+//                    .subscribe(response -> System.out.println("Response: " + response));
 
         } catch (Exception e) {
             log.error("{}", e);
