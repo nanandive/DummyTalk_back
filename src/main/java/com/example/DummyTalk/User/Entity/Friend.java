@@ -14,6 +14,7 @@ public class Friend {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "friend_id")
     private Long friendId;
 
     @Column(name = "user_id")
@@ -24,4 +25,9 @@ public class Friend {
 
     @Column(name = "accept")
     private String accept; // 수락 여부 Y / N
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
+
 }
