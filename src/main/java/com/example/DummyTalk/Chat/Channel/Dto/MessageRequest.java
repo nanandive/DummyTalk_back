@@ -23,7 +23,7 @@ public class MessageRequest {
     private LocalDateTime timeStamp;
     private String type;
     private String filePath;
-    private Long imageId;
+    private int imageId;
     private List<MessageRequest> chatList;
     private MultipartFile[] fileInfo;
     private MultipartFile file;

@@ -161,7 +161,6 @@ public class ChatServiceImpl implements ChatService {
                 .doOnTerminate(() -> cdl.countDown())
                 .subscribe((res) -> response.setMessageResponse(res.getNickname(), res.getStatus(), res.getChat()));
 
-
         log.info("{}", response);
 
         try {

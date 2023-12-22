@@ -88,7 +88,7 @@ public class ImageServiceImpl implements ImageService {
                 .nickname(imageDto.getNickname())
                 .filePath(imageEntity.getFilePath())
                 .message(imageEntity.getSavedFileName())
-                .imageId(imageEntity.getImageId())
+                .imageId(imageEntity.getImageId().intValue())
                 .sender(imageDto.getUserId())
                 .fileInfo(imageDto.getFileInfo())
                 .build();

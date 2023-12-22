@@ -2,7 +2,16 @@ package com.example.DummyTalk.Chat.Channel.Controller;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ImageChatDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Resource;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -10,10 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import com.example.DummyTalk.Chat.Channel.Service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/img")
 @RestController
@@ -22,6 +34,7 @@ import java.util.List;
 public class ImageUploadController {
 
     private final ImageService imageService;
+    private final ObjectMapper objectMapper;
 
     /***
      * 이미지 저장
@@ -38,10 +51,10 @@ public class ImageUploadController {
         log.info("\nimageEmbedded saveImageToChat    : {}", saveImageToChat);
 
         try {
-        String response = imageEmbedded(saveImageToChat);
-        if (response.equals("200")) {
-            return new MessageResponse(saveImageToChat.get(0).getNickname(), "이미지 전송 성공", saveImageToChat);
-        }
+            String response = imageEmbedded(saveImageToChat);
+            if (response.equals("200")) {
+                return new MessageResponse(saveImageToChat.get(0).getNickname(), "이미지 전송 성공", saveImageToChat);
+            }
 
         } catch (Exception e) {
             log.error("{}", e);
@@ -58,30 +71,64 @@ public class ImageUploadController {
      * 1. 이미지 저장
      * 2. 이미지 저장 성공 시, 채팅방에 이미지 전송
      */
-    public static String imageEmbedded(List<MessageRequest> chat) {
-        log.info("\n귀신 !!!! imageEmbedded    : {}", chat);
+    public String imageEmbedded(List<MessageRequest> chat) {
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        for(MessageRequest messageRequest : chat) {
-            body.add("imageId", messageRequest.getImageId());
-            body.add("channelId", messageRequest.getChannelId());
-            body.add("file", messageRequest.getFile());
-            body.add("filePath", messageRequest.getFilePath());
+
+        try {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        Map<String, String> map = objectMapper.convertValue(chat, new TypeReference<Map<String, String>>() {}); // (3)
+        params.setAll(map); // (4)
+        log.info("\n귀신 !!!! imageEmbedded    : {}", params);
+
+//            log.info("\n귀신 !!!! imageEmbedded    : {}", body);
+
+            WebClient.create()
+                    .post()
+                    .uri("http://localhost:8000/uploadImage")
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .body(BodyInserters.fromMultipartData(params))
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .subscribe(response -> System.out.println("Response: " + response));
+
+        } catch (Exception e) {
+            log.error("{}", e);
         }
-        log.info("\n귀신 !!!! imageEmbedded    : {}", body);
 
-        String response = WebClient.create()
-                .post()
-                .uri("http://localhost:8000/uploadImage")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData(body))
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-
-        log.info("{}", response);
-
-        return response;
+        return "response";
     }
+//    public static String imageEmbedded(List<MessageRequest> chat) {
+//        log.info("\n귀신 !!!! imageEmbedded    : {}", chat);
+//
+//        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+//
+//
+//        for (MessageRequest messageRequest : chat) {
+////            builder.part("channelId", chat.get(0).getChannelId());
+////            builder.part("imageId", messageRequest.getImageId());
+////            builder.part("file", messageRequest.getFile());
+////            builder.part("filePath", messageRequest.getFilePath());
+//
+//        }
+//
+//        MultiValueMap<String, HttpEntity<?>> multipartBody = builder.build();
+//
+//        log.info("\n귀신 !!!! imageEmbedded    : {}", multipartBody);
+//
+//        WebClient.create()
+//                .post()
+//                .uri("http://localhost:8000/uploadImage")
+//                .accept(MediaType.APPLICATION_JSON)
+//                .contentType(MediaType.MULTIPART_FORM_DATA)
+//                .bodyValue(multipartBody)
+//                .retrieve()
+//                .bodyToMono(String.class)
+//                .block();
+//
+////        log.info("{}", response);
+//
+//        return "200";
+//    }
 }
+
 
