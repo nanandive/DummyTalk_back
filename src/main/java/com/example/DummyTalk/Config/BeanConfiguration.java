@@ -12,8 +12,6 @@ public class BeanConfiguration {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-
-
         return modelMapper;
     }
 
@@ -22,6 +20,5 @@ public class BeanConfiguration {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
 }

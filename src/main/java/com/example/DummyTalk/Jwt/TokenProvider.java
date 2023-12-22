@@ -54,6 +54,7 @@ public class TokenProvider extends AESUtil {
         Claims claims = Jwts.claims().setSubject(String.valueOf(user.getUserId()));    // ex) { sub : memberId }
 
         claims.put("nickname", user.getNickname());
+        claims.put("userName", user.getName());
         claims.put("national_language", user.getNationalLanguage());
 
         long now = System.currentTimeMillis();  // 현재시간을 밀리세컨드단위로 가져옴

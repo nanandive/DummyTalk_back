@@ -60,6 +60,8 @@ java {
         /* 로그인 인증 메일 */
         implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+        implementation 'commons-io:commons-io:2.15.1'
+
 
         tasks.named('bootBuildImage') {
             builder = 'paketobuildpacks/builder-jammy-base:latest'

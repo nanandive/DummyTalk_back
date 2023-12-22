@@ -10,5 +10,4 @@ import lombok.ToString;
 public class EmbeddingImageDto {
     private Long id;
     private String emText;
-
 }

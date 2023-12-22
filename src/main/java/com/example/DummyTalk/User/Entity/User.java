@@ -2,6 +2,7 @@ package com.example.DummyTalk.User.Entity;
 
 
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
+import com.example.DummyTalk.User.Repository.UserRepository;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -11,8 +12,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.annotation.CreatedDate;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,7 +73,6 @@ public class User {
     private String nationalLanguage;
 
     /* 유저와 서버의 관계 */
-    @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChat> userChats = new ArrayList<>();
 
