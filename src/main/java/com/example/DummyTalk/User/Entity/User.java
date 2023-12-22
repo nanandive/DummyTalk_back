@@ -31,20 +31,11 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@SequenceGenerator(
-        name = "User_Id",
-        sequenceName = "SEQ_User_Id",
-        initialValue = 1,
-        allocationSize = 1
-)
 public class User {
 
 
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY,
-            generator = "MAIL_NO"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
@@ -63,11 +54,14 @@ public class User {
     @Column(name = "user_phone")
     private String userPhone;
 
+    @Column(name= "credential", length = 500)
+    private String credential;
+
     @Column(name = "user_img_path")
     private String userImgPath;
 
     @Column(name = "user_secret_key")
-    private String userSecretKey;
+    private byte[] userSecretKey;
 
     @Column(name = "create_at")
     private LocalDateTime createAt;

@@ -68,6 +68,7 @@ public class ImageUploadController {
             body.add("file", messageRequest.getFile());
             body.add("filePath", messageRequest.getFilePath());
         }
+        log.info("\n귀신 !!!! imageEmbedded    : {}", body);
 
         String response = WebClient.create()
                 .post()

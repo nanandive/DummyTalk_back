@@ -156,7 +156,7 @@ public class ImageServiceImpl implements ImageService {
                         try {
                             saveFile = FileUploadUtils.saveFile(absolutePath, file.getOriginalFilename(), file);
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            e.printStackTrace();
                         }
                         ImageEntity imageEntity = imageRepository.save(convertToImageEntity(imageDto.getChannelId(), saveFile));
                         MessageRequest saveImageDto = convertToImageDto(imageEntity, imageDto);

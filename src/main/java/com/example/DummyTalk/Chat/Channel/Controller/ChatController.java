@@ -1,5 +1,6 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
+import com.example.DummyTalk.Chat.Channel.Dto.ChatDataDto.MessageType;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
 import com.example.DummyTalk.Chat.Channel.Service.ChatService;
@@ -15,7 +16,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Slf4j
@@ -25,6 +25,7 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
+
 
     /*** 웹소켓으로 들어온 메시지 수신 및 발신
      * @param message SendChatDto: 클라이언트에서 전송된 채팅 메시지 데이터
@@ -39,9 +40,9 @@ public class ChatController {
             , @DestinationVariable String channelId) {
         log.info("\n handleMessage message   : {}", message);
 
-        if (message.getAudioUrl() != null && !message.getAudioUrl().isEmpty()) {
-            int audioChatId = chatService.saveAudioChatData(message);
-            message.setAudioChatId(audioChatId);
+        if (message.getType().equals(MessageType.AUDIO.toString())) {
+            // int audioChatId = chatService.saveAudioChatData(message);
+            // message.setAudioChatId(audioChatId);
             return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message);
         }
 

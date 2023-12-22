@@ -24,6 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 @Service
@@ -148,15 +149,27 @@ public class ChatServiceImpl implements ChatService {
     /* Chat 번역 */
     public MessageResponse translateMessage(MessageRequest chat, String nationLanguage) {
 
-        MessageResponse response = WebClient.create()
+        CountDownLatch cdl = new CountDownLatch(1);
+        MessageResponse response = new MessageResponse();
+        WebClient.create()
                 .post()
                 .uri("http://localhost:8000/api/v1/trans/" + nationLanguage)
                 .header("Content-Type", "application/json")
                 .body(BodyInserters.fromValue(chat))
                 .retrieve()
                 .bodyToMono(MessageResponse.class)
-                .block();
+                .doOnTerminate(() -> cdl.countDown())
+                .subscribe((res) -> response.setMessageResponse(res.getNickname(), res.getStatus(), res.getChat()));
+
+
         log.info("{}", response);
+
+        try {
+            cdl.await();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return response;
     }
 

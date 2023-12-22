@@ -33,4 +33,11 @@ public class MessageResponse {
         this.status = status;
     }
 
+    public void setMessageResponse(String nickname, String status, MessageRequest chat) {
+
+        this.chat = chat;
+        this.status = status;
+        this.nickname = nickname;
+    }
+
 }
