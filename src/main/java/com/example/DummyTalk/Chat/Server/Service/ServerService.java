@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +42,8 @@ public class ServerService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final UserChatRepository userChatRepository;
+
+    private Map<String, ServerEntity> server = new ConcurrentHashMap<>();
 
     /* 서버리스트 */
     public List<ServerDto> findServerIdByUserId(Long userId) {
@@ -194,19 +197,19 @@ public class ServerService {
         serverRepository.deleteById(id);
     }
 
-//    /* 서버에 접속중인 유저 수 제한 */
-//    public void updateMaxUser(Long id) {
-//        ServerEntity serverEntity = serverRepository.findById(id).orElseThrow(()->
-//                new RuntimeException(">>>>>>>>>>>>>>>>>>>>>>>(서비스)서버를 찾을수 없다"));
-//        int currentUsers = serverEntity.getcurrentUsers();
-//        int maxUser = serverEntity.getMaxUsers();
-//
-//        if(currentUsers < maxUser) {
-//            serverEntity.setcurrentUsers(currentUsers + 1);
-//            serverRepository.save(serverEntity);
-//        }else {
-//            throw new RuntimeException(">>>>>>>>>>>>>>>>(서비스) 서버 최대 사용자 수 초과");
-//        }
+//    /* 서버 유저 초대 */
+//    public void addParticipants(Long userId) {
+//        serverRepository.findById(userId);
 //    }
+//
+//
+//    /* 서버 접속 유저 제한 */
+//    public boolean checkAccess(Long serverId, Long userId) {
+//        serverRepository.find
+//
+//    }
+
+
+
 
 }

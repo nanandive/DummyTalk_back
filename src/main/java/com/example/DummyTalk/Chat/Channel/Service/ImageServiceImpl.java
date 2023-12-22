@@ -139,6 +139,7 @@ public class ImageServiceImpl implements ImageService {
 
         User user = findUserById(image.getUserId());
         ChannelEntity channel = findChannelById(image.getChannelId());
+        System.out.println(">>>>>>>>(서비스)" +image );
 
         try {
             ChatDataEntity chatEntity = convertToChatEntity(user, channel, image);

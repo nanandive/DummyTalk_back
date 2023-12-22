@@ -2,7 +2,9 @@ package com.example.DummyTalk.User.Entity;
 
 
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
+import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Repository.UserRepository;
+import com.example.DummyTalk.User.Service.UserService;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -76,5 +78,26 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChat> userChats = new ArrayList<>();
 
+    @Component
+    @RequiredArgsConstructor
+    public static class UserInit implements CommandLineRunner {
+        private final UserRepository userRepository;
 
+        private final UserService userService;
+
+        @Override
+        public void run(String... args) throws Exception {
+            for (int i = 1; i <= 3; i++) {
+                UserDTO userDTO = UserDTO.builder()
+                        .name("유저"+i)
+                        .userEmail(i+"test@test.com")
+                        .password("1234")
+                        .nickname("유저"+i)
+                        .userPhone("123"+i)
+                        .build();
+
+                userService.signUp(userDTO);
+            }
+        }
+    }
 }
