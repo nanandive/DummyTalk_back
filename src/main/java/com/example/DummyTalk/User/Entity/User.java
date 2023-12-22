@@ -2,7 +2,9 @@ package com.example.DummyTalk.User.Entity;
 
 
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
+import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Repository.UserRepository;
+import com.example.DummyTalk.User.Service.UserService;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -80,7 +82,6 @@ public class User {
     @RequiredArgsConstructor
     public static class UserInit implements CommandLineRunner {
         private final UserRepository userRepository;
-        private final PasswordEncoder passwordEncoder;
 
         private final UserService userService;
 
@@ -90,12 +91,11 @@ public class User {
                 UserDTO userDTO = UserDTO.builder()
                         .name("유저"+i)
                         .userEmail(i+"test@test.com")
-                        .password(("1234"))
+                        .password("1234")
                         .nickname("유저"+i)
                         .userPhone("123"+i)
-                        .userSecretKey("다뚫리쥬")
-                        .createAt(LocalDateTime.now())
                         .build();
+
                 userService.signUp(userDTO);
             }
         }

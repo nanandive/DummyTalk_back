@@ -1,7 +1,9 @@
 package com.example.DummyTalk.Chat.Server.Controller;
 
+import java.security.Principal;
 import java.util.List;
 
+import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Entity.UserChat;
 import org.springframework.http.HttpStatus;
@@ -97,7 +99,7 @@ public class ServerController {
         return ResponseEntity.ok(channelDtoList);
 
     }
-
+    /* 채널 삭제 */
     @DeleteMapping("/{serverId}/channel/{channelId}/delete")
     public ResponseEntity<List<ChannelDto>> deleteChannel(@PathVariable Long serverId, @PathVariable Long channelId) {
         System.out.println("채널 삭제 (컨트롤러) >>>>>> :" + channelId);
@@ -105,7 +107,18 @@ public class ServerController {
         return ResponseEntity.ok().build();
     }
 
+    /* 서버 접속 허용 */
 
+
+//    /* 접속제한 */
+//    @PostMapping("/joinUser/{serverId}/{userId}")
+//    public ResponseEntity<?> joinServer(@PathVariable Long serverId, @PathVariable Long userId){
+//        if(!serverService.checkAccess(serverId, userId)){
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("유저 접속 실패");
+//        }
+//        return ResponseEntity.ok("유저 서버 접속 성공");
+//
+//    }
 
 
 
