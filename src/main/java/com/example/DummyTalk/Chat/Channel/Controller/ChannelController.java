@@ -50,8 +50,9 @@ public class ChannelController {
 
     /* 채널명 조회 */
     @GetMapping("/{channelId}")
-    public ResponseEntity<ChannelDto> getChannelName(@PathVariable int channelId) {
-        return ResponseEntity.ok(channelService.getChannelName((long)channelId));
+    public ResponseEntity<ResponseDTO> getChannelName(@PathVariable int channelId) {
+        return ResponseEntity.ok()
+                .body(new ResponseDTO(HttpStatus.OK,"서버 이름 조회 ",channelService.getChannelName((long)channelId)));
     }
 
 

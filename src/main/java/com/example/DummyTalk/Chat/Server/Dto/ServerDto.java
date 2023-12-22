@@ -17,7 +17,8 @@ public class ServerDto {
     private String serverName;
     private String invitedUser;
     private String userName;
-    private int userCount;
+    private int maxUsers;
+    private int currentUsers;
 
     private Long userId;
 
