@@ -56,12 +56,19 @@ java {
 
         implementation group: 'com.google.api-client', name: 'google-api-client', version: '2.2.0'
 
-
         /* 로그인 인증 메일 */
         implementation 'org.springframework.boot:spring-boot-starter-mail'
 
         implementation 'commons-io:commons-io:2.15.1'
 
+        /* AWS */
+//        implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+        implementation(platform("software.amazon.awssdk:bom:2.21.20"))
+        implementation("software.amazon.awssdk:s3")
+//        implementation 'com.amazonaws:aws-java-sdk-s3:1.12.42'
+/* AWS S3 */
+//        implementation 'com.amazonaws:aws-java-sdk-s3:1.11.1000'
 
         tasks.named('bootBuildImage') {
             builder = 'paketobuildpacks/builder-jammy-base:latest'

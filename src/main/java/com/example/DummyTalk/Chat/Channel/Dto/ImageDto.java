@@ -21,4 +21,10 @@ public class ImageDto {
     private MultipartFile[] fileInfo;
     @JsonIgnore
     private List<EmbeddingImageDto> embeddingImageDtoList ;
+
+    public ImageDto(String awsUrl, String originalFileName, String savedFileName) {
+        this.filePath = awsUrl;
+        this.originalFileName = originalFileName;
+        this.savedFileName = savedFileName;
+    }
 }
