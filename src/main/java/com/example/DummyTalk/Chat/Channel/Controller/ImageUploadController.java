@@ -5,6 +5,7 @@ import com.example.DummyTalk.Chat.Channel.Dto.ImageChatDto;
 import com.example.DummyTalk.Chat.Channel.Dto.ImageEmbeddingRequestDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.DummyTalk.Chat.Channel.Service.ImageService;
@@ -35,6 +36,7 @@ public class ImageUploadController {
     public MessageResponse saveImage(@ModelAttribute ImageChatDto imageDto) {
 
         /* AWS S3 및 DB에 이미지 저장 */
+//        List<ImageEmbeddingRequestDto> saveImageList = imageService.saveImage(imageDto);
         List<ImageEmbeddingRequestDto> saveImageList = imageService.saveImage(imageDto);
         log.info("\nImageUploadController saveImage    : {}", saveImageList);
 

@@ -84,10 +84,9 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /****
-     * 이미지 저장 후 채팅 데이터로 저장
-     * 로컬 저장 경로 : ${chatAbsolutePath.dir}
-     * uuid_기존파일명.확장자
-     * @return SendChatDto
+     * 이미지 저장 후 채팅 데이터로 저장 (processImage -> saveImageToDatabase -> saveImageToChat)
+     * @param imageDto : channelId, userId, imageUrl, Multipart[], nickname
+     * @return List<ImageEmbeddingRequestDto> : 이미지 아이디, 파일 경로, 채널 아이디
      */
     @Transactional
     @Override
@@ -96,11 +95,20 @@ public class ImageServiceImpl implements ImageService {
         if (imageDto.getFileInfo() == null || imageDto.getFileInfo().length == 0)
             throw new ChatFailException("이미지 파일이 없습니다.");
 
-        return Arrays.stream(imageDto.getFileInfo())
+        /* 이미지 임베딩 요청을 위한 정보 적재 */
+        List<ImageEmbeddingRequestDto> saveImageList = Arrays.stream(imageDto.getFileInfo())
                 .map(file -> processImage(file, imageDto.getChannelId()))
                 .collect(Collectors.toList());
+
+        saveImageToChat(saveImageList, imageDto);
+
+        return saveImageList;
     }
 
+    /***
+     * 이미지 AWS S3 및 DB 저장
+     * @return List<ImageEmbeddingRequestDto> : 이미지 아이디, 파일 경로, 채널 아이디
+     */
     private ImageEmbeddingRequestDto processImage(MultipartFile file, int channelId) {
         try {
             ImageDto saveImage = awsS3UploadService.upload(file, BUCKET_DIR);
@@ -113,7 +121,7 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-
+    // 이미지 -> DB 저장
     private ImageEntity saveImageToDatabase(ImageDto saveImage, int channelId) {
         try {
             return imageRepository.save(convertToImageEntity(channelId, saveImage));
@@ -124,31 +132,38 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-//        return Arrays.stream(imageDto.getFileInfo())
-//                .map(file -> {
-//                    try {
-//                        // 이미지 S3에 저장
-//                        ImageDto saveImage = awsS3UploadService.upload(file, BUCKET_DIR);
-//
-//                        // 이미지 DB에 저장
-//                        ImageEntity imageEntity = imageRepository.save(convertToImageEntity(imageDto.getChannelId(), saveImage));
-//
-//                        // 이미지 임베딩 요청을 위한 정보 list에 담기
-//                        return convertToImageDto(imageEntity.getImageId(), imageDto.getFilePath(), imageEntity.getChannelId());
-//                    } catch (IOException e) {
-//                        log.error("파일을 읽어들이는데 에러가 발생했습니다.");
-//                        log.error(e.getMessage());
-//                        throw new RuntimeException(e.getMessage());
-//                    } catch (S3Exception e) {
-//                        log.error(e.getMessage());
-//                        throw new AwsFailException("AWS와 통신에 문제가 발생했습니다.");
-//                    } catch (IllegalStateException e){
-//                        log.error(e.getMessage());
-//                        throw new ChatFailException("이미지 저장에 실패하였습니다.");
-//                    }
-//                })
-//                .collect(Collectors.toList());
-//    }
+    /*** 채팅 데이터로 저장
+     * @param imageDto : 이미지 아이디, 파일 경로, 채널 아이디
+     * @param imageChatDto : 채널 아이디, 유저 아이디, 닉네임
+     * @return List<MessageRequest> : 채팅 데이터
+     */
+    public List<MessageRequest> saveImageToChat(List<ImageEmbeddingRequestDto> imageDto, ImageChatDto imageChatDto) {
+
+        User user = Optional.ofNullable(userRepository.findByUserId((long) imageChatDto.getUserId()))
+                .orElseThrow(() -> new ChatFailException("유저 조회에 실패하였습니다."));
+
+        ChannelEntity channel = Optional.ofNullable(channelRepository.findByChannelId((long) imageChatDto.getChannelId()))
+                .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
+
+        return imageDto.stream()
+                .map(chat -> saveToChatDatabase(chat, user, channel))
+                .collect(Collectors.toList());
+    }
+
+
+    // 채팅 데이터 -> DB 저장
+    private MessageRequest saveToChatDatabase(ImageEmbeddingRequestDto imageDto, User user, ChannelEntity channel){
+        try {
+            ChatDataEntity saveChat = chatRepository.save(convertToChatEntity(user, channel, imageDto.getFilePath()));
+            return convertToChatDto(saveChat);
+        } catch (Exception e) {
+            log.error("채팅 데이터를 데이터베이스에 저장하는데 에러가 발생했습니다.");
+            log.error(e.getMessage());
+            throw new ChatFailException("채팅 데이터 저장에 실패하였습니다.");
+        }
+
+    }
+
 
     /***
      * 이미지 전송
@@ -219,37 +234,4 @@ public class ImageServiceImpl implements ImageService {
 //    }
 
 
-    // 이미지 -> 채팅 데이터로 저장 (채팅 데이터에 이미지 정보 저장)
-    public List<MessageRequest> saveImageToChat(List<ImageEmbeddingRequestDto> imageDto, ImageChatDto imageChatDto) {
-
-        /* chat DB에 담기
-         * 1. list size 반복
-         * 2. chat에 필요한 정보 담기 : message, channelId, sender, type
-         * 3. dto에 builder
-         * */
-
-        User user = Optional.ofNullable(userRepository.findByUserId((long) imageChatDto.getUserId()))
-                .orElseThrow(() -> new ChatFailException("유저 조회에 실패하였습니다."));
-
-        ChannelEntity channel = Optional.ofNullable(channelRepository.findByChannelId((long) imageChatDto.getChannelId()))
-                .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
-
-        return imageDto.stream()
-                .map(chat -> saveToChatDatabase(chat, user, channel))
-                .collect(Collectors.toList());
-    }
-
-
-
-    private MessageRequest saveToChatDatabase(ImageEmbeddingRequestDto imageDto, User user, ChannelEntity channel){
-        try {
-            ChatDataEntity saveChat = chatRepository.save(convertToChatEntity(user, channel, imageDto.getFilePath()));
-            return convertToChatDto(saveChat);
-        } catch (Exception e) {
-            log.error("채팅 데이터를 데이터베이스에 저장하는데 에러가 발생했습니다.");
-            log.error(e.getMessage());
-            throw new ChatFailException("채팅 데이터 저장에 실패하였습니다.");
-        }
-
-    }
 }
