@@ -33,6 +33,6 @@ public interface ChatService {
      *  @param chatId : 채팅 아이디
      *  @return 삭제된 채팅 아이디
      */
-    Long deleteChat(int chatId);
+    Long deleteChat(int channelId, int chatId);
     int saveAudioChatData(MessageRequest message);
 }

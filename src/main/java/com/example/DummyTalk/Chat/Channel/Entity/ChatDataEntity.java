@@ -50,7 +50,7 @@ public class ChatDataEntity extends BaseTimeEntity {
 
 
     public Long delete() {
-        this.type = "DELETED";
+        this.type = "DELETE";
         return getChatId();
     }
 }

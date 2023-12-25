@@ -41,7 +41,7 @@ public class ChatServiceImpl implements ChatService {
     /* 채팅 데이터에 들어가는 유저 정보 Entity -> Dto 변환 */
     private ChatSenderDTO userToDto(User user) {
         return ChatSenderDTO.builder()
-                .sender((long) user.getUserId())
+                .sender(user.getUserId())
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .userImgPath(user.getUserImgPath())
@@ -57,14 +57,6 @@ public class ChatServiceImpl implements ChatService {
                 .sender(userToDto(chat.getSender()))
                 .type(chat.getType())
                 .timestamp(chat.getCreatedAt())
-                .build();
-    }
-
-    private ChannelParticipantDto channelParticipantToDto(ChannelParticipantEntity channelParticipant) {
-        return ChannelParticipantDto.builder()
-                .channelId(channelParticipant.getChannelId())
-                .userId(channelParticipant.getUserId())
-                .lastChatId(channelParticipant.getLastChatId())
                 .build();
     }
 
@@ -86,11 +78,11 @@ public class ChatServiceImpl implements ChatService {
     @Transactional
     public int saveChatData(MessageRequest message) {
 
-        User user = Optional.ofNullable(userRepository.findByUserId((long) message.getSender()))
-                .orElseThrow(() -> new ChatFailException("유저 조회에 실패하였습니다. "));
+        User user = userRepository.findByUserId((long) message.getSender());
+        ChannelEntity channel = channelRepository.findByChannelId((long) message.getChannelId());
 
-        ChannelEntity channel = Optional.ofNullable(channelRepository.findByChannelId((long) message.getChannelId()))
-                .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
+        if(user == null ) throw new ChatFailException("유저 조회에 실패하였습니다. ");
+        if(channel == null ) throw new ChatFailException("채널 조회에 실패하였습니다.");
 
         try {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
@@ -108,10 +100,10 @@ public class ChatServiceImpl implements ChatService {
      */
     public void checkParticipant(int channelId, Long userId) {
         ChannelParticipantEntity channel =
-                channelParticipantRepository.findByChannelIdAndUserId((long) channelId, userId);
+                channelParticipantRepository.findByChannelIdAndUserId((long)channelId, userId);
 //        if (channel == null) {
 //            throw new ChatFailException("초대 된 채널이 아닙니다.");
-//        } 비활성화
+//        }
     }
 
     /***
@@ -120,9 +112,14 @@ public class ChatServiceImpl implements ChatService {
      *  @return 삭제된 채팅 아이디
      */
     @Override
-    public Long deleteChat(int chatId) {
-        ChatDataEntity chat = Optional.ofNullable(chatRepository.findByChatId(chatId))
-                .orElseThrow(() -> new ChatFailException("오류가 발생하였습니다. 다시 시도해주세요."));
+    @Transactional
+    public Long deleteChat(int channelId, int chatId) {
+
+        ChatDataEntity chat = chatRepository.findByChannelIdAndChatId((long)channelId, (long)chatId);
+        log.info("\n deleteChat chat   : {}", chat);
+
+        if( chat == null ) throw new ChatFailException("오류가 발생하였습니다. 다시 시도해주세요.");
+
         return chat.delete();
     }
 
@@ -132,8 +129,9 @@ public class ChatServiceImpl implements ChatService {
      */
     public List<MessageHistoryDto> findChatData(int channelId) {
 
-        ChannelEntity channelEntity = Optional.ofNullable(channelRepository.findByChannelId((long) channelId))
-                .orElseThrow(() -> new ChatFailException("채널 조회에 실패하였습니다."));
+        ChannelEntity channelEntity = channelRepository.findByChannelId((long) channelId);
+
+        if (channelEntity == null) throw new ChatFailException("채널 조회에 실패하였습니다.");
 
         try {
             return chatRepository.findAllByChannelId(channelEntity).stream()

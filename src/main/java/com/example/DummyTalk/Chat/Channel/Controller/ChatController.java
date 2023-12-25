@@ -95,12 +95,15 @@ public class ChatController {
 
 
     /* 채팅 삭제 */
-    @PostMapping("del/{chatId}")
-    public ResponseEntity<ResponseDTO> deleteChat(@PathVariable int chatId) {
+    @PostMapping("/del/{channelId}/{chatId}")
+    public ResponseEntity<ResponseDTO> deleteChat(
+            @PathVariable(value="channelId") int channelId,
+            @PathVariable(value="chatId") int chatId) {
+        log.info("\n deleteChat channelId=============================\n{}", channelId);
         try {
             return ResponseEntity
                     .ok().body(new ResponseDTO(HttpStatus.OK
-                            ,"채팅 삭제 성공", chatService.deleteChat(chatId)));
+                            ,"채팅 삭제 성공", chatService.deleteChat(channelId, chatId)));
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

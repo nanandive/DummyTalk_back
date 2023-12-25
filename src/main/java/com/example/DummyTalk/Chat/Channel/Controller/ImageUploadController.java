@@ -1,19 +1,11 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
-
-import com.example.DummyTalk.Aws.AwsS3Service;
 import com.example.DummyTalk.Chat.Channel.Dto.ImageChatDto;
 import com.example.DummyTalk.Chat.Channel.Dto.ImageEmbeddingRequestDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
 import com.example.DummyTalk.Chat.Channel.Service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.util.List;
 
 @RequestMapping("/img")
@@ -36,9 +28,8 @@ public class ImageUploadController {
     public MessageResponse saveImage(@ModelAttribute ImageChatDto imageDto) {
 
         /* AWS S3 및 DB에 이미지 저장 */
-//        List<ImageEmbeddingRequestDto> saveImageList = imageService.saveImage(imageDto);
         List<ImageEmbeddingRequestDto> saveImageList = imageService.saveImage(imageDto);
-        log.info("\nImageUploadController saveImage    : {}", saveImageList);
+        log.info("\nImageUploadController saveImage    : {}", saveImageList.get(0).getImageId());
 
         /* fastapi로 이미지 임베딩 요청 */
         imageService.imageEmbedded(saveImageList);
@@ -50,6 +41,7 @@ public class ImageUploadController {
         /* 클라이언트로 응답 */
         return new MessageResponse( imageDto.getNickname(), "이미지 임베딩 실패", messageResponse);
     }
+
 }
 
 
