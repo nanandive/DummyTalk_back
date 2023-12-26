@@ -11,7 +11,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString
+@ToString(exclude = {"user", "server"})
 @Table(name = "user_chat")
 public class UserChat {
     @Id
@@ -20,7 +20,7 @@ public class UserChat {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user; // 가정한 UserEntity
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "server_id")

@@ -1,13 +1,10 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
+import com.example.DummyTalk.Common.DTO.ResponseDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
@@ -41,5 +38,12 @@ public class ChannelController {
         channelServiceImpl.channelDelete(id);
         return ResponseEntity.ok().build();
 
+    }
+
+    /* 채널명 조회 */
+    @GetMapping("/{channelId}")
+    public ResponseEntity<ResponseDTO> getChannelName(@PathVariable int channelId) {
+        return ResponseEntity.ok()
+                .body(new ResponseDTO(HttpStatus.OK,"서버 이름 조회 ",channelService.getChannelName((long)channelId)));
     }
 }

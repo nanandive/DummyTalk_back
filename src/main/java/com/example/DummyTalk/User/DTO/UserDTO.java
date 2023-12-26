@@ -15,11 +15,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class UserDTO implements UserDetails {
 
     private Long userId;
@@ -34,13 +33,17 @@ public class UserDTO implements UserDetails {
 
     private String userPhone;
 
+    private String credential;
+
     private String userImgPath;
 
-    private String userSecretKey;
+    private  byte[] userSecretKey;
 
     private LocalDateTime createAt;
 
     private LocalDateTime updateAt;
+
+    private String nationalLanguage;
 
 
     @Override

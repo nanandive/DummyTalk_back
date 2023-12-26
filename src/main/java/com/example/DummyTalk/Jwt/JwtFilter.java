@@ -46,7 +46,6 @@ public class JwtFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)){
             return bearerToken.substring(7); // 사용자가 보낸 토큰 값추출
-
             // 토큰 생성 패턴이 Bearer ==byoj...
         }
         return null;
