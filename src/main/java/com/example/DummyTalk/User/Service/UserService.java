@@ -15,14 +15,18 @@ import com.google.api.client.json.gson.GsonFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.SecretKey;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -35,13 +39,18 @@ import java.util.zip.*;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class UserService extends AESUtil {
+
+    @Value("${serverAbsolutePath.dir}")
+    private String absolutePath;
 
     private final UserRepository userRepository;
     private final FriendRepository friendRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+
 
     // 회원가입
     public UserDTO signUp(UserDTO userDTO) throws Exception {
@@ -171,8 +180,8 @@ public class UserService extends AESUtil {
                 Friend addFriend = new Friend();
                 addFriend.setUserId(LuserId); // 친구요청을 보낸 사람
                 addFriend.setFriendUserId(friend.getUserId()); // 친구요청을 받은 사람
-//                addFriend.setAccept("N");  // 수락 대기중
-                addFriend.setAccept("Y");  // 자동 수락
+                addFriend.setAccept("N");  // 수락 대기중
+//                addFriend.setAccept("Y");  // 자동 수락
 
                 Friend resultFriend = friendRepository.save(addFriend);
 
@@ -197,10 +206,79 @@ public class UserService extends AESUtil {
 
     }
 
+    public List<UserDTO> findByFriend(int userId) {
+
+        List<User> userList = userRepository.findByFriends(userId);
+
+        List<UserDTO> result = userList.stream().map(User -> modelMapper.map(User, UserDTO.class)).collect(Collectors.toList());
+
+        return result;
+    }
+    public List<UserDTO> findByFriendRequest(int userId) {
+
+        List<User> userList = userRepository.findByFriendRequest(userId);
+
+        List<UserDTO> result = userList.stream().map(User -> modelMapper.map(User, UserDTO.class)).collect(Collectors.toList());
+        return result;
+
+    }
 
 
+    public UserDTO changeUser(int userId, MultipartFile file, Map<String, String> formData) throws IOException {
+
+        User user = userRepository.findByUserId(Long.valueOf(userId));
+
+        if(formData.get("file") != null){
+            String filePath = absolutePath;
+            UUID uuid = UUID.randomUUID();
+            String fileName = uuid + "_" + file.getOriginalFilename();
+
+            File saveFile = new File(filePath, fileName);
+            file.transferTo(saveFile);
+
+            user.setUserImgPath(fileName);
+        }
+        if (!formData.get("nickname").isEmpty()) {
+            user.setNickname(formData.get("nickname"));
+        }
+        if (!formData.get("language").isEmpty()) {
+            user.setNationalLanguage(formData.get("language"));
+        }
+        if (!formData.get("password").isEmpty()) {
+            if(user.getCredential() != null){
+                throw new RemoteException("구글로그인은 비밀번호 변경이 불가능합니다.");
+            }
+            user.setPassword(passwordEncoder.encode(formData.get("password")));
+        }
+        return modelMapper.map(user, UserDTO.class);
+
+    }
 
 
+    public UserDTO approval(int userId, String friendId) {
+
+        Friend friend =friendRepository.findByFriend(userId, friendId);
+
+        friend.setAccept("Y");
+
+        Friend user = new Friend();
+        user.setUserId(Long.valueOf(userId));
+        user.setFriendUserId(Long.parseLong(friendId));
+        user.setAccept("Y");
+
+        friendRepository.save(user);
+
+        return null;
+    }
+
+    public UserDTO refusal(int userId, String friendId) {
+
+        Friend friend =friendRepository.findByFriend(userId, friendId);
+
+        friendRepository.deleteById(friend.getFriendId());
+
+        return null;
+    }
 
     // 랜덤한 JWT SecretKey 생성
     private static byte[] generateRandomBytes(int length) throws NoSuchAlgorithmException {
@@ -210,12 +288,4 @@ public class UserService extends AESUtil {
         return randomBytes;
     }
 
-    public List<UserDTO> findByFriend(int userId) {
-
-        List<User> userList = userRepository.findByFriend(userId);
-
-        List<UserDTO> result = userList.stream().map(User -> modelMapper.map(User, UserDTO.class)).collect(Collectors.toList());
-
-        return result;
-    }
 }
