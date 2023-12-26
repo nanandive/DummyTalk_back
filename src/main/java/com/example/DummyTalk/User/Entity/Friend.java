@@ -25,7 +25,7 @@ public class Friend {
     private String accept; // 수락 여부 Y / N
 
     @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id",  insertable = false, updatable = false)
     private User user;
 
 }

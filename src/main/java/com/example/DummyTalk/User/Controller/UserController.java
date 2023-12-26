@@ -103,17 +103,28 @@ public class UserController {
     @PostMapping("/changePassword")
     public ResponseEntity<ResponseDTO> changePassword(@RequestBody Map<String, String> user){
 
-//        try{
+        try{
             UserDTO result = userService.changePassword(user);
 
             return  ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseDTO(HttpStatus.OK, "비밀번호 변경에 성공하셨습니다.", result));
 
-//        } catch (RuntimeException e){
-//            return  ResponseEntity
-//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null));
-//        }
+        } catch (RuntimeException e){
+            return  ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null));
+        }
     }
+
+    @GetMapping("friend/{userId}")
+    public ResponseEntity<ResponseDTO> findFriend(@PathVariable int userId){
+
+        List<UserDTO> result = userService.findByFriend(userId);
+
+        return  ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseDTO(HttpStatus.OK, "친구 조회에 성공하셨습니다.", result));
+    }
+
 }

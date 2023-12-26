@@ -75,5 +75,6 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChat> userChats = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "friendId")
+    private List<Friend> friend = new ArrayList<>();
 }

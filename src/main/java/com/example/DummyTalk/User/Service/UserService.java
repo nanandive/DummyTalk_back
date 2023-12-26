@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.*;
 
 @Service
@@ -209,4 +210,12 @@ public class UserService extends AESUtil {
         return randomBytes;
     }
 
+    public List<UserDTO> findByFriend(int userId) {
+
+        List<User> userList = userRepository.findByFriend(userId);
+
+        List<UserDTO> result = userList.stream().map(User -> modelMapper.map(User, UserDTO.class)).collect(Collectors.toList());
+
+        return result;
+    }
 }
