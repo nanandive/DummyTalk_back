@@ -26,8 +26,21 @@ public class ChannelEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private String channelName; // 채널 이름
 
+    @Column(nullable = false)
+    private int channelCount; // 채널에 접속한 유저 수
+
     @Column(name = "server_id", nullable = false)
     private long serverId;
+
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private ChannelType channelType; // 채널 타입 필드
+
+    public enum ChannelType {
+        VOICE, TEXT // 채널 타입: 음성, 텍스트
+    }
+
 
     /* 서버와의 연관관계 (자식) */
     @ManyToOne(fetch = FetchType.LAZY)

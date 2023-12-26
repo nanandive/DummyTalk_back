@@ -1,9 +1,16 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
-import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
-import com.example.DummyTalk.Chat.Channel.Dto.ChannelParticipantDto;
-import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelParticipantEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
@@ -16,16 +23,7 @@ import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
