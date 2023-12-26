@@ -86,15 +86,15 @@ public class ServerService {
         ServerEntity serverEntity = convertToEntity(serverDto);
         ServerEntity serverEntity1 = serverRepository.save(serverEntity);
 
-
-        /* 서버 생성시 채널 생성 */
-        List<String> channelNames = Arrays.asList("일반", "1:1 음성 번역");
-        for (String channelName : channelNames) {
-            ChannelEntity channelEntity = new ChannelEntity();
-            channelEntity.setChannelName(channelName);
-            channelEntity.setServerId(serverEntity1.getId());
-            channelRepository.save(channelEntity);
-        }
+//
+//        /* 서버 생성시 채널 생성 */
+//        List<String> channelNames = Arrays.asList("일반", "1:1 음성 번역");
+//        for (String channelName : channelNames) {
+//            ChannelEntity channelEntity = new ChannelEntity();
+//            channelEntity.setChannelName(channelName);
+//            channelEntity.setServerId(serverEntity1.getId());
+//            channelRepository.save(channelEntity);
+//        }
 
         // UserChat 테이블에 insert
         UserChat userChat = new UserChat();

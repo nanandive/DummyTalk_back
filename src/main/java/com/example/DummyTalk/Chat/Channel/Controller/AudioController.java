@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
@@ -65,7 +66,7 @@ public class AudioController {
         StringBuilder result = new StringBuilder();
 
 
-        return new MessageResponse(null, "200", chat);
+        return new MessageResponse(null, "200", List.of());
     }
 
     @PostMapping("/transport/{nationalLanguage}")

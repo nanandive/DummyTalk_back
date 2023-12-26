@@ -1,6 +1,7 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;

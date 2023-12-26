@@ -34,7 +34,7 @@ public class ChannelEntity extends BaseTimeEntity {
 
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
     private ChannelType channelType; // 채널 타입 필드
 
     public enum ChannelType {
