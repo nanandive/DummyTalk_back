@@ -3,6 +3,7 @@ package com.example.DummyTalk.Util;
 import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.hibernate.annotations.Comment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,5 +66,7 @@ public class FileUploadUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
+
 }

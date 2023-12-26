@@ -2,14 +2,9 @@ package com.example.DummyTalk.Chat.Server.Controller;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
-import com.example.DummyTalk.Chat.Server.repository.ServerRepository;
-import com.example.DummyTalk.User.DTO.UserChatDto;
 import com.example.DummyTalk.User.DTO.UserDTO;
-import com.example.DummyTalk.User.DTO.UserServerCodeDto;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Entity.UserChat;
 import com.example.DummyTalk.User.Entity.UserServerCode;
@@ -80,6 +75,7 @@ public class ServerController {
     @GetMapping("/{id}")
     public ResponseEntity<ServerDto> getServerDetail(@PathVariable Long id) {
         ServerDto serverDto = serverService.findById(id);
+
         System.out.println(" 서버에 접속 하기(컨트롤러) >>>>>>>>> : " + serverDto);
 
         return ResponseEntity.ok(serverDto);

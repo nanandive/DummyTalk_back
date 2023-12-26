@@ -131,7 +131,7 @@ public class AudioController {
         byte[] result = null;
         try {
             CountDownLatch latch = new CountDownLatch(1);
-            
+
             WebClient.create()
             .post()
             .uri("http://localhost:8000/api/v1/audio/audio/" + nationalLanguage)

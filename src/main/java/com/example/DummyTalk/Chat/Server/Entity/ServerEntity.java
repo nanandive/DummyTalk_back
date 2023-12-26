@@ -2,7 +2,6 @@ package com.example.DummyTalk.Chat.Server.Entity;
 
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
-import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Entity.UserChat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -11,7 +10,6 @@ import org.springframework.core.annotation.Order;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -50,10 +48,5 @@ public class ServerEntity extends BaseTimeEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "serverEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ChannelEntity> channelEntityList = new ArrayList<>();
-
-    /* 서버와 서버롤의 연관관계 */
-    @OneToMany(mappedBy = "server", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ServerRoleEntity> serverRoleEntityList = new ArrayList<>();
-
 
 }

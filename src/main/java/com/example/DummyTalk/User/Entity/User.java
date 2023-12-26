@@ -1,5 +1,6 @@
 package com.example.DummyTalk.User.Entity;
 
+
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
 import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Repository.UserRepository;
@@ -9,9 +10,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.annotation.CreatedDate;
 import lombok.*;
@@ -30,6 +34,7 @@ import java.util.List;
 @Setter
 @Builder
 public class User {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,7 +56,7 @@ public class User {
     @Column(name = "user_phone")
     private String userPhone;
 
-    @Column(name = "credential", length = 500)
+    @Column(name= "credential", length = 500)
     private String credential;
 
     @Column(name = "user_img_path")
