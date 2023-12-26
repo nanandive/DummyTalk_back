@@ -28,8 +28,9 @@ public class ImageEntity {
     @Column(name="saved_file_name")
     private String savedFileName;
 
-    @Column(name="channel_id")
-    private Long channelId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "channel_id")
+    private ChannelEntity channelId;
 
     /* 이미지와 채널데이터의 연관관계(자식) */
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)

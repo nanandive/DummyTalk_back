@@ -28,6 +28,7 @@ public class AwsS3Service {
     private String chatAbsolutePath;
 
     public ImageDto upload(MultipartFile file, String BUCKET_DIR) throws IOException {
+
         try (InputStream fileStream = file.getInputStream()) {
             String fileName = file.getOriginalFilename();
             String contentType = file.getContentType();
@@ -61,7 +62,6 @@ public class AwsS3Service {
             ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(objectRequest);
             byte[] data = objectBytes.asByteArray();
 
-            // Write the data to a local file.
             File myFile = new File(chatAbsolutePath);
             OutputStream os = new FileOutputStream(myFile);
             os.write(data);

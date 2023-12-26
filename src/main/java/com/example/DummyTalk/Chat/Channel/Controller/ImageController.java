@@ -1,18 +1,26 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
+
 import com.example.DummyTalk.Chat.Channel.Dto.ImageChatDto;
+import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
 import com.example.DummyTalk.Chat.Channel.Dto.ImageEmbeddingRequestDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import com.example.DummyTalk.Common.DTO.ResponseDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.DummyTalk.Chat.Channel.Service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.awt.*;
 import java.util.List;
 
 @RequestMapping("/img")
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-public class ImageUploadController {
+public class ImageController {
 
     private final ImageService imageService;
 
@@ -39,9 +47,21 @@ public class ImageUploadController {
         log.info("\nImageUploadController saveImage    : {}", messageResponse);
 
         /* 클라이언트로 응답 */
-        return new MessageResponse( imageDto.getNickname(), "이미지 임베딩 실패", messageResponse);
+        return new MessageResponse(imageDto.getNickname(), "이미지 임베딩 실패", messageResponse);
     }
 
+    @GetMapping("/list/{channelId}")
+    public ResponseEntity<ResponseDTO> getImageList(@RequestParam("channelId") Long channelId) {
+        try {
+            return ResponseEntity
+                    .ok()
+                    .body(new ResponseDTO(HttpStatus.OK, "이미지 리스트 조회 성공", imageService.getImageList(channelId)));
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+        }
+    }
 }
 
 

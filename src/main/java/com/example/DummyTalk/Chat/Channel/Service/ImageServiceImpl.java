@@ -1,4 +1,5 @@
 package com.example.DummyTalk.Chat.Channel.Service;
+
 import com.example.DummyTalk.Aws.AwsS3Service;
 import com.example.DummyTalk.Chat.Channel.Dto.*;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,9 +40,9 @@ public class ImageServiceImpl implements ImageService {
     private final String BUCKET_DIR = "channel-1/";
 
 
-    private ImageEntity convertToImageEntity(int channelId, ImageDto imageDto) {
+    private ImageEntity convertToImageEntity(ChannelEntity channel, ImageDto imageDto) {
         return ImageEntity.builder()
-                .channelId((long) channelId)
+                .channelId(channel)
                 .originalFileName(imageDto.getOriginalFileName())
                 .savedFileName(imageDto.getSavedFileName())
                 .filePath(imageDto.getFilePath())
@@ -106,7 +108,7 @@ public class ImageServiceImpl implements ImageService {
         try {
             ImageDto saveImage = awsS3UploadService.upload(file, BUCKET_DIR);
             ImageEntity imageEntity = saveImageToDatabase(saveImage, channelId);
-            return convertToImageDto(imageEntity.getImageId(), saveImage.getFilePath(), imageEntity.getChannelId());
+            return convertToImageDto(imageEntity.getImageId(), saveImage.getFilePath(), imageEntity.getChannelId().getChannelId());
         } catch (IOException | S3Exception | IllegalStateException e) {
             log.error("이미지 처리 중 에러가 발생했습니다.");
             log.error(e.getMessage());
@@ -116,8 +118,11 @@ public class ImageServiceImpl implements ImageService {
 
     // 이미지 -> DB 저장
     private ImageEntity saveImageToDatabase(ImageDto saveImage, int channelId) {
+        ChannelEntity channel = channelRepository.findByChannelId((long) channelId);
+        if (channel == null) throw new ChatFailException("채널 조회에 실패하였습니다.");
+
         try {
-            return imageRepository.save(convertToImageEntity(channelId, saveImage));
+            return imageRepository.save(convertToImageEntity(channel, saveImage));
         } catch (Exception e) {
             log.error("이미지를 데이터베이스에 저장하는데 에러가 발생했습니다.");
             log.error(e.getMessage());
@@ -182,4 +187,20 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+    @Override
+        public List<ImageDto> getImageList(Long channelId) {
+            List<ImageEntity> imageEntities = imageRepository.findAllByChannelId(channelId);
+
+            if (imageEntities == null || imageEntities.isEmpty()) return null;
+            log.info("\nImageServiceImpl getImageList    : {}", imageEntities);
+
+            return imageEntities.stream()
+                    .map(image -> ImageDto.builder()
+                            .imageId(image.getImageId())
+                            .originalFileName(image.getOriginalFileName())
+                        .savedFileName(image.getSavedFileName())
+                        .filePath(image.getFilePath())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }
