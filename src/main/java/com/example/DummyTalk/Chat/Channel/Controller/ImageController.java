@@ -51,7 +51,7 @@ public class ImageController {
     }
 
     @GetMapping("/list/{channelId}")
-    public ResponseEntity<ResponseDTO> getImageList(@RequestParam("channelId") Long channelId) {
+    public ResponseEntity<ResponseDTO> getImageList(@PathVariable Long channelId) {
         try {
             return ResponseEntity
                     .ok()

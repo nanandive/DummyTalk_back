@@ -14,5 +14,4 @@ public interface ChatRepository extends JpaRepository<ChatDataEntity, Long> {
     List<ChatDataEntity> findAllByChannelId(ChannelEntity channelEntity);
     @Query("SELECT cd FROM ChatDataEntity cd JOIN FETCH cd.channelId c WHERE c.channelId = ?1 AND cd.chatId = ?2")
     ChatDataEntity findByChannelIdAndChatId(Long channelId, Long chatId);
-
 }

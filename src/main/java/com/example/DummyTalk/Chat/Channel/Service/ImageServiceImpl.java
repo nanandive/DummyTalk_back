@@ -40,9 +40,9 @@ public class ImageServiceImpl implements ImageService {
     private final String BUCKET_DIR = "channel-1/";
 
 
-    private ImageEntity convertToImageEntity(ChannelEntity channel, ImageDto imageDto) {
+    private ImageEntity convertToImageEntity(Long channelId, ImageDto imageDto) {
         return ImageEntity.builder()
-                .channelId(channel)
+                .channelId(channelId)
                 .originalFileName(imageDto.getOriginalFileName())
                 .savedFileName(imageDto.getSavedFileName())
                 .filePath(imageDto.getFilePath())
@@ -108,7 +108,7 @@ public class ImageServiceImpl implements ImageService {
         try {
             ImageDto saveImage = awsS3UploadService.upload(file, BUCKET_DIR);
             ImageEntity imageEntity = saveImageToDatabase(saveImage, channelId);
-            return convertToImageDto(imageEntity.getImageId(), saveImage.getFilePath(), imageEntity.getChannelId().getChannelId());
+            return convertToImageDto(imageEntity.getImageId(), saveImage.getFilePath(), imageEntity.getChannelId());
         } catch (IOException | S3Exception | IllegalStateException e) {
             log.error("이미지 처리 중 에러가 발생했습니다.");
             log.error(e.getMessage());
@@ -122,7 +122,7 @@ public class ImageServiceImpl implements ImageService {
         if (channel == null) throw new ChatFailException("채널 조회에 실패하였습니다.");
 
         try {
-            return imageRepository.save(convertToImageEntity(channel, saveImage));
+            return imageRepository.save(convertToImageEntity(channel.getChannelId(), saveImage));
         } catch (Exception e) {
             log.error("이미지를 데이터베이스에 저장하는데 에러가 발생했습니다.");
             log.error(e.getMessage());
@@ -188,16 +188,17 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-        public List<ImageDto> getImageList(Long channelId) {
-            List<ImageEntity> imageEntities = imageRepository.findAllByChannelId(channelId);
+    public List<ImageDto> getImageList(Long channelId) {
+//            ChannelEntity channel = channelRepository.findByChannelId(channelId);
+        List<ImageEntity> imageEntities = imageRepository.findByChannelId(channelId);
 
-            if (imageEntities == null || imageEntities.isEmpty()) return null;
-            log.info("\nImageServiceImpl getImageList    : {}", imageEntities);
+        if (imageEntities == null || imageEntities.isEmpty()) return null;
+        log.info("\nImageServiceImpl getImageList    : {}", imageEntities);
 
-            return imageEntities.stream()
-                    .map(image -> ImageDto.builder()
-                            .imageId(image.getImageId())
-                            .originalFileName(image.getOriginalFileName())
+        return imageEntities.stream()
+                .map(image -> ImageDto.builder()
+                        .imageId(image.getImageId())
+                        .originalFileName(image.getOriginalFileName())
                         .savedFileName(image.getSavedFileName())
                         .filePath(image.getFilePath())
                         .build())
