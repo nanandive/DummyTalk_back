@@ -27,7 +27,7 @@ public class ServerEntity extends BaseTimeEntity {
 
     private String serverName;
     private String userName;
-    private String invitedUser;
+    private String invitedCode;
 
     @Column(nullable = false)
     private int maxUsers;
@@ -38,6 +38,8 @@ public class ServerEntity extends BaseTimeEntity {
     private String filePath;
 
     private String fileName;
+
+    private Long userId;
 
 
     /* 유저와 서버의 관계 */

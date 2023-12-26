@@ -2,10 +2,20 @@ package com.example.DummyTalk.Chat.Server.Controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
+import com.example.DummyTalk.Chat.Server.repository.ServerRepository;
+import com.example.DummyTalk.User.DTO.UserChatDto;
+import com.example.DummyTalk.User.DTO.UserDTO;
+import com.example.DummyTalk.User.DTO.UserServerCodeDto;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Entity.UserChat;
+import com.example.DummyTalk.User.Entity.UserServerCode;
+import com.example.DummyTalk.User.Repository.UserChatRepository;
+import com.example.DummyTalk.User.Repository.UserRepository;
+import com.example.DummyTalk.User.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -51,6 +61,7 @@ public class ServerController {
             @RequestParam(value = "file", required = false) MultipartFile file, Long userId
            ) throws Exception {
 
+
         log.info("file {}, serverDTO {}, userId {}", file, serverDto, userId);
 
         ServerDto responseServerDto = null;
@@ -69,9 +80,8 @@ public class ServerController {
     @GetMapping("/{id}")
     public ResponseEntity<ServerDto> getServerDetail(@PathVariable Long id) {
         ServerDto serverDto = serverService.findById(id);
-        //serverService.updateMaxUser(id);
-
         System.out.println(" 서버에 접속 하기(컨트롤러) >>>>>>>>> : " + serverDto);
+
         return ResponseEntity.ok(serverDto);
     }
 
@@ -107,18 +117,44 @@ public class ServerController {
         return ResponseEntity.ok().build();
     }
 
-    /* 서버 접속 허용 */
+    /* 서버 초대 */
+    @PostMapping("/invitedUser")
+    public ResponseEntity<?> invitedUser(@RequestBody UserServerCodeDto userServerCodeDto) {
 
+            try {
+                serverService.addUserInvitedCode(userServerCodeDto);
+                return ResponseEntity.ok().body("(성공) 초대코드 : " + userServerCodeDto);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("초대 실패");
+            }
+        }
 
-//    /* 접속제한 */
-//    @PostMapping("/joinUser/{serverId}/{userId}")
-//    public ResponseEntity<?> joinServer(@PathVariable Long serverId, @PathVariable Long userId){
-//        if(!serverService.checkAccess(serverId, userId)){
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("유저 접속 실패");
-//        }
-//        return ResponseEntity.ok("유저 서버 접속 성공");
-//
-//    }
+    /* 서버 초대된 유저 리스트 */
+    @GetMapping("/access/{serverId}")
+    public ResponseEntity<List<UserDTO>> getAccessUser(@PathVariable Long serverId) {
+        List<UserDTO> invitedUserDto = serverService.getInvitedUser(serverId);
+        System.out.println("서버에 초대된 유저 리스트 (컨트롤러) >>>>> : " + invitedUserDto);
+        return ResponseEntity.ok(invitedUserDto);
+    }
+
+    /* 서버 유저 강퇴(방장만 강퇴가능) */
+    @PostMapping("/resignUser/{serverId}")
+    public ResponseEntity<?> resignUser(@PathVariable Long serverId, @RequestBody UserDTO userDto){
+        Long userId = userDto.getUserId();      // 강퇴하는 사람의 Id
+        Long serverUserId = serverService.findById(serverId).getUserId();   // 서버를 생성한 사람의 Id
+        System.out.println("(컨트롤러) 강퇴 resignUser : " + userId);
+        System.out.println("(컨트롤러) 강퇴 MainUser : " + serverUserId);
+        // 권한 체크 (서버를 생성한 사람인지 확인)
+        if(userId.equals(serverUserId)) {
+            try {
+                serverService.deleteUser(userDto);
+                return ResponseEntity.ok().body("사용자 강퇴 성공");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 강퇴 실패.");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("권한이 없습니다.");
+    }
 
 
 

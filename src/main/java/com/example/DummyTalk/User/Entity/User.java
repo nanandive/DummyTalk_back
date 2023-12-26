@@ -73,6 +73,10 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChat> userChats = new ArrayList<>();
 
+    /* 유저와 유저초대코드와의 연관관계 */
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserServerCode> userServerCodeList = new ArrayList<>();
+
     @Component
     @RequiredArgsConstructor
     public static class UserInit implements CommandLineRunner {
@@ -83,8 +87,7 @@ public class User {
         private String DDL_AUTO_SETTING;
 
         @Override
-        pu
-blic void run(String... args) throws Exception {
+        public void run(String... args) throws Exception {
             if (!DDL_AUTO_SETTING.equals("create"))
                 return;
             for (int i = 1; i <= 3; i++) {
