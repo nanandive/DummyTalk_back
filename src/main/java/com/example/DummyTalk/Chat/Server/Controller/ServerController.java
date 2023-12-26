@@ -1,32 +1,21 @@
 package com.example.DummyTalk.Chat.Server.Controller;
 
-import java.security.Principal;
-import java.util.List;
-
-import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
-import com.example.DummyTalk.User.DTO.UserDTO;
-import com.example.DummyTalk.User.Entity.User;
-import com.example.DummyTalk.User.Entity.UserChat;
-import com.example.DummyTalk.User.Entity.UserServerCode;
-import com.example.DummyTalk.User.Repository.UserChatRepository;
-import com.example.DummyTalk.User.Repository.UserRepository;
-import com.example.DummyTalk.User.Service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Service.ChannelServiceImpl;
 import com.example.DummyTalk.Chat.Server.Dto.ServerDto;
 import com.example.DummyTalk.Chat.Server.Dto.ServerSettingDto;
 import com.example.DummyTalk.Chat.Server.Service.ServerService;
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
-
+import com.example.DummyTalk.User.DTO.UserDTO;
+import com.example.DummyTalk.User.DTO.UserServerCodeDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
