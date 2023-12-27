@@ -119,6 +119,7 @@ public class UserController {
     @GetMapping("friend/{userId}")
     public ResponseEntity<ResponseDTO> findFriend(@PathVariable int userId){
 
+
         List<UserDTO> result = userService.findByFriend(userId);
 
         return  ResponseEntity
@@ -128,6 +129,7 @@ public class UserController {
 
     @GetMapping("friendRequest/{userId}")
     public ResponseEntity<ResponseDTO> findFriendRequest(@PathVariable int userId){
+
 
         List<UserDTO> result = userService.findByFriendRequest(userId);
 
