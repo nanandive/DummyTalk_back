@@ -15,17 +15,6 @@ public class AwsConfig {
 
     private final Environment env;
 
-//    @Bean
-//    public AmazonS3Client amazonS3Client() {
-//        BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
-//
-//        return (AmazonS3Client) AmazonS3ClientBuilder
-//                .standard()
-//                .withRegion(region)
-//                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-//                .build();
-//    }
-
     @Bean
     public S3Client amazonS3Client() {
         AwsBasicCredentials credentials = AwsBasicCredentials.create(env.getProperty("cloud.s3.access-id"), env.getProperty("cloud.s3.secret-key"));

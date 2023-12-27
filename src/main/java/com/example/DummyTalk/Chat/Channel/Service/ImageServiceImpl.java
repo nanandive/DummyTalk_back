@@ -11,8 +11,10 @@ import com.example.DummyTalk.Chat.Channel.Repository.ImageRepository;
 import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import software.amazon.awssdk.services.s3.model.JSONInput;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
@@ -205,5 +208,18 @@ public class ImageServiceImpl implements ImageService {
                         .filePath(image.getFilePath())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ImageDto> getImageEmbeddList(Long channelId, String query) {
+
+//        WebClient.create()
+//                .get()
+//                .uri("http://localhost:8000/textImageSearch/"+channelId.intValue()+"/"+query)
+//                .retrieve()
+//                .bodyToMono(ResponseEntity.class)
+//                .subscribe(res ->  log.info("\nImageServiceImpl getImageEmbeddList    : {}", res));
+
+        return null;
     }
 }

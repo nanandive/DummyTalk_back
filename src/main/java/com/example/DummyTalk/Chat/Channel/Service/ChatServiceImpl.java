@@ -86,7 +86,7 @@ public class ChatServiceImpl implements ChatService {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
             ChatDataEntity newChat = chatRepository.save(chatEntity);
 
-            return Math.toIntExact(newChat.getChatId());
+            return newChat.getChatId().intValue();
         } catch (Exception e) {
             throw new ChatFailException("채팅 저장에 실패하였습니다.");
         }
