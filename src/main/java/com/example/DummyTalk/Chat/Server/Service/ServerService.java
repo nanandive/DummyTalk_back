@@ -107,6 +107,11 @@ public class ServerService {
             ChannelEntity channelEntity = new ChannelEntity();
             channelEntity.setChannelName(channelName);
             channelEntity.setServerId(serverEntity1.getId());
+            if(channelName.equals("일반")) {
+                channelEntity.setChannelType(ChannelEntity.ChannelType.TEXT);
+            }else {
+                channelEntity.setChannelType(ChannelEntity.ChannelType.VOICE);
+            }
             channelRepository.save(channelEntity);
         }
 
@@ -147,6 +152,11 @@ public class ServerService {
             ChannelEntity channelEntity = new ChannelEntity();
             channelEntity.setChannelName(channelName);
             channelEntity.setServerId(serverEntity.getId());
+            if(channelName.equals("일반")) {
+                channelEntity.setChannelType(ChannelEntity.ChannelType.TEXT);
+            }else {
+                channelEntity.setChannelType(ChannelEntity.ChannelType.VOICE);
+            }
             channelRepository.save(channelEntity);
         }
 
