@@ -6,6 +6,7 @@ import lombok.*;
 
 @Data
 @Entity
+@Builder
 @Table(name = "Friend")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,4 +30,7 @@ public class Friend {
     @JoinColumn(name = "user_id",  insertable = false, updatable = false)
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "friend_user_id",  insertable = false, updatable = false)
+    private User FriendUser;
 }

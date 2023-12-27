@@ -31,4 +31,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE f.friendUserId = :userId " +
             "AND f.accept = 'N'")
     List<User> findByFriendRequest(@Param("userId") int userId);
+
 }

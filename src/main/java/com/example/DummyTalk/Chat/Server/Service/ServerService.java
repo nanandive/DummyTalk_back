@@ -229,8 +229,13 @@ public class ServerService {
 
     @Transactional
     /* 서버 삭제 */
-    public void serverDelete(Long id) {
-        serverRepository.deleteById(id);
+    public void serverDelete(Long id, Long userId) {
+        Optional<ServerEntity> serverId = serverRepository.findById(id);
+        Long mainUserId = serverId.get().getUserId();
+        if (mainUserId.equals(userId)) {
+            serverRepository.deleteById(id);
+        }
+        System.out.println("서버 삭제 권한이 없습니다.");
     }
 
     /* 서버 초대 */
@@ -286,14 +291,16 @@ public class ServerService {
                 .build();
     }
 
-
+    @Transactional
     /* 서버 초대된 유저 강퇴 */
-    public void deleteUser(UserDTO userDto) {
-        String userEmail = userDto.getUserEmail();
-        User user = userRepository.findByUserEmail(userEmail);
-        User userId = userRepository.findByUserId(user.getUserId());
+    public void deleteUser(long serverId, String userEmail) {
+        User users = userRepository.findByUserEmail(userEmail);
+        Long userId = users.getUserId();
+        User user = userRepository.findById(userId).orElseThrow();
+        ServerEntity server = serverRepository.findById(serverId).orElseThrow();
 
-        userChatRepository.deleteById(userId.getUserId());
+        System.out.println("(서비스)>>>>>>>>>>>>>>> : userId" + userId);
+        userChatRepository.deleteByUserAndServer(user, server);
 
     }
 }

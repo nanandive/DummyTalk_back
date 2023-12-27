@@ -8,6 +8,7 @@ import com.example.DummyTalk.Chat.Server.Service.ServerService;
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
 import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.DTO.UserServerCodeDto;
+import com.example.DummyTalk.User.Entity.UserChat;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -64,9 +65,7 @@ public class ServerController {
     @GetMapping("/{id}")
     public ResponseEntity<ServerDto> getServerDetail(@PathVariable Long id) {
         ServerDto serverDto = serverService.findById(id);
-
         System.out.println(" 서버에 접속 하기(컨트롤러) >>>>>>>>> : " + serverDto);
-
         return ResponseEntity.ok(serverDto);
     }
 
@@ -79,11 +78,16 @@ public class ServerController {
     }
 
     /* TODO 서버 삭제 */
-    @GetMapping("/delete")
-    public String delete(@RequestParam Long id) {
-        serverService.serverDelete(id);
-        return "/wesocket/main";
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> delete(@RequestParam Long id, @RequestParam Long userId) {
+        try {
+            serverService.serverDelete(id, userId);
+            return ResponseEntity.ok().body("서버가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("서버 삭제 권한이 없습니다.");
+        }
     }
+
 
     /* 서버에 해당하는 채널 리스트 */
     @GetMapping("/{serverId}/channel/list")
@@ -125,6 +129,7 @@ public class ServerController {
     /* 서버 유저 강퇴(방장만 강퇴가능) */
     @PostMapping("/resignUser/{serverId}")
     public ResponseEntity<?> resignUser(@PathVariable Long serverId, @RequestBody UserDTO userDto){
+        String userEmail = userDto.getUserEmail();
         Long userId = userDto.getUserId();      // 강퇴하는 사람의 Id
         Long serverUserId = serverService.findById(serverId).getUserId();   // 서버를 생성한 사람의 Id
         System.out.println("(컨트롤러) 강퇴 resignUser : " + userId);
@@ -132,7 +137,8 @@ public class ServerController {
         // 권한 체크 (서버를 생성한 사람인지 확인)
         if(userId.equals(serverUserId)) {
             try {
-                serverService.deleteUser(userDto);
+//                serverService.deleteUser(userDto);
+                serverService.deleteUser(serverId, userEmail);
                 return ResponseEntity.ok().body("사용자 강퇴 성공");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 강퇴 실패.");
