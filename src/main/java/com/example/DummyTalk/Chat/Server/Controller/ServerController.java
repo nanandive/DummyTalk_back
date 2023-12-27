@@ -79,11 +79,16 @@ public class ServerController {
     }
 
     /* TODO 서버 삭제 */
-    @GetMapping("/delete")
-    public String delete(@RequestParam Long id) {
-        serverService.serverDelete(id);
-        return "/wesocket/main";
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> delete(@RequestParam Long id, @RequestParam Long userId) {
+        try {
+            serverService.serverDelete(id, userId);
+            return ResponseEntity.ok().body("서버가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("서버 삭제 권한이 없습니다.");
+        }
     }
+
 
     /* 서버에 해당하는 채널 리스트 */
     @GetMapping("/{serverId}/channel/list")
@@ -132,7 +137,8 @@ public class ServerController {
         // 권한 체크 (서버를 생성한 사람인지 확인)
         if(userId.equals(serverUserId)) {
             try {
-                serverService.deleteUser(userDto);
+//                serverService.deleteUser(userDto);
+                serverService.deleteUser(serverId, userId);
                 return ResponseEntity.ok().body("사용자 강퇴 성공");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("사용자 강퇴 실패.");
