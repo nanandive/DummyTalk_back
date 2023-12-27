@@ -61,9 +61,12 @@ public class SecurityConfig {
                 .cors(cors ->  cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()                             // cors를 위해 허용
-                                .requestMatchers("/", "/login/**", "/websocket", "/app/**").permitAll()   // index와 login페이지만 허용
-                                .anyRequest().permitAll()
+                                .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/**").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/**").permitAll()
+                                .requestMatchers("/", "/login/**", "/websocket", "/app/**","/googleLogin/**").permitAll()   // index와 login페이지만 허용
+                                .anyRequest().authenticated()
                 ).apply(new JwtSecurityConfig(tokenProvider));
 
         return http.build();
@@ -99,7 +102,7 @@ public class SecurityConfig {
         configuration.setExposedHeaders(List.of("Access-Control-Allow-Origin"));                   // setExposedHeaders() : 서버에서 클라이언트로 응답할 때 노출할 수 있는 헤더의 목록을 지정
         configuration.addAllowedMethod("*");                                                           // addAllowedMethod() : Get/Post/Delete.. 등 요청의 모든 방식을 허용
 
-       configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", configuration);                                 // 특정 URL이 아닌 모든 URL에 CORS 적용
 

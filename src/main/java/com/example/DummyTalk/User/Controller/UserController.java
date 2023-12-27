@@ -16,24 +16,25 @@ import com.google.api.client.json.JsonParser;
 import com.google.api.client.json.gson.GsonFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
-
-    HttpTransport transport = new NetHttpTransport();
+    @Value("${serverAbsolutePath.dir}")
+    private String absolutePath;
 
     private final UserService userService;
 
@@ -74,7 +75,7 @@ public class UserController {
     public ResponseEntity<ResponseDTO> findByUser(@PathVariable String userId){
 
         UserDTO result = userService.findByUser(userId);
-        
+
         return  ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseDTO(HttpStatus.OK, "유저 조회에 성공하였습니다.", result));
@@ -84,19 +85,109 @@ public class UserController {
     public ResponseEntity<ResponseDTO> findByUser(@PathVariable String userId,
                                                   @RequestBody Map<String, String> email){
 
-        log.info("TEST");
-
         try{
             FriendDTO result = userService.saveFriend(userId, email);
 
             return  ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(new ResponseDTO(HttpStatus.OK, "친구 추가에 성공하셨습니다.", result));
+                    .body(new ResponseDTO(HttpStatus.OK, "친구 신청을 보냈습니다.", result));
 
         } catch (RuntimeException e){
             return  ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null));
         }
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<ResponseDTO> changePassword(@RequestBody Map<String, String> user){
+
+        try{
+            UserDTO result = userService.changePassword(user);
+
+            return  ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDTO(HttpStatus.OK, "비밀번호 변경에 성공하셨습니다.", result));
+
+        } catch (RuntimeException e){
+            return  ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("friend/{userId}")
+    public ResponseEntity<ResponseDTO> findFriend(@PathVariable int userId){
+
+
+        List<UserDTO> result = userService.findByFriend(userId);
+
+        return  ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseDTO(HttpStatus.OK, "친구 조회에 성공하셨습니다.", result));
+    }
+
+    @GetMapping("friendRequest/{userId}")
+    public ResponseEntity<ResponseDTO> findFriendRequest(@PathVariable int userId){
+
+
+        List<UserDTO> result = userService.findByFriendRequest(userId);
+
+        return  ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseDTO(HttpStatus.OK, "친구 요청 조회에 성공하셨습니다.", result));
+    }
+
+    @PostMapping("change/{userId}")
+    public ResponseEntity<ResponseDTO> changeUser (@PathVariable int userId,
+                                                   @RequestParam(required = false) MultipartFile file,
+                                                   @RequestParam String nickname,
+                                                   @RequestParam String password,
+                                                   @RequestParam String language) throws IOException {
+
+        Map<String, String> formData = new HashMap<>();
+        formData.put("nickname", nickname);
+        formData.put("password", password);
+        formData.put("language", language);
+
+        try {
+
+            UserDTO result = userService.changeUser(userId, file, formData);
+
+            return  ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDTO(HttpStatus.OK, "프로필 변경에 성공하였습니다.", result));
+
+        } catch (RuntimeException e){
+            return  ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR,  e.getMessage(), null));
+        }
+    }
+
+    @PostMapping("approval/{userId}")
+    public ResponseEntity<ResponseDTO> approval(@PathVariable int userId, @RequestBody Map<String, String> friendId){
+
+        log.info("TEST==========>{} " , friendId.get("friendId"));
+
+        friendId.get("friendId");
+        UserDTO result = userService.approval(userId, friendId.get("friendId"));
+
+        return  ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseDTO(HttpStatus.OK, "친구 요청을 수락하셨습니다.", result));
+
+    }
+    @PostMapping("refusal/{userId}")
+    public ResponseEntity<ResponseDTO> refusal(@PathVariable int userId, @RequestBody Map<String, String> friendId){
+
+
+        friendId.get("friendId");
+        UserDTO result = userService.refusal(userId, friendId.get("friendId"));
+
+        return  ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseDTO(HttpStatus.OK, "친구 요청을 거절하셨습니다.", result));
+
     }
 }

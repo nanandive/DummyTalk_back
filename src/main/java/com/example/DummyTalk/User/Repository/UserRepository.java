@@ -19,4 +19,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByUserId(Long sender);
 
     User findByCredential(String credential);
+
+    @Query("SELECT u FROM User u " +
+            "JOIN Friend f ON f.userId = u.userId " +
+            "WHERE f.friendUserId = :id " +
+            "AND f.accept = 'Y'")
+    List<User> findByFriends(@Param("id") int id);
+
+    @Query("SELECT u FROM User u " +
+            "JOIN Friend f ON f.userId = u.userId " +
+            "WHERE f.friendUserId = :userId " +
+            "AND f.accept = 'N'")
+    List<User> findByFriendRequest(@Param("userId") int userId);
 }

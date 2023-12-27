@@ -62,6 +62,9 @@ java {
 
         implementation 'commons-io:commons-io:2.15.1'
 
+        /* AWS */
+        implementation(platform("software.amazon.awssdk:bom:2.21.20"))
+        implementation("software.amazon.awssdk:s3")
 
         tasks.named('bootBuildImage') {
             builder = 'paketobuildpacks/builder-jammy-base:latest'

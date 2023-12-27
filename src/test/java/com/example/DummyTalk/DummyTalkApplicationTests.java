@@ -51,5 +51,11 @@ class DummyTalkApplicationTests {
         List<ChatDataEntity> chat = chatRepository.findAll();
     }
 
+    @Test
+    void 채팅_삭제(){
+        ChatDataEntity chat = chatRepository.findByChannelIdAndChatId((long)14, (long)41);
+        System.out.println(chat);
+        chat.delete();
+    }
 
 }

@@ -4,12 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
+@Data
 @Entity
 @Table(name = "Friend")
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 public class Friend {
 
     @Id
@@ -27,7 +26,7 @@ public class Friend {
     private String accept; // 수락 여부 Y / N
 
     @ManyToOne
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id",  insertable = false, updatable = false)
     private User user;
 
 }

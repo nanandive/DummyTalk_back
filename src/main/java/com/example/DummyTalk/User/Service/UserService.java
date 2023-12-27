@@ -15,31 +15,42 @@ import com.google.api.client.json.gson.GsonFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.SecretKey;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.*;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class UserService extends AESUtil {
+
+    @Value("${serverAbsolutePath.dir}")
+    private String absolutePath;
 
     private final UserRepository userRepository;
     private final FriendRepository friendRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+
 
     // 회원가입
     public UserDTO signUp(UserDTO userDTO) throws Exception {
@@ -56,12 +67,12 @@ public class UserService extends AESUtil {
             byte[] keyBytes = generateRandomBytes(keyLength);
 
             // Base64로 인코딩하여 JWT 시크릿 키 생성
-            String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
+//            String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
 
             // 랜덤한 AES키 생성
-            SecretKey aesKey = AESUtil.generateAESKey();
+//            SecretKey aesKey = AESUtil.generateAESKey();
 
-            byte[] encrtptJWT = AESUtil.encrypt(jwtKey, aesKey);
+//            byte[] encrtptJWT = AESUtil.encrypt(jwtKey, aesKey);
 
             // 서울시간으로 가져오기 위해 + 9시간
             LocalDateTime currentDateTime = LocalDateTime.now();
@@ -76,7 +87,7 @@ public class UserService extends AESUtil {
             }
 
             // jwt secret key
-            userDTO.setUserSecretKey(encrtptJWT);
+            userDTO.setUserSecretKey(keyBytes);
             
             // 비밀번호 인코딩
             userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
@@ -169,8 +180,8 @@ public class UserService extends AESUtil {
                 Friend addFriend = new Friend();
                 addFriend.setUserId(LuserId); // 친구요청을 보낸 사람
                 addFriend.setFriendUserId(friend.getUserId()); // 친구요청을 받은 사람
-//                addFriend.setAccept("N");  // 수락 대기중
-                addFriend.setAccept("Y");  // 자동 수락
+                addFriend.setAccept("N");  // 수락 대기중
+//                addFriend.setAccept("Y");  // 자동 수락
 
                 Friend resultFriend = friendRepository.save(addFriend);
 
@@ -179,10 +190,95 @@ public class UserService extends AESUtil {
         }
     }
 
+    @Transactional
+    public UserDTO changePassword(Map<String, String> user) {
+
+        String email = user.get("email");
+        String password = user.get("password");
 
 
+        User findUser =  userRepository.findByUserEmail(email);
+
+        findUser.setPassword(passwordEncoder.encode(password));
+
+        log.info("TestPassword");
+        return modelMapper.map(findUser, UserDTO.class);
+
+    }
+
+    public List<UserDTO> findByFriend(int userId) {
+
+        List<User> userList = userRepository.findByFriends(userId);
+
+        List<UserDTO> result = userList.stream().map(User -> modelMapper.map(User, UserDTO.class)).collect(Collectors.toList());
+
+        return result;
+    }
+    public List<UserDTO> findByFriendRequest(int userId) {
+
+        List<User> userList = userRepository.findByFriendRequest(userId);
+
+        List<UserDTO> result = userList.stream().map(User -> modelMapper.map(User, UserDTO.class)).collect(Collectors.toList());
+        return result;
+
+    }
 
 
+    public UserDTO changeUser(int userId, MultipartFile file, Map<String, String> formData) throws IOException {
+
+        User user = userRepository.findByUserId(Long.valueOf(userId));
+
+        if(formData.get("file") != null){
+            String filePath = absolutePath;
+            UUID uuid = UUID.randomUUID();
+            String fileName = uuid + "_" + file.getOriginalFilename();
+
+            File saveFile = new File(filePath, fileName);
+            file.transferTo(saveFile);
+
+            user.setUserImgPath(fileName);
+        }
+        if (!formData.get("nickname").isEmpty()) {
+            user.setNickname(formData.get("nickname"));
+        }
+        if (!formData.get("language").isEmpty()) {
+            user.setNationalLanguage(formData.get("language"));
+        }
+        if (!formData.get("password").isEmpty()) {
+            if(user.getCredential() != null){
+                throw new RemoteException("구글로그인은 비밀번호 변경이 불가능합니다.");
+            }
+            user.setPassword(passwordEncoder.encode(formData.get("password")));
+        }
+        return modelMapper.map(user, UserDTO.class);
+
+    }
+
+
+    public UserDTO approval(int userId, String friendId) {
+
+        Friend friend =friendRepository.findByFriend(userId, friendId);
+
+        friend.setAccept("Y");
+
+        Friend user = new Friend();
+        user.setUserId(Long.valueOf(userId));
+        user.setFriendUserId(Long.parseLong(friendId));
+        user.setAccept("Y");
+
+        friendRepository.save(user);
+
+        return null;
+    }
+
+    public UserDTO refusal(int userId, String friendId) {
+
+        Friend friend =friendRepository.findByFriend(userId, friendId);
+
+        friendRepository.deleteById(friend.getFriendId());
+
+        return null;
+    }
 
     // 랜덤한 JWT SecretKey 생성
     private static byte[] generateRandomBytes(int length) throws NoSuchAlgorithmException {
@@ -191,4 +287,5 @@ public class UserService extends AESUtil {
         secureRandom.nextBytes(randomBytes);
         return randomBytes;
     }
+
 }

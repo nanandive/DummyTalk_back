@@ -69,7 +69,6 @@ public class MailService {
         }
 
     }
-
     public String checkNum(int checkNum) {
 
 
@@ -82,6 +81,26 @@ public class MailService {
         } else{
 
             throw new RuntimeException("인증번호 체크 오류");
+        }
+    }
+
+    public String passwordMail(String email) {
+
+
+        User findUser =  userRepository.findByUserEmail(email);
+
+        if(findUser.getCredential() != null){
+            throw new RuntimeException("구글로 회원가입된 이메일입니다.");
+        }
+        try{
+
+            MimeMessage message = CreateMail(email);
+            javaMailSender.send(message);
+
+            return "해당 이메일로 인증번호가 전송되었습니다.";
+        } catch (RuntimeException e){
+
+            throw new RuntimeException("인증번호 전송에 실패하였습니다.");
         }
     }
 }

@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 
 import org.springframework.core.io.UrlResource;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -25,8 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
-
 @RestController
 @RequestMapping("/audio")
 public class AudioController {
@@ -39,7 +38,7 @@ public class AudioController {
 
     @MessageMapping("/{channelId}/audio")
     @SendTo("/topic/audio/{channelId}")
-    public MessageResponse receiveAudio(SendChatDto message
+    public MessageResponse receiveAudio(MessageRequest message
             , @DestinationVariable String channelId) {
 
                 return new MessageResponse(message.getNickname(), "200", message);
@@ -118,7 +117,7 @@ public class AudioController {
     // }
 
     @PostMapping("/transport/{nationalLanguage}")
-    public ResponseEntity<?> translateTextToAudio(@RequestBody SendChatDto chat,
+    public ResponseEntity<?> translateTextToAudio(@RequestBody MessageRequest chat,
             @PathVariable String nationalLanguage) {
 
         byte[] result = null;
