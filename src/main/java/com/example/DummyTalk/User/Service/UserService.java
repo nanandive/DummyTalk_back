@@ -1,6 +1,8 @@
 package com.example.DummyTalk.User.Service;
 
 import com.example.DummyTalk.AES.AESUtil;
+import com.example.DummyTalk.Aws.AwsS3Service;
+import com.example.DummyTalk.Chat.Channel.Dto.ImageDto;
 import com.example.DummyTalk.Jwt.TokenProvider;
 import com.example.DummyTalk.User.DTO.FriendDTO;
 import com.example.DummyTalk.User.DTO.TokenDTO;
@@ -50,7 +52,9 @@ public class UserService extends AESUtil {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final AwsS3Service awsS3UploadService;
 
+    private final String BUCKET_DIR = "profile/";
 
     // 회원가입
     public UserDTO signUp(UserDTO userDTO) throws Exception {
@@ -135,13 +139,19 @@ public class UserService extends AESUtil {
             LocalDateTime currentDateTime = LocalDateTime.now();
             LocalDateTime plus9Hours = currentDateTime.plusHours(9);
 
-
-            UserDTO userDTO = new UserDTO();
-            userDTO.setNickname("기본 닉네임");
-            userDTO.setCredential(credential.substring(0, 500));
-            userDTO.setCreateAt(plus9Hours);
-            userDTO.setUserSecretKey(encrtptJWT);
-            userDTO.setUserEmail(email);
+            UserDTO userDTO = UserDTO.builder()
+                                        .nickname("기본 닉네임")
+                                        .credential(credential.substring(0, 500))
+                                        .createAt(plus9Hours)
+                                        .userSecretKey(encrtptJWT)
+                                        .userEmail(email)
+                                        .build();
+//
+//            userDTO.setNickname("기본 닉네임");
+//            userDTO.setCredential(credential.substring(0, 500));
+//            userDTO.setCreateAt(plus9Hours);
+//            userDTO.setUserSecretKey(encrtptJWT);
+//            userDTO.setUserEmail(email);
 
             User user = modelMapper.map(userDTO, User.class);
 
@@ -164,12 +174,16 @@ public class UserService extends AESUtil {
 
     public FriendDTO  saveFriend(String userId, Map<String,String> email){
 
+
         Long LuserId = Long.parseLong(userId);
 
-        String result =  email.get("email");
+        String resultEmail =  email.get("email"); // 입력한 이메일
 
-        User friend = userRepository.findByUserEmail(result);
+        User friend = userRepository.findByUserEmail(resultEmail);
         User user = userRepository.findByUserId(LuserId);
+
+        List<Friend> friendList = friendRepository.findByUser(LuserId);
+
 
         if(friend == null){
             throw new RuntimeException("존재하지 않은 회원입니다.");
@@ -178,11 +192,18 @@ public class UserService extends AESUtil {
 
                 throw new RuntimeException("본인은 친구로 추가할 수 없습니다.");
             } else {
+
+                for(Friend friend1 : friendList){
+                    if(friend1.getFriendUser().getUserEmail().equals(resultEmail)){
+                        throw new RuntimeException("이미 친구요청을 보낸 이메일입니다.");
+                    }
+                }
                 Friend addFriend = Friend.builder()
-                        .userId(LuserId)                    // 친구요청을 보낸 사람
-                        .friendUserId(friend.getUserId())   // 친구요청을 받은 사람
-                        .accept("N")                        // 수락 대기중
-                        .build();
+                                            .userId(LuserId)                    // 친구요청을 보낸 사람
+                                            .friendUserId(friend.getUserId())   // 친구요청을 받은 사람
+                                            .accept("N")                        // 수락 대기중
+                                            .build();
+
 
                 Friend resultFriend = friendRepository.save(addFriend);
 
@@ -211,6 +232,8 @@ public class UserService extends AESUtil {
 
         List<User> userList = userRepository.findByFriends(userId);
 
+
+
         List<UserDTO> result = userList.stream().map(User -> modelMapper.map(User, UserDTO.class)).collect(Collectors.toList());
 
         return result;
@@ -224,20 +247,22 @@ public class UserService extends AESUtil {
 
     }
 
-
     public UserDTO changeUser(int userId, MultipartFile file, Map<String, String> formData) throws IOException {
 
         User user = userRepository.findByUserId(Long.valueOf(userId));
 
-        if(formData.get("file") != null){
+        if(file != null){
+
+            ImageDto imageDto = awsS3UploadService.upload(file, BUCKET_DIR);
+            String imagePath =  imageDto.getFilePath();
+            user.setUserImgPath(imagePath);
+
             String filePath = absolutePath;
             UUID uuid = UUID.randomUUID();
             String fileName = uuid + "_" + file.getOriginalFilename();
 
             File saveFile = new File(filePath, fileName);
             file.transferTo(saveFile);
-
-            user.setUserImgPath(fileName);
         }
         if (!formData.get("nickname").isEmpty()) {
             user.setNickname(formData.get("nickname"));
@@ -262,10 +287,11 @@ public class UserService extends AESUtil {
 
         friend.setAccept("Y");
 
-        Friend user = new Friend();
-        user.setUserId(Long.valueOf(userId));
-        user.setFriendUserId(Long.parseLong(friendId));
-        user.setAccept("Y");
+        Friend user = Friend.builder()
+                                .userId(Long.valueOf(userId))
+                                .friendUserId(Long.parseLong(friendId))
+                                .accept("Y")
+                                .build();
 
         friendRepository.save(user);
 

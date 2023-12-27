@@ -82,7 +82,7 @@ public class UserController {
     }
 
     @PostMapping("/friend/{userId}")
-    public ResponseEntity<ResponseDTO> findByUser(@PathVariable String userId,
+    public ResponseEntity<ResponseDTO> saveFriend(@PathVariable String userId,
                                                   @RequestBody Map<String, String> email){
 
         try{
@@ -149,6 +149,8 @@ public class UserController {
         formData.put("nickname", nickname);
         formData.put("password", password);
         formData.put("language", language);
+
+        log.info("TESTTTTTTTTTTTT ===> {}" , file);
 
         try {
 
