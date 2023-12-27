@@ -24,12 +24,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "User")
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 @Builder
 public class User {
 
@@ -76,5 +75,6 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChat> userChats = new ArrayList<>();
 
-
+    @OneToMany(mappedBy = "friendId")
+    private List<Friend> friend = new ArrayList<>();
 }
