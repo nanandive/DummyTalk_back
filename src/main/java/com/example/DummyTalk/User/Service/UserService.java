@@ -67,12 +67,12 @@ public class UserService extends AESUtil {
             byte[] keyBytes = generateRandomBytes(keyLength);
 
             // Base64로 인코딩하여 JWT 시크릿 키 생성
-            String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
+//            String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
 
             // 랜덤한 AES키 생성
-            SecretKey aesKey = AESUtil.generateAESKey();
+//            SecretKey aesKey = AESUtil.generateAESKey();
 
-            byte[] encrtptJWT = AESUtil.encrypt(jwtKey, aesKey);
+//            byte[] encrtptJWT = AESUtil.encrypt(jwtKey, aesKey);
 
             // 서울시간으로 가져오기 위해 + 9시간
             LocalDateTime currentDateTime = LocalDateTime.now();
@@ -87,7 +87,7 @@ public class UserService extends AESUtil {
             }
 
             // jwt secret key
-            userDTO.setUserSecretKey(encrtptJWT);
+            userDTO.setUserSecretKey(keyBytes);
             
             // 비밀번호 인코딩
             userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
