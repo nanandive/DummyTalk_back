@@ -42,14 +42,13 @@ public class TokenProvider extends AESUtil {
     /* 1. 토큰(xxxxx.yyyyy.zzzzz) 생성 메소드 */
     public TokenDTO generateTokenDTO(User user) throws Exception {
 
-//        log.info("AESUtil.getKey() ==>{}", AESUtil.getKey());
+        log.info("AESUtil.getKey() ==>{}", AESUtil.getKey());
         
         // AES키를 활용한 복호화
-//        String decryptJWT = AESUtil.decrypt(user.getUserSecretKey(), AESUtil.getKey());
+        String decryptJWT = AESUtil.decrypt(user.getUserSecretKey(), AESUtil.getKey());
 
-//        byte[] keyBytest = Decoders.BASE64.decode(decryptJWT);
-//        this.key = Keys.hmacShaKeyFor(keyBytest);
-        this.key = Keys.hmacShaKeyFor(user.getUserSecretKey());
+        byte[] keyBytest = Decoders.BASE64.decode(decryptJWT);
+        this.key = Keys.hmacShaKeyFor(keyBytest);
 
         /* 1. 회원 아이디를 "sub"이라는 클레임으로 토큰으로 추가 */
         Claims claims = Jwts.claims().setSubject(String.valueOf(user.getUserId()));    // ex) { sub : memberId }

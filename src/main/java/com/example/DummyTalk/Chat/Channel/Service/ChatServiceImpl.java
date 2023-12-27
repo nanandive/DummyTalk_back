@@ -25,14 +25,27 @@ import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.User.DTO.ChatSenderDTO;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import java.io.File;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ChatServiceImpl implements ChatService {
+
 
     private final ChannelRepository channelRepository;
     private final ChatRepository chatRepository;
@@ -162,7 +175,7 @@ public class ChatServiceImpl implements ChatService {
                 .bodyToMono(MessageResponse.class)
                 .doOnTerminate(() -> cdl.countDown())
                 .subscribe((res) -> response.setMessageResponse(res.getNickname(), res.getStatus(), res.getChat()));
-        
+
 
         log.info("{}", response);
 

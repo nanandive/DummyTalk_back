@@ -31,6 +31,15 @@ public class ChannelController {
         return ResponseEntity.noContent().build();
     }
 
+
+    /* 채널 생성, 채널 타입 insert */
+    @PostMapping("/writePro1")
+    public ResponseEntity<?> serverWritePro2(@ModelAttribute ChannelDto channelDto) {
+        channelServiceImpl.createChannelType(channelDto);
+        System.out.println(">>>>>>>>>" + channelDto);
+        return ResponseEntity.noContent().build();
+    }
+
     /* 채널 삭제 */
     @DeleteMapping("/channel/{id}/delete")
     public ResponseEntity<ChannelEntity> deleteChannel(@PathVariable Long id) {
@@ -45,5 +54,16 @@ public class ChannelController {
     public ResponseEntity<ResponseDTO> getChannelName(@PathVariable int channelId) {
         return ResponseEntity.ok()
                 .body(new ResponseDTO(HttpStatus.OK,"서버 이름 조회 ",channelService.getChannelName((long)channelId)));
+    }
+
+
+    @PostMapping("/type")
+    public ResponseEntity<?> getChannelType(@RequestParam int channelId) {
+        ChannelDto channelDto = channelService.getChannelType((long)channelId);
+        if (channelDto != null) {
+            return ResponseEntity.ok(channelService.getChannelType((long)channelId));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
