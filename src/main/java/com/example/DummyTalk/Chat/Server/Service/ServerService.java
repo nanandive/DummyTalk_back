@@ -5,10 +5,14 @@ import com.example.DummyTalk.Chat.Server.Dto.ServerDto;
 import com.example.DummyTalk.Chat.Server.Dto.ServerSettingDto;
 import com.example.DummyTalk.Chat.Server.Entity.ServerEntity;
 import com.example.DummyTalk.Chat.Server.repository.ServerRepository;
+import com.example.DummyTalk.User.DTO.UserDTO;
+import com.example.DummyTalk.User.DTO.UserServerCodeDto;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Entity.UserChat;
+import com.example.DummyTalk.User.Entity.UserServerCode;
 import com.example.DummyTalk.User.Repository.UserChatRepository;
 import com.example.DummyTalk.User.Repository.UserRepository;
+import com.example.DummyTalk.User.Repository.UserServerCodeRepository;
 import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +46,9 @@ public class ServerService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final UserChatRepository userChatRepository;
+    private final UserServerCodeRepository userServerCodeRepository;
+
+    private Map<String, ServerEntity> server = new ConcurrentHashMap<>();
 
     /* 서버리스트 */
     public List<ServerDto> findServerIdByUserId(Long userId) {
@@ -56,7 +64,7 @@ public class ServerService {
         return ServerDto.builder()
                 .id(serverEntity.getId())
                 .serverName(serverEntity.getServerName())
-                .invitedUser(serverEntity.getInvitedUser())
+                .invitedCode(serverEntity.getInvitedCode())
                 .userName(serverEntity.getUserName())
                 .maxUsers(serverEntity.getMaxUsers())
                 .currentUsers(serverEntity.getCurrentUsers())
@@ -67,6 +75,12 @@ public class ServerService {
     /* 서버 생성 */
     public ServerDto createServer(ServerDto serverDto, MultipartFile file, Long userId) throws Exception{
         System.out.println(">>>>>>>>> userInfoDto (서비스)" );
+
+
+        // 서버 초대 코드생성
+        String invitedCode = UUID.randomUUID().toString();
+        serverDto.setInvitedCode(invitedCode);
+
 
         // 파일존재시
         if(file != null && !file.isEmpty()){
@@ -86,37 +100,44 @@ public class ServerService {
         ServerEntity serverEntity = convertToEntity(serverDto);
         ServerEntity serverEntity1 = serverRepository.save(serverEntity);
 
-//
-//        /* 서버 생성시 채널 생성 */
-//        List<String> channelNames = Arrays.asList("일반", "1:1 음성 번역");
-//        for (String channelName : channelNames) {
-//            ChannelEntity channelEntity = new ChannelEntity();
-//            channelEntity.setChannelName(channelName);
-//            channelEntity.setServerId(serverEntity1.getId());
-//            channelRepository.save(channelEntity);
-//        }
+
+        /* 서버 생성시 채널 생성 */
+        List<String> channelNames = Arrays.asList("일반", "1:1 음성 번역");
+        for (String channelName : channelNames) {
+            ChannelEntity channelEntity = new ChannelEntity();
+            channelEntity.setChannelName(channelName);
+            channelEntity.setServerId(serverEntity1.getId());
+            channelRepository.save(channelEntity);
+        }
 
         // UserChat 테이블에 insert
         UserChat userChat = new UserChat();
         User savedUser = userRepository.findByUserId(userId);
-
-
-        System.out.println("savedUser  " + savedUser);
-        System.out.println("serverEntity1   " +serverEntity1);
         userChat.setUser(savedUser);
         userChat.setServer(serverEntity1);
-
         userChatRepository.save(userChat);
         System.out.println("서버 저장 : 이미지 존재 (서비스) : >>>>>>>>> " + serverEntity);
         System.out.println("서버 저장 : 이미지 존재 (서비스)  : >>>>>>>>> " + userChat);
+
+
+        // 서버 생성시 방장은 초대코드 자동 저장
+        UserServerCode userServerCode = new UserServerCode();
+        userServerCode.setServerCode(invitedCode);
+        userServerCode.setUser(savedUser);
+        System.out.println("유저 코드 테이블에 유저정보 저장 (서비스)>>>>>>>>>>>>>>>> : " + userServerCode);
+        userServerCodeRepository.save(userServerCode);
 
         return modelMapper.map(serverEntity, ServerDto.class);
 
     }
 
     // 파일이 존재하지 않을시 서버 생성
-    @Transactional
     public ServerDto createServer(ServerDto serverDto) throws Exception {
+
+        // 서버 초대 코드생성
+        String invitedCode = UUID.randomUUID().toString();
+        serverDto.setInvitedCode(invitedCode);
+
         ServerEntity serverEntity = convertToEntity(serverDto);
         User user = userRepository.findByUserId(serverDto.getUserId());
         serverEntity = serverRepository.save(serverEntity);
@@ -133,8 +154,14 @@ public class ServerService {
         UserChat userChat = new UserChat();
         userChat.setServer(serverEntity);
         userChat.setUser(user);
-
         userChatRepository.save(userChat);
+
+        // 서버 생성시 방장은 초대코드 자동 저장
+        UserServerCode userServerCode = new UserServerCode();
+        userServerCode.setServerCode(invitedCode);
+        userServerCode.setUser(user);
+        System.out.println("유저 코드 테이블에 유저정보 저장 (서비스)>>>>>>>>>>>>>>>> : " + userServerCode);
+        userServerCodeRepository.save(userServerCode);
 
 
         System.out.println("서버 저장 : >>>>>>>>> " + serverEntity);
@@ -146,7 +173,8 @@ public class ServerService {
         return ServerEntity.builder()
                 .serverName(serverDto.getServerName())
                 .userName(serverDto.getUserName())
-                .invitedUser(serverDto.getInvitedUser())
+                .userId(serverDto.getUserId())
+                .invitedCode(serverDto.getInvitedCode())
                 .filePath(serverDto.getFilePath())
                 .fileName(serverDto.getFileName())
                 .maxUsers(serverDto.getMaxUsers())
@@ -162,9 +190,10 @@ public class ServerService {
             ServerEntity serverEntity = optionalServerEntity.get();
             return ServerDto.builder()
                     .id(serverEntity.getId())
+                    .userId(serverEntity.getUserId())
                     .serverName(serverEntity.getServerName())
                     .maxUsers(serverEntity.getMaxUsers())
-                    .invitedUser(serverEntity.getInvitedUser())
+                    .invitedCode(serverEntity.getInvitedCode())
                     .userName(serverEntity.getUserName())
                     .currentUsers(serverEntity.getCurrentUsers())
                     .build();
@@ -194,19 +223,67 @@ public class ServerService {
         serverRepository.deleteById(id);
     }
 
-//    /* 서버에 접속중인 유저 수 제한 */
-//    public void updateMaxUser(Long id) {
-//        ServerEntity serverEntity = serverRepository.findById(id).orElseThrow(()->
-//                new RuntimeException(">>>>>>>>>>>>>>>>>>>>>>>(서비스)서버를 찾을수 없다"));
-//        int currentUsers = serverEntity.getcurrentUsers();
-//        int maxUser = serverEntity.getMaxUsers();
-//
-//        if(currentUsers < maxUser) {
-//            serverEntity.setcurrentUsers(currentUsers + 1);
-//            serverRepository.save(serverEntity);
-//        }else {
-//            throw new RuntimeException(">>>>>>>>>>>>>>>>(서비스) 서버 최대 사용자 수 초과");
-//        }
-//    }
+    /* 서버 초대 */
+    public void addUserInvitedCode(UserServerCodeDto userServerCodeDto) {
+        // userEmail를 가지고 userId를 조회
+        String userEmail = userServerCodeDto.getUserEmail();
+        User user = userRepository.findByUserEmail(userEmail);
+        User userId = userRepository.findById(user.getUserId())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없음"));
 
+        System.out.println("1-1>>>>>>>>>>>>>>>> : " + userId);
+
+        // serverId를 가지고 서버 조회
+        ServerEntity serverEntity = serverRepository.findById(userServerCodeDto.getServerId())
+                .orElseThrow(() -> new RuntimeException("서버를 찾을 수 없음"));
+        String invitedCode = serverEntity.getInvitedCode();
+
+        System.out.println("1-2>>>>>>>>>>>>> : " + invitedCode);
+
+        UserServerCode userServerCode = UserServerCode.builder()
+                .user(userId)
+                .serverCode(invitedCode)
+                .build();
+        System.out.println("2.(서비스) >>>>>>>>>>>>> : " + userServerCode.getServerCode());
+
+        // UserChat 테이블에 insert
+        UserChat userChat = new UserChat();
+        User savedUser = userRepository.findByUserId(user.getUserId());
+        userChat.setUser(savedUser);
+        userChat.setServer(serverEntity);
+        userChatRepository.save(userChat);
+
+        userServerCodeRepository.save(userServerCode);
+
+    }
+
+    /* 서버에 초대된 유저 리스트 */
+    public List<UserDTO> getInvitedUser(Long serverId) {
+        // 서버Id에 해당되는 서버를 UserChat에서 찾는다.
+        List<UserChat> userChatList = userChatRepository.findByServerId(serverId);
+        System.out.println("서버에 초대된 유저 리스트(서비스) >>>>>>>>>>>>>>> : " + userChatList);
+
+        List<UserDTO> invitedUsers = userChatList.stream()
+                .map(userChat -> UserConvertToDto(userChat.getUser()))
+                .collect(Collectors.toList());
+        return invitedUsers;
+    }
+
+    private UserDTO UserConvertToDto(User user){
+        return UserDTO.builder()
+                .userEmail(user.getUserEmail())
+                .nickname(user.getNickname())
+                .build();
+    }
+
+
+    /* 서버 초대된 유저 강퇴 */
+    public void deleteUser(UserDTO userDto) {
+        String userEmail = userDto.getUserEmail();
+        User user = userRepository.findByUserEmail(userEmail);
+        User userId = userRepository.findByUserId(user.getUserId());
+
+        userChatRepository.deleteById(userId.getUserId());
+
+    }
 }

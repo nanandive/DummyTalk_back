@@ -2,7 +2,9 @@ package com.example.DummyTalk.User.Entity;
 
 
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
+import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Repository.UserRepository;
+import com.example.DummyTalk.User.Service.UserService;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -14,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.annotation.CreatedDate;
 import lombok.*;
@@ -76,5 +79,34 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChat> userChats = new ArrayList<>();
 
+    /* 유저와 유저초대코드와의 연관관계 */
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserServerCode> userServerCodeList = new ArrayList<>();
 
+    @Component
+    @RequiredArgsConstructor
+    public static class UserInit implements CommandLineRunner {
+        private final UserRepository userRepository;
+        private final UserService userService;
+
+        @Value("${spring.jpa.hibernate.ddl-auto}")
+        private String DDL_AUTO_SETTING;
+
+        @Override
+        public void run(String... args) throws Exception {
+            if (!DDL_AUTO_SETTING.equals("create"))
+                return;
+            for (int i = 1; i <= 3; i++) {
+                UserDTO userDTO = UserDTO.builder()
+                        .name("유저" + i)
+                        .userEmail(i + "test@test.com")
+                        .password("1234")
+                        .nickname("유저" + i)
+                        .userPhone("123" + i)
+                        .build();
+
+                userService.signUp(userDTO);
+            }
+        }
+    }
 }
