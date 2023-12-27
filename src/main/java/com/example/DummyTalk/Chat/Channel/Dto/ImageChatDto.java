@@ -22,5 +22,7 @@ public class ImageChatDto {
     @JsonIgnore
     private MultipartFile[] fileInfo;
     @JsonIgnore
+    private MultipartFile file;
+    @JsonIgnore
     private List<EmbeddingImageDto> embeddingImageDtoList ;
 }

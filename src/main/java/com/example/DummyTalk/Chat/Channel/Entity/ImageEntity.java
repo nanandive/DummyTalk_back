@@ -40,5 +40,4 @@ public class ImageEntity {
     /* 이미지와 임베딩 이미지의 연관관계(부모) */
     @OneToMany( mappedBy = "imageId", fetch = FetchType.LAZY)
     private List<EmbeddingImageEntity> embeddingImageEntityList = new ArrayList<>();
-
 }

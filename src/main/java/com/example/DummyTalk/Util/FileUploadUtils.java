@@ -38,10 +38,9 @@ public class FileUploadUtils {
 
         /* 파일명 리네임 */
         String uuid = UUID.randomUUID().toString();
-        fileName = Objects.requireNonNull(fileName.replace("_", "")).split("\\.")[0];
+        fileName = Objects.requireNonNull(fileName.replace(" ", "")).split("\\.")[0];
         String replaceFileName = uuid + "_" + fileName + "." + FilenameUtils.getExtension(multipartFile.getOriginalFilename());
 
-        log.info("\nsaveImage fileName : \n" + fileName);
 
         /* 파일 저장 */
         Path filePath;
@@ -52,6 +51,7 @@ public class FileUploadUtils {
             e.printStackTrace();
             throw new IOException("파일을 저장하지 못하였습니다. filename : " + fileName);
         }
+        log.info("\nsaveImage fileName : \n" + replaceFileName);
 
         return new ImageDto(null, 0, fileName, filePath.toString() , replaceFileName, null, null);
     }

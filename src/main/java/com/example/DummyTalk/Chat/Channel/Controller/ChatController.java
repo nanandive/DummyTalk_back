@@ -1,41 +1,22 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
-import com.example.DummyTalk.Chat.Channel.Dto.ChannelParticipantDto;
-import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
-import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 import com.example.DummyTalk.Chat.Channel.Dto.ChatDataDto.MessageType;
-import com.example.DummyTalk.Chat.Channel.Entity.ChannelParticipantEntity;
-import com.example.DummyTalk.Chat.Channel.Service.ChannelService;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
 import com.example.DummyTalk.Chat.Channel.Service.ChatService;
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
 import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.Jwt.JwtFilter;
-import com.example.DummyTalk.User.Entity.User;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -55,7 +36,7 @@ public class ChatController {
      */
     @MessageMapping("/{channelId}/message")
     @SendTo("/topic/msg/{channelId}")
-    public MessageResponse handleMessage(SendChatDto message
+    public MessageResponse handleMessage(MessageRequest message
             , @DestinationVariable String channelId) {
         log.info("\n handleMessage message   : {}", message);
 
@@ -100,7 +81,7 @@ public class ChatController {
     }
 
     @PostMapping("trans/{nationLanguage}")
-    public MessageResponse translateMessage(@RequestBody SendChatDto message,
+    public MessageResponse translateMessage(@RequestBody MessageRequest message,
                                             @PathVariable String nationLanguage,
                                             HttpServletRequest request) {
 
@@ -114,12 +95,15 @@ public class ChatController {
 
 
     /* 채팅 삭제 */
-    @PostMapping("del/{chatId}")
-    public ResponseEntity<ResponseDTO> deleteChat(@PathVariable int chatId) {
+    @PostMapping("/del/{channelId}/{chatId}")
+    public ResponseEntity<ResponseDTO> deleteChat(
+            @PathVariable(value="channelId") int channelId,
+            @PathVariable(value="chatId") int chatId) {
+        log.info("\n deleteChat channelId=============================\n{}", channelId);
         try {
             return ResponseEntity
                     .ok().body(new ResponseDTO(HttpStatus.OK
-                            ,"채팅 삭제 성공", chatService.deleteChat(chatId)));
+                            ,"채팅 삭제 성공", chatService.deleteChat(channelId, chatId)));
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -128,68 +112,6 @@ public class ChatController {
     }
 
 }
-
-
-//public class ChatController extends TextWebSocketHandler {
-//    private final List<String> participants = new ArrayList<>();
-//
-//    @Override
-//    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-//        log.info("============session================================={}", session);
-//        // 접근자의 ID를 가져옵니다.
-//        String id = Objects.requireNonNull(session.getRemoteAddress()).getHostName();
-//
-//        // 접근자를 참여자로 추가합니다.
-//        participants.add(id);
-//        session.getAttributes().put("participants", participants);
-//    }
-//
-//    @Override
-//    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-// 메시지의 내용을 가져옵니다.
-//        String content = message.getPayload();
-//
-//        // 메시지의 내용을 파싱합니다.
-//        SendChatDto dto = new SendChatDto();
-//        dto.setNickname(content.split(" ")[0]);
-//        dto.setContent(content.split(" ")[1]);
-//        dto.setChannelId(content.split(" ")[2]);
-//
-//        // 채팅 데이터 저장
-//        int chatId = chatService.saveChatData(dto);
-//        dto.setChatId(chatId);
-//
-//        // 참여자에게 메시지 전송
-//        for (String participant : participants) {
-//            if (!participant.equals(session.getRemoteAddress().getHostName())) {
-//                session.sendMessage(new TextMessage(toJson(dto)));
-//            }
-//        }
-//    private String toJson(Object obj) {
-//        return new ObjectMapper().writeValueAsString(obj);
-//    }
-//    }
-
-
-//    @PostMapping("/writePro")
-//    public ResponseEntity<?> serverWritePro(@ModelAttribute ChannelDto channelDto) {
-//        channelService.createChannel(channelDto);
-//        return ResponseEntity.noContent().build();
-//    }
-
-
-//
-//
-//  log.info("============message================================={}", message);
-//        // 채팅 데이터 저장
-//        if (message.getAudioUrl() != null && !message.getAudioUrl().isEmpty()) {
-//            // 오디오 채팅 데이터 저장
-//            int audioChatId = chatService.saveAudioChatData(message);
-//            message.setAudioChatId(audioChatId);
-//            log.info("============setAudioChatId================================={}", message);
-//
-//            return new MessageResponse(message.getNickname(), "오디오 채팅 메시지 전송 성공", message); //분리해야함
-//
 
 
 

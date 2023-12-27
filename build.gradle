@@ -54,7 +54,6 @@ java {
         implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
         implementation 'com.fasterxml.jackson.core:jackson-databind'
 
-
         implementation group: 'com.google.api-client', name: 'google-api-client', version: '2.2.0'
 
 
@@ -62,6 +61,10 @@ java {
         implementation 'org.springframework.boot:spring-boot-starter-mail'
 
         implementation 'commons-io:commons-io:2.15.1'
+
+        /* AWS */
+        implementation(platform("software.amazon.awssdk:bom:2.21.20"))
+        implementation("software.amazon.awssdk:s3")
 
         tasks.named('bootBuildImage') {
             builder = 'paketobuildpacks/builder-jammy-base:latest'

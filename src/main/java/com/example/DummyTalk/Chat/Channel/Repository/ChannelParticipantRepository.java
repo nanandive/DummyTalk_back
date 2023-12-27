@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface ChannelParticipantRepository extends JpaRepository< ChannelParticipantEntity, ChannelParticipantId> {
 
-    List<ChannelParticipantEntity> findAllByChannelId(long channelId);
+    List<ChannelParticipantEntity> findAllByChannelId(Long channelId);
 
-    ChannelParticipantEntity findByChannelIdAndUserId(long channelId, Long userId);
+    ChannelParticipantEntity findByChannelIdAndUserId(Long channelId, Long userId);
 }
 
