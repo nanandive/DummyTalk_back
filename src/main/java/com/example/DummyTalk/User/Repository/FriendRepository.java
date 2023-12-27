@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 public interface FriendRepository extends JpaRepository<Friend, Long> {
 
 
@@ -13,5 +15,10 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
             "WHERE f.friendUserId = :userId " +
             "AND f.userId = :friendId")
     Friend findByFriend(int userId, String friendId);
+
+    @Query("SELECT f FROM Friend f " +
+            "JOIN User u ON u.userId = f.userId " +
+            "WHERE f.userId = :result")
+    List<Friend> findByUser(Long result);
 
 }
