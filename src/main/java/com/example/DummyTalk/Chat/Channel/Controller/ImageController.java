@@ -33,21 +33,19 @@ public class ImageController {
      * 3. 추후 성공적으로 저장되면 로컬은 삭제
      */
     @PostMapping("/save")
-    public MessageResponse saveImage(@ModelAttribute ImageChatDto imageDto) {
+    public ResponseEntity<ResponseDTO> saveImage(@ModelAttribute ImageChatDto imageDto) {
+        try {
+            /* AWS S3 및 DB에 이미지 저장 */
+            List<MessageRequest> saveImageList = imageService.saveImage(imageDto);
 
-        /* AWS S3 및 DB에 이미지 저장 */
-        List<ImageEmbeddingRequestDto> saveImageList = imageService.saveImage(imageDto);
-        log.info("\nImageUploadController saveImage    : {}", saveImageList.get(0).getImageId());
-
-        /* fastapi로 이미지 임베딩 요청 */
-        imageService.imageEmbedded(saveImageList);
-
-        /* chat data로 저장 */
-        List<MessageRequest> messageResponse = imageService.saveImageToChat(saveImageList, imageDto);
-        log.info("\nImageUploadController saveImage    : {}", messageResponse);
-
-        /* 클라이언트로 응답 */
-        return new MessageResponse(imageDto.getNickname(), "이미지 임베딩 실패", messageResponse);
+            return ResponseEntity.ok()
+                    .body(new ResponseDTO(HttpStatus.OK, "이미지 저장 성공",  saveImageList));
+        }catch (Exception e){
+            log.error("\nImageUploadController saveImage    : {}", e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+        }
     }
 
     @GetMapping("/list/{channelId}")

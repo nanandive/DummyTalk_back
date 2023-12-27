@@ -85,7 +85,7 @@ public class ImageServiceImpl implements ImageService {
      */
     @Transactional
     @Override
-    public List<ImageEmbeddingRequestDto> saveImage(ImageChatDto imageDto) {
+    public List<MessageRequest> saveImage(ImageChatDto imageDto) {
 
         if (imageDto.getFileInfo() == null || imageDto.getFileInfo().length == 0)
             throw new ChatFailException("이미지 파일이 없습니다.");
@@ -95,9 +95,11 @@ public class ImageServiceImpl implements ImageService {
                 .map(file -> processImage(file, imageDto.getChannelId()))
                 .collect(Collectors.toList());
 
-        saveImageToChat(saveImageList, imageDto);
+        log.info("\nImageUploadController saveImage    : {}", saveImageList.get(0).getImageId());
 
-        return saveImageList;
+        imageEmbedded(saveImageList);
+
+        return saveImageToChat(saveImageList, imageDto);
     }
 
     /***
@@ -180,7 +182,7 @@ public class ImageServiceImpl implements ImageService {
                     .body(BodyInserters.fromValue(chat))
                     .retrieve()
                     .bodyToMono(ResponseEntity.class)
-                    .block();
+                    .subscribe();
 
         } catch (Exception e) {
             log.error("{}", e);

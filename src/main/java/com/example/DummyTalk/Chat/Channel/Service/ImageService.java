@@ -9,7 +9,7 @@ import org.springframework.http.RequestEntity;
 import java.util.List;
 
 public interface ImageService {
-    List<ImageEmbeddingRequestDto> saveImage(ImageChatDto imageDto);
+    List<MessageRequest> saveImage(ImageChatDto imageDto);
 
     void imageEmbedded(List<ImageEmbeddingRequestDto> saveImageList);
 
