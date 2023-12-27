@@ -1,23 +1,21 @@
 package com.example.DummyTalk.User.Entity;
 
 
+import com.example.DummyTalk.User.Service.UserService;
 import com.example.DummyTalk.Common.Entity.BaseTimeEntity;
+import com.example.DummyTalk.User.DTO.UserDTO;
 import com.example.DummyTalk.User.Repository.UserRepository;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.annotation.CreatedDate;
-import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -29,8 +27,6 @@ import java.util.List;
 @Table(name = "User")
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 @Builder
 public class User {
 
