@@ -26,8 +26,11 @@ import com.example.DummyTalk.Chat.Channel.Dto.PayloadRequestDTO;
 import com.example.DummyTalk.Chat.Channel.Dto.PayloadResponseDTO;
 import com.example.DummyTalk.Chat.Channel.Enum.PayloadResponseType;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/audio")
+@Slf4j
 public class AudioController {
 
     private final SimpMessageSendingOperations messagingTemplate;
@@ -42,6 +45,7 @@ public class AudioController {
             @DestinationVariable long channelId) {
 
         String type = payload.getType();
+        log.info("{}", payload);
         
         if (type.equals("join-room")) {
 
@@ -50,13 +54,17 @@ public class AudioController {
             
             return new PayloadResponseDTO(PayloadResponseType.OTHER_USER.getValue(), payload.getSource(), payload.getDest(), channelId, payload.getData());
         } else if (type.equals("offer")) {
-
+            
+            return new PayloadResponseDTO(PayloadResponseType.OFFER.getValue(), payload.getSource(), payload.getDest(), channelId, payload.getData());
         } else if (type.equals("answer")) {
-
+            
+            return new PayloadResponseDTO(PayloadResponseType.ANSWER.getValue(), payload.getSource(), payload.getDest(), channelId, payload.getData());
         } else if (type.equals("ice-candidate")) {
-
+            
+            return new PayloadResponseDTO(PayloadResponseType.ICE_CANDIDATE.getValue(), payload.getSource(), payload.getDest(), channelId, payload.getData());
         }
-        return new PayloadResponseDTO();
+
+        return null;
     }
 
     @PostMapping("/upload")
