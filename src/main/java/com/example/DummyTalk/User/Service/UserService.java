@@ -175,13 +175,14 @@ public class UserService extends AESUtil {
             throw new RuntimeException("존재하지 않은 회원입니다.");
         } else {
             if (friend.getUserId() == user.getUserId()) {
+
                 throw new RuntimeException("본인은 친구로 추가할 수 없습니다.");
             } else {
-                Friend addFriend = new Friend();
-                addFriend.setUserId(LuserId); // 친구요청을 보낸 사람
-                addFriend.setFriendUserId(friend.getUserId()); // 친구요청을 받은 사람
-                addFriend.setAccept("N");  // 수락 대기중
-//                addFriend.setAccept("Y");  // 자동 수락
+                Friend addFriend = Friend.builder()
+                        .userId(LuserId)                    // 친구요청을 보낸 사람
+                        .friendUserId(friend.getUserId())   // 친구요청을 받은 사람
+                        .accept("N")                        // 수락 대기중
+                        .build();
 
                 Friend resultFriend = friendRepository.save(addFriend);
 
