@@ -1,19 +1,14 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 
 import org.springframework.core.io.UrlResource;
-import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,6 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import com.example.DummyTalk.Chat.Channel.Dto.PayloadRequestDTO;
+import com.example.DummyTalk.Chat.Channel.Dto.PayloadResponseDTO;
+import com.example.DummyTalk.Chat.Channel.Enum.PayloadResponseType;
 
 @RestController
 @RequestMapping("/audio")
@@ -38,10 +38,25 @@ public class AudioController {
 
     @MessageMapping("/{channelId}/audio")
     @SendTo("/topic/audio/{channelId}")
-    public MessageResponse receiveAudio(MessageRequest message
-            , @DestinationVariable String channelId) {
+    public PayloadResponseDTO receiveAudio(PayloadRequestDTO payload,
+            @DestinationVariable long channelId) {
 
-                return new MessageResponse(message.getNickname(), "200", message);
+        String type = payload.getType();
+        
+        if (type.equals("join-room")) {
+
+            return new PayloadResponseDTO(PayloadResponseType.JOIN_USER.getValue(), payload.getSource(), null, channelId, null);
+        } else if (type.equals("welcome")) {
+            
+            return new PayloadResponseDTO(PayloadResponseType.OTHER_USER.getValue(), payload.getSource(), payload.getDest(), channelId, payload.getData());
+        } else if (type.equals("offer")) {
+
+        } else if (type.equals("answer")) {
+
+        } else if (type.equals("ice-candidate")) {
+
+        }
+        return new PayloadResponseDTO();
     }
 
     @PostMapping("/upload")
@@ -69,7 +84,7 @@ public class AudioController {
             e.printStackTrace();
         }
 
-        SendChatDto chat = new SendChatDto();
+        MessageRequest chat = new MessageRequest();
         chat.setMessage(result.toString());
         chat.setType("AUDIO");
 
@@ -125,20 +140,19 @@ public class AudioController {
             CountDownLatch latch = new CountDownLatch(1);
 
             WebClient.create()
-            .post()
-            .uri("http://localhost:8000/api/v1/audio/audio/" + nationalLanguage)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(chat))
-            .retrieve()
-            .bodyToMono(byte[].class)
-            .doOnTerminate(() -> latch.countDown())
-            .subscribe();
+                    .post()
+                    .uri("http://localhost:8000/api/v1/audio/audio/" + nationalLanguage)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromValue(chat))
+                    .retrieve()
+                    .bodyToMono(byte[].class)
+                    .doOnTerminate(() -> latch.countDown())
+                    .subscribe();
 
             latch.wait();
         } catch (Exception e) {
 
         }
-
 
         // 리액트 클라이언트에게 바로 byte 배열을 응답
         return ResponseEntity.ok()
