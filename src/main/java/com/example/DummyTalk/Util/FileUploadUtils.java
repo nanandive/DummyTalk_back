@@ -53,7 +53,7 @@ public class FileUploadUtils {
         }
         log.info("\nsaveImage fileName : \n" + replaceFileName);
 
-        return new ImageDto(null, 0, fileName, filePath.toString() , replaceFileName, null, null);
+        return new ImageDto(null, 0, fileName, filePath.toString() , multipartFile.getContentType(), replaceFileName, null, null,null);
     }
 
     public static void deleteFile(String uploadDir, String fileName) throws IOException {

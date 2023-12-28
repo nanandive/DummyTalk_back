@@ -1,6 +1,7 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
 import com.example.DummyTalk.Aws.AwsS3Service;
+import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
 import com.example.DummyTalk.Chat.Channel.Dto.*;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
@@ -11,8 +12,10 @@ import com.example.DummyTalk.Chat.Channel.Repository.ImageRepository;
 import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import software.amazon.awssdk.services.s3.model.JSONInput;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
@@ -37,7 +41,7 @@ public class ImageServiceImpl implements ImageService {
     private final ChatRepository chatRepository;
     private final AwsS3Service awsS3UploadService;
 
-    private final String BUCKET_DIR = "channel-1/";
+    private final String BUCKET_DIR = "channel-";
 
 
     private ImageEntity convertToImageEntity(Long channelId, ImageDto imageDto) {
@@ -46,6 +50,7 @@ public class ImageServiceImpl implements ImageService {
                 .originalFileName(imageDto.getOriginalFileName())
                 .savedFileName(imageDto.getSavedFileName())
                 .filePath(imageDto.getFilePath())
+                .contentType(imageDto.getContentType())
                 .build();
     }
 
@@ -108,7 +113,7 @@ public class ImageServiceImpl implements ImageService {
      */
     private ImageEmbeddingRequestDto processImage(MultipartFile file, int channelId) {
         try {
-            ImageDto saveImage = awsS3UploadService.upload(file, BUCKET_DIR);
+            ImageDto saveImage = awsS3UploadService.upload(file, BUCKET_DIR+channelId+"/");
             ImageEntity imageEntity = saveImageToDatabase(saveImage, channelId);
             return convertToImageDto(imageEntity.getImageId(), saveImage.getFilePath(), imageEntity.getChannelId());
         } catch (IOException | S3Exception | IllegalStateException e) {
@@ -182,7 +187,7 @@ public class ImageServiceImpl implements ImageService {
                     .body(BodyInserters.fromValue(chat))
                     .retrieve()
                     .bodyToMono(ResponseEntity.class)
-                    .subscribe();
+                    .subscribe(res -> log.info(res.toString()));
 
         } catch (Exception e) {
             log.error("{}", e);
@@ -202,8 +207,22 @@ public class ImageServiceImpl implements ImageService {
                         .imageId(image.getImageId())
                         .originalFileName(image.getOriginalFileName())
                         .savedFileName(image.getSavedFileName())
-                        .filePath(image.getFilePath())
+                        .contentType(image.getContentType())
+                        .fileBlob(awsS3UploadService.getObjectBytes(image.getSavedFileName()))
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ImageDto> getImageEmbeddList(Long channelId, String query) {
+
+//        WebClient.create()
+//                .get()
+//                .uri("http://localhost:8000/textImageSearch/"+channelId.intValue()+"/"+query)
+//                .retrieve()
+//                .bodyToMono(ResponseEntity.class)
+//                .subscribe(res ->  log.info("\nImageServiceImpl getImageEmbeddList    : {}", res));
+
+        return null;
     }
 }
