@@ -76,6 +76,7 @@ public class AwsS3Service {
             log.error(e.awsErrorDetails().errorMessage());
             log.error("AwsS3Service getObjectBytes error : " + e.getMessage());
         }
+
         return null;
     }
 }

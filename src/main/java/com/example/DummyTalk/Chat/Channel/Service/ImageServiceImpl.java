@@ -1,6 +1,7 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
 import com.example.DummyTalk.Aws.AwsS3Service;
+import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
 import com.example.DummyTalk.Chat.Channel.Dto.*;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
@@ -185,7 +186,7 @@ public class ImageServiceImpl implements ImageService {
                     .body(BodyInserters.fromValue(chat))
                     .retrieve()
                     .bodyToMono(ResponseEntity.class)
-                    .subscribe();
+                    .subscribe(res -> log.info(res.toString()));
 
         } catch (Exception e) {
             log.error("{}", e);
