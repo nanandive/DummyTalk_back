@@ -9,12 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.*;
-import java.net.URL;
 
 @Service
 @Slf4j
@@ -45,7 +43,7 @@ public class AwsS3Service {
 
             String url = env.getProperty("cloud.s3.url.path") + BUCKET_DIR + fileName;
 
-            return new ImageDto(url, fileName, file.getOriginalFilename() + file.getContentType());
+            return new ImageDto(url, fileName, BUCKET_DIR+file.getOriginalFilename(), contentType);
         }
     }
 
@@ -60,18 +58,8 @@ public class AwsS3Service {
                     .build();
 
             ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(objectRequest);
-            byte[] data = objectBytes.asByteArray();
+            return objectBytes.asByteArray();
 
-            File myFile = new File(chatAbsolutePath);
-            OutputStream os = new FileOutputStream(myFile);
-            os.write(data);
-            log.info("\nAwsS3Service getObjectBytes success : " + myFile.getAbsolutePath());
-            os.close();
-
-            return data;
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
         } catch (S3Exception e) {
             log.error(e.awsErrorDetails().errorMessage());
             log.error("AwsS3Service getObjectBytes error : " + e.getMessage());

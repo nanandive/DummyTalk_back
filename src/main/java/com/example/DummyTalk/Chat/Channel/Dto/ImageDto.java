@@ -16,15 +16,18 @@ public class ImageDto {
     private int channelId;
     private String originalFileName;
     private String filePath;
+    private String contentType;
     private String savedFileName;
+    private byte[] fileBlob;
     @JsonIgnore
     private MultipartFile[] fileInfo;
     @JsonIgnore
     private List<EmbeddingImageDto> embeddingImageDtoList ;
 
-    public ImageDto(String awsUrl, String originalFileName, String savedFileName) {
+    public ImageDto(String awsUrl, String originalFileName, String savedFileName, String contentType) {
         this.filePath = awsUrl;
         this.originalFileName = originalFileName;
         this.savedFileName = savedFileName;
+        this.contentType = contentType;
     }
 }

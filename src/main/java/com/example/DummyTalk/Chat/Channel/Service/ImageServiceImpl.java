@@ -41,7 +41,7 @@ public class ImageServiceImpl implements ImageService {
     private final ChatRepository chatRepository;
     private final AwsS3Service awsS3UploadService;
 
-    private final String BUCKET_DIR = "channel-1/";
+    private final String BUCKET_DIR = "channel-";
 
 
     private ImageEntity convertToImageEntity(Long channelId, ImageDto imageDto) {
@@ -50,6 +50,7 @@ public class ImageServiceImpl implements ImageService {
                 .originalFileName(imageDto.getOriginalFileName())
                 .savedFileName(imageDto.getSavedFileName())
                 .filePath(imageDto.getFilePath())
+                .contentType(imageDto.getContentType())
                 .build();
     }
 
@@ -112,7 +113,7 @@ public class ImageServiceImpl implements ImageService {
      */
     private ImageEmbeddingRequestDto processImage(MultipartFile file, int channelId) {
         try {
-            ImageDto saveImage = awsS3UploadService.upload(file, BUCKET_DIR);
+            ImageDto saveImage = awsS3UploadService.upload(file, BUCKET_DIR+channelId+"/");
             ImageEntity imageEntity = saveImageToDatabase(saveImage, channelId);
             return convertToImageDto(imageEntity.getImageId(), saveImage.getFilePath(), imageEntity.getChannelId());
         } catch (IOException | S3Exception | IllegalStateException e) {
@@ -206,7 +207,8 @@ public class ImageServiceImpl implements ImageService {
                         .imageId(image.getImageId())
                         .originalFileName(image.getOriginalFileName())
                         .savedFileName(image.getSavedFileName())
-                        .filePath(image.getFilePath())
+                        .contentType(image.getContentType())
+                        .fileBlob(awsS3UploadService.getObjectBytes(image.getSavedFileName()))
                         .build())
                 .collect(Collectors.toList());
     }

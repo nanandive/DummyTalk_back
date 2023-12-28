@@ -28,6 +28,9 @@ public class ImageEntity {
     @Column(name="saved_file_name")
     private String savedFileName;
 
+    @Column(name="content_type")
+    private String contentType;
+
     @Column(name="channel_id")
     private Long channelId;
 
