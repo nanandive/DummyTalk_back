@@ -3,6 +3,7 @@ package com.example.DummyTalk.Chat.Channel.Controller;
 import com.example.DummyTalk.Chat.Channel.Dto.ChatDataDto.MessageType;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import com.example.DummyTalk.Chat.Channel.Dto.SummaryDto;
 import com.example.DummyTalk.Chat.Channel.Service.ChatService;
 import com.example.DummyTalk.Common.DTO.ResponseDTO;
 import com.example.DummyTalk.Exception.ChatFailException;
@@ -109,6 +110,12 @@ public class ChatController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
         }
+    }
+
+    /* 채팅 요약 */
+    @PostMapping("/summary")
+    public ResponseEntity<SummaryDto> summaryChat(){
+        return null;
     }
 
 }
