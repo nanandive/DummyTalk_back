@@ -1,4 +1,4 @@
-package com.example.DummyTalk.Chat.Channel.Dto;
+package com.example.DummyTalk.Chat.Channel.Dto.WebRTC;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
