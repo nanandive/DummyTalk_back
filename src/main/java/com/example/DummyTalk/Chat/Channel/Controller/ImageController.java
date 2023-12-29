@@ -60,6 +60,22 @@ public class ImageController {
                     .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
         }
     }
+
+    @GetMapping("/search/{channelId}/{qeury}")
+    public ResponseEntity<ResponseDTO> getImageEmbedding(
+            @PathVariable(value = "channelId") Long channelId,
+            @PathVariable(value = "qeury") String query) {
+
+        try {
+            return ResponseEntity
+                    .ok()
+                    .body(new ResponseDTO(HttpStatus.OK, "이미지 임베딩 조회 성공", imageService.getImageEmbeddList(channelId, query)));
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
+        }
+    }
 }
 
 

@@ -16,4 +16,6 @@ public interface ImageService {
     List<MessageRequest> saveImageToChat(List<ImageEmbeddingRequestDto> imageDto, ImageChatDto imageChatDto);
 
     List<ImageDto> getImageList(Long channelId);
+
+    List<ImageDto> getImageEmbeddList(Long channelId, String query);
 }

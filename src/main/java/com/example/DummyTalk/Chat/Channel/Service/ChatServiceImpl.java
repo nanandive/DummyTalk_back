@@ -86,7 +86,7 @@ public class ChatServiceImpl implements ChatService {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
             ChatDataEntity newChat = chatRepository.save(chatEntity);
 
-            return Math.toIntExact(newChat.getChatId());
+            return newChat.getChatId().intValue();
         } catch (Exception e) {
             throw new ChatFailException("채팅 저장에 실패하였습니다.");
         }
@@ -146,25 +146,25 @@ public class ChatServiceImpl implements ChatService {
     /* Chat 번역 */
     public MessageResponse translateMessage(MessageRequest chat, String nationLanguage) {
 
-        CountDownLatch cdl = new CountDownLatch(1);
-        MessageResponse response = new MessageResponse();
-        WebClient.create()
-                .post()
-                .uri("http://localhost:8000/api/v1/trans/" + nationLanguage)
-                .header("Content-Type", "application/json")
-                .body(BodyInserters.fromValue(chat))
-                .retrieve()
-                .bodyToMono(MessageResponse.class)
-                .doOnTerminate(() -> cdl.countDown())
-                .subscribe((res) -> response.setMessageResponse(res.getNickname(), res.getStatus(), res.getChat()));
+                CountDownLatch cdl = new CountDownLatch(1);
+                MessageResponse response = new MessageResponse();
+                WebClient.create()
+                        .post()
+                        .uri("http://localhost:8000/api/v1/trans/" + nationLanguage)
+                        .header("Content-Type", "application/json")
+                        .body(BodyInserters.fromValue(chat))
+                        .retrieve()
+                        .bodyToMono(MessageResponse.class)
+                        .doOnTerminate(() -> cdl.countDown())
+                        .subscribe((res) -> response.setMessageResponse(res.getNickname(), res.getStatus(), res.getChat()));
 
-        log.info("{}", response);
+                log.info("{}", response);
 
-        try {
-            cdl.await();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+                try {
+                    cdl.await();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
         }
         return response;
     }

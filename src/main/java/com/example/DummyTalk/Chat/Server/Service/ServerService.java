@@ -291,21 +291,11 @@ public class ServerService {
                 .build();
     }
 
-//    @Transactional
-//    /* 서버 초대된 유저 강퇴 */
-//    public void deleteUser(UserDTO userDto) {
-//        String userEmail = userDto.getUserEmail();
-//        User user = userRepository.findByUserEmail(userEmail);
-//        User userId = userRepository.findByUserId(user.getUserId());
-//        Long id = userId.getUserId();
-//        System.out.println("(서비스)>>>>>>>>>>>>>>> : userId" + userId);
-//        userChatRepository.deleteByUserId(id);
-//
-//    }
-
     @Transactional
     /* 서버 초대된 유저 강퇴 */
-    public void deleteUser(long serverId, long userId) {
+    public void deleteUser(long serverId, String userEmail) {
+        User users = userRepository.findByUserEmail(userEmail);
+        Long userId = users.getUserId();
         User user = userRepository.findById(userId).orElseThrow();
         ServerEntity server = serverRepository.findById(serverId).orElseThrow();
 

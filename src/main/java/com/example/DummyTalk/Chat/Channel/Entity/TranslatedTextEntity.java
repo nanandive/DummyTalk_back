@@ -6,6 +6,7 @@ import lombok.ToString;
 
 @Entity
 @Data
+@ToString(exclude = "channelDataId")
 @Table(name = "translated_text")
 public class TranslatedTextEntity {
     @Id
