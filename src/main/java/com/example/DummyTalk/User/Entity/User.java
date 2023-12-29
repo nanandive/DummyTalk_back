@@ -30,7 +30,6 @@ import java.util.List;
 @Builder
 public class User {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -90,6 +89,7 @@ public class User {
         public void run(String... args) throws Exception {
             if (!DDL_AUTO_SETTING.equals("create"))
                 return;
+            String[] list = new String[]{"kor_Hang", "eng_Latn", "jpn_Jpan"};
             for (int i = 1; i <= 3; i++) {
                 UserDTO userDTO = UserDTO.builder()
                         .name("유저" + i)
@@ -97,6 +97,7 @@ public class User {
                         .password("1234")
                         .nickname("유저" + i)
                         .userPhone("123" + i)
+                        .nationalLanguage(list[i - 1])
                         .build();
 
                 userService.signUp(userDTO);
