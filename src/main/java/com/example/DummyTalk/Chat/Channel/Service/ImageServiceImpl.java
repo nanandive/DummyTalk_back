@@ -12,22 +12,21 @@ import com.example.DummyTalk.Chat.Channel.Repository.ImageRepository;
 import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import software.amazon.awssdk.services.s3.model.JSONInput;
+import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -177,22 +176,35 @@ public class ImageServiceImpl implements ImageService {
      * 2. 이미지 저장 성공 시, 채팅방에 이미지 전송
      */
     public void imageEmbedded(List<ImageEmbeddingRequestDto> chat) {
-        try {
+
             log.info("\n귀신 !!!! imageEmbedded chat   : {}", chat);
 
-            WebClient.create()
-                    .post()
-                    .uri("http://localhost:8000/uploadImage")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(chat))
-                    .retrieve()
-                    .bodyToMono(ResponseEntity.class)
-                    .subscribe(res -> log.info(res.toString()));
-
-        } catch (Exception e) {
-            log.error("{}", e);
+            try {
+                WebClient.create()
+                        .post()
+                        .uri("http://localhost:8000/uploadImage")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(chat))
+                        .retrieve();
+            }catch (Exception e){
+                log.error("\nImageUploadController imageEmbedded    : {}", e.getMessage());
+                throw new ChatFailException("이미지 임베딩에 실패하였습니다.");
+            }
         }
-    }
+            // subscribe 메서드를 사용하여 비동기적으로 응답을 처리
+//            response.subscribe(
+//                    res -> {
+//                        log.info("Received response: " + response);
+//                        if(!res.get("message").getAsString().equals("200")) {
+//                            throw new ChatFailException("이미지 임베딩에 실패하였습니다.");
+//                        }
+//                    },
+//                    error -> {
+//                        log.info("Error occurred: " + error.getMessage());
+//                    }
+//            );
+//        }
+
 
     @Override
     public List<ImageDto> getImageList(Long channelId) {
