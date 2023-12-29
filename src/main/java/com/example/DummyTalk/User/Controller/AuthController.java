@@ -20,7 +20,6 @@ public class AuthController {
 
     private final TokenProvider tokenProvider;
 
-
     @PostMapping("/login")
     public ResponseEntity<ResponseDTO> Login(@RequestBody UserDTO userDTO) throws Exception {
 

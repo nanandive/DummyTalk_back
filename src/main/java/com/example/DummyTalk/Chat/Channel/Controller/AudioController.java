@@ -22,8 +22,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
-import com.example.DummyTalk.Chat.Channel.Dto.PayloadRequestDTO;
-import com.example.DummyTalk.Chat.Channel.Dto.PayloadResponseDTO;
+import com.example.DummyTalk.Chat.Channel.Dto.WebRTC.PayloadRequestDTO;
+import com.example.DummyTalk.Chat.Channel.Dto.WebRTC.PayloadResponseDTO;
 import com.example.DummyTalk.Chat.Channel.Enum.PayloadResponseType;
 
 import lombok.extern.slf4j.Slf4j;

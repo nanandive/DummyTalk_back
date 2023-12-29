@@ -65,9 +65,11 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/**").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/**").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/**").permitAll()
+                                //.requestMatchers("/server/**", "/channel/**", "/chat/**").access(USER,ADMIN)
                                 .requestMatchers("/", "/login/**", "/websocket", "/app/**","/googleLogin/**").permitAll()   // index와 login페이지만 허용
                                 .anyRequest().authenticated()
-                ).apply(new JwtSecurityConfig(tokenProvider));
+                )
+                .apply(new JwtSecurityConfig(tokenProvider));
 
         return http.build();
 
