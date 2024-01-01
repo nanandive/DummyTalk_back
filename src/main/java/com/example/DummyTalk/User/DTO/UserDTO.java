@@ -40,7 +40,7 @@ public class UserDTO implements UserDetails {
 
     private String userImgPath;
 
-    private  byte[] userSecretKey;
+    private  String userSecretKey;
 
     private LocalDateTime createAt;
 

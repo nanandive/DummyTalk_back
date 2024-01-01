@@ -18,10 +18,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.kms.KmsClient;
 
 import javax.crypto.SecretKey;
 import java.io.ByteArrayInputStream;
@@ -42,7 +48,7 @@ import java.util.zip.*;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
-public class UserService extends AESUtil {
+public class UserService  {
 
     @Value("${serverAbsolutePath.dir}")
     private String absolutePath;
@@ -53,6 +59,9 @@ public class UserService extends AESUtil {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final AwsS3Service awsS3UploadService;
+    private final AESUtil aesUtil;
+    private final Environment env;
+    private final KmsClient kmsClient;
 
     private final String BUCKET_DIR = "profile/";
 
@@ -71,7 +80,7 @@ public class UserService extends AESUtil {
             byte[] keyBytes = generateRandomBytes(keyLength);
 
             // Base64로 인코딩하여 JWT 시크릿 키 생성
-//            String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
+            String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
 
             // 랜덤한 AES키 생성
 //            SecretKey aesKey = AESUtil.generateAESKey();
@@ -91,7 +100,7 @@ public class UserService extends AESUtil {
             }
 
             // jwt secret key
-            userDTO.setUserSecretKey(keyBytes);
+//            userDTO.setUserSecretKey(keyBytes);
             
             // 비밀번호 인코딩
             userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
@@ -127,13 +136,13 @@ public class UserService extends AESUtil {
             // 안전한 랜덤 바이트 생성
             byte[] keyBytes = generateRandomBytes(keyLength);
 
+            log.info("keyBytes ====> {}", keyBytes);
+
             // Base64로 인코딩하여 JWT 시크릿 키 생성
             String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
-
-            // 랜덤한 AES키 생성
-            SecretKey aesKey = AESUtil.generateAESKey();
-
-            byte[] encrtptJWT = AESUtil.encrypt(jwtKey, aesKey);
+            
+            // AWS KMS(AES 256)를 활용한 암호화
+            String encrtptJWT = aesUtil.encrypt(kmsClient, jwtKey);
 
             // 서울시간으로 가져오기 위해 + 9시간
             LocalDateTime currentDateTime = LocalDateTime.now();
@@ -146,12 +155,6 @@ public class UserService extends AESUtil {
                                         .userSecretKey(encrtptJWT)
                                         .userEmail(email)
                                         .build();
-//
-//            userDTO.setNickname("기본 닉네임");
-//            userDTO.setCredential(credential.substring(0, 500));
-//            userDTO.setCreateAt(plus9Hours);
-//            userDTO.setUserSecretKey(encrtptJWT);
-//            userDTO.setUserEmail(email);
 
             User user = modelMapper.map(userDTO, User.class);
 
