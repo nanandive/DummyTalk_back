@@ -1,4 +1,4 @@
-package com.example.DummyTalk.Chat.Channel.Dto;
+package com.example.DummyTalk.Chat.Channel.Dto.WebRTC;
 
 import com.example.DummyTalk.Chat.Channel.Enum.PayloadResponseType;
 
