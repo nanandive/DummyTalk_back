@@ -1,5 +1,6 @@
 package com.example.DummyTalk.User.DTO;
 
+import com.example.DummyTalk.User.Entity.UserServerCode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -13,7 +14,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -44,6 +47,8 @@ public class UserDTO implements UserDetails {
     private LocalDateTime updateAt;
 
     private String nationalLanguage;
+
+    private List<UserServerCodeDto> userServerCodeList = new ArrayList<>();
 
 
     @Override
