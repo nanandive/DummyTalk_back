@@ -19,6 +19,7 @@ public class MailController {
 
     private final MailService mailService;
 
+    /* 회원가입 이메일 인증 요청 */
     @PostMapping("/userEmail")
     public ResponseEntity<ResponseDTO> authMail(@RequestBody String userEmail){
 
@@ -36,6 +37,7 @@ public class MailController {
         }
     }
 
+    /* 이메일 인증 확인 */
     @PostMapping("/checkNum")
     public ResponseEntity<ResponseDTO> checkNum(@RequestBody int checkNum){
 
@@ -53,21 +55,22 @@ public class MailController {
         }
     }
 
+    /* 비밀번호 찾기 이메일 인증 */
     @PostMapping("/passwordMail")
     public ResponseEntity<ResponseDTO> passwordMail(@RequestBody Map<String,String> passwordMail){
 
-//        try {
+        try {
             String result = mailService.passwordMail(passwordMail.get("userEmail"));
 
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseDTO(HttpStatus.OK, "발급 성공", result));
-//        } catch (RuntimeException e){
-//
-//            return ResponseEntity
-//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, "발급 실패", e.getMessage()));
-//        }
+        } catch (RuntimeException e){
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, "발급 실패", e.getMessage()));
+        }
     }
 
 

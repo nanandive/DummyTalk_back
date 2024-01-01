@@ -82,28 +82,22 @@ public class UserService  {
             // Base64로 인코딩하여 JWT 시크릿 키 생성
             String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
 
-            // 랜덤한 AES키 생성
-//            SecretKey aesKey = AESUtil.generateAESKey();
-
-//            byte[] encrtptJWT = AESUtil.encrypt(jwtKey, aesKey);
+            // AWS KMS(AES 256)를 활용한 암호화
+            String encrtptJWT = aesUtil.encrypt(kmsClient, jwtKey);
 
             // 서울시간으로 가져오기 위해 + 9시간
             LocalDateTime currentDateTime = LocalDateTime.now();
             LocalDateTime plus9Hours = currentDateTime.plusHours(9);
 
-            // 유저에게 현재 시간 추가
-            userDTO.setCreateAt(plus9Hours);
+
+            userDTO.setCreateAt(plus9Hours);                                    // 유저에게 현재 시간 추가
+            userDTO.setUserSecretKey(encrtptJWT);
+            userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword())); // 비밀번호 인코딩
 
             // 닉네임을 입력하지 않았을 경우 이름으로 등록
             if(userDTO.getNickname().isEmpty()){
                 userDTO.setNickname(userDTO.getName());
             }
-
-            // jwt secret key
-//            userDTO.setUserSecretKey(keyBytes);
-            
-            // 비밀번호 인코딩
-            userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
             User user = modelMapper.map(userDTO, User.class);
 
@@ -135,8 +129,6 @@ public class UserService  {
 
             // 안전한 랜덤 바이트 생성
             byte[] keyBytes = generateRandomBytes(keyLength);
-
-            log.info("keyBytes ====> {}", keyBytes);
 
             // Base64로 인코딩하여 JWT 시크릿 키 생성
             String jwtKey = Base64.getEncoder().encodeToString(keyBytes);
