@@ -3,6 +3,8 @@ package com.example.DummyTalk.Chat.Channel.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.DummyTalk.User.Entity.User;
+import com.example.DummyTalk.User.Entity.UserChat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ChannelServiceImpl implements ChannelService {
     private final ChannelRepository channelRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     /* 채널 생성 */
@@ -41,17 +44,28 @@ public class ChannelServiceImpl implements ChannelService {
     @Transactional
     /* 채널 리스트 */
     @Override
-    public List<ChannelDto> findByChannelList(Long serverId) {
-        // 데이터베이스에서 채널 리스트를 조회
-        return channelRepository.findByServerId(serverId)
-                .stream()
-                .map(channelEntity -> ChannelDto.builder()
-                        .channelId(channelEntity.getChannelId())
-                        .serverId(channelEntity.getServerId())
-                        .channelName(channelEntity.getChannelName())
-                        .build())
-                .collect(Collectors.toList());
+    public List<ChannelDto> findByChannelList(Long serverId, Long userId) {
+
+        User user = userRepository.findByUserId(userId);
+        
+        for (UserChat data : user.getUserChats()){
+            if(data.getServer().getId() == serverId){
+
+                // 데이터베이스에서 채널 리스트를 조회
+                return channelRepository.findByServerId(serverId)
+                        .stream()
+                        .map(channelEntity -> ChannelDto.builder()
+                                .channelId(channelEntity.getChannelId())
+                                .serverId(channelEntity.getServerId())
+                                .channelName(channelEntity.getChannelName())
+                                .build())
+                        .collect(Collectors.toList());
+            }
+        }
+
+        throw new RuntimeException("잘못된 접근입니다.");
     }
+
 
     /* 채널 삭제 */
     public void channelDelete(Long id) {
