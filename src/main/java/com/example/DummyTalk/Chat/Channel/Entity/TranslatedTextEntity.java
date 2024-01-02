@@ -20,6 +20,8 @@ public class TranslatedTextEntity {
     @JoinColumn(name = "chat_id")
     private ChatDataEntity channelDataId;
 
+    private String national_language_code;
+
 //text, translated_text, image, img_em_text
 
 
