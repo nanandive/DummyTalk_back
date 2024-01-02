@@ -18,12 +18,9 @@ public class AuthController {
 
     private final AuthService authSerivce;
 
-    private final TokenProvider tokenProvider;
-
+    /* 로그인 */
     @PostMapping("/login")
     public ResponseEntity<ResponseDTO> Login(@RequestBody UserDTO userDTO) throws Exception {
-
-        log.info("Test============>{}", userDTO);
 
         TokenDTO result = authSerivce.login(userDTO);
 

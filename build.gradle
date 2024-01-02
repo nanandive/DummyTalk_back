@@ -65,6 +65,7 @@ java {
         /* AWS */
         implementation(platform("software.amazon.awssdk:bom:2.21.20"))
         implementation("software.amazon.awssdk:s3")
+        implementation('software.amazon.awssdk:kms')
 
         tasks.named('bootBuildImage') {
             builder = 'paketobuildpacks/builder-jammy-base:latest'

@@ -15,13 +15,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.Authentication;
+import software.amazon.awssdk.services.kms.KmsClient;
 
 import java.security.Key;
 import java.util.Date;
 
 @Component
 @Slf4j
-public class TokenProvider extends AESUtil {
+public class TokenProvider {
+
 
     private static final String BEARER_TYPE = "Bearer";   // Bearer 토큰 사용시 앞에 붙이는 prefix문자열
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 8; // 8시간으로 설정
@@ -29,27 +31,27 @@ public class TokenProvider extends AESUtil {
     private Key key;
     private final UserDetailsService userDetailsService;  // 사용자의 인증 및 권한 정보를 가져올수 있음
 
-    public TokenProvider(UserDetailsService userDetailsService){
+    private final AESUtil aesUtil;
+    private final KmsClient kmsClient;
 
-//        String secretKey = "ejiSfPXxOMUuMXEU932MCy0adrbtkSlKeWcVZ0app6DpenURBmjaClhGTB4hR2dzzBhbMshXio46kUOtLs3tdw==";
+    public TokenProvider(UserDetailsService userDetailsService, AESUtil aesUtil, KmsClient kmsClient){
 
-//        byte[] keyBytest = Decoders.BASE64.decode(secretKey);      // Decoders.BASE64.decode() : 해당 메소드를 사용하여 secretKey를 디코딩
-//        this.key = Keys.hmacShaKeyFor(keyBytest);                  // hmacShaKeyFor() : SecretKey를 생성
+        String secretKey = "ejiSfPXxOMUuMXEU932MCy0adrbtkSlKeWcVZ0app6DpenURBmjaClhGTB4hR2dzzBhbMshXio46kUOtLs3tdw==";
+
+        byte[] keyBytest = Decoders.BASE64.decode(secretKey);      // Decoders.BASE64.decode() : 해당 메소드를 사용하여 secretKey를 디코딩
+        this.key = Keys.hmacShaKeyFor(keyBytest);                  // hmacShaKeyFor() : SecretKey를 생성
         this.userDetailsService = userDetailsService;
+        this.aesUtil = aesUtil;
+        this.kmsClient = kmsClient;
     }
 
 
     /* 1. 토큰(xxxxx.yyyyy.zzzzz) 생성 메소드 */
     public TokenDTO generateTokenDTO(User user) throws Exception {
 
-        log.info("AESUtil.getKey() ==>{}", AESUtil.getKey());
-        
-        // AES키를 활용한 복호화
-//        String decryptJWT = AESUtil.decrypt(user.getUserSecretKey(), AESUtil.getKey());
+        String decryptJWT = aesUtil.decrypt(kmsClient, user.getUserSecretKey());
 
-//        byte[] keyBytest = Decoders.BASE64.decode(decryptJWT);
-//        this.key = Keys.hmacShaKeyFor(keyBytest);
-        this.key = Keys.hmacShaKeyFor(user.getUserSecretKey());
+        this.key = Keys.hmacShaKeyFor(decryptJWT.getBytes());
 
         /* 1. 회원 아이디를 "sub"이라는 클레임으로 토큰으로 추가 */
         Claims claims = Jwts.claims().setSubject(String.valueOf(user.getUserId()));    // ex) { sub : memberId }
