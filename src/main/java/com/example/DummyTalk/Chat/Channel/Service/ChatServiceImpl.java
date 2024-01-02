@@ -105,7 +105,7 @@ public class ChatServiceImpl implements ChatService {
                     .body(BodyInserters.fromValue(chatDTO))
                     .retrieve()
                     .bodyToMono(ResponseEntity.class)
-                    .subscribe(res -> log.info(res.toString()));
+                    .subscribe();
 
             return newChat.getChatId().intValue();
         } catch (Exception e) {
