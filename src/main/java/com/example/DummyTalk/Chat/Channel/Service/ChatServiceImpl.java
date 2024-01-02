@@ -1,5 +1,7 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
@@ -91,16 +93,19 @@ public class ChatServiceImpl implements ChatService {
         try {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
             ChatDataEntity newChat = chatRepository.save(chatEntity);
+
             ChatDTO chatDTO = ChatDTO.builder()
                                         .chatId(newChat.getChatId())
                                         .channelId(newChat.getChannelId().getChannelId())
                                         .message(newChat.getMessage())
                                         .language(newChat.getLanguage())
+                                        .nickname(user.getNickname())
                                         .build();
+
             // springBoot => python
             WebClient.create()
                     .post()
-                    .uri("http://localhost:8000/saveChatData")
+                    .uri("http://localhost:8000/api/search/saveChatData")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(chatDTO))
                     .retrieve()
