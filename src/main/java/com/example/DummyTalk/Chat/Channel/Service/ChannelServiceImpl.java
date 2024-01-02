@@ -49,7 +49,7 @@ public class ChannelServiceImpl implements ChannelService {
         User user = userRepository.findByUserId(userId);
         
         for (UserChat data : user.getUserChats()){
-            if(data.getServer().getId() == serverId){
+            if(data.getServer().getId().equals(serverId)){
 
                 // 데이터베이스에서 채널 리스트를 조회
                 return channelRepository.findByServerId(serverId)
@@ -58,6 +58,7 @@ public class ChannelServiceImpl implements ChannelService {
                                 .channelId(channelEntity.getChannelId())
                                 .serverId(channelEntity.getServerId())
                                 .channelName(channelEntity.getChannelName())
+                                .channelType(channelEntity.getChannelType())
                                 .build())
                         .collect(Collectors.toList());
             }
