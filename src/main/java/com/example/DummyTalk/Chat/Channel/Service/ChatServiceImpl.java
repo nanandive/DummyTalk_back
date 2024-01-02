@@ -3,8 +3,13 @@ package com.example.DummyTalk.Chat.Channel.Service;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
+
+import com.example.DummyTalk.Chat.Channel.Dto.ChatDTO;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -34,6 +39,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final ChannelParticipantRepository channelParticipantRepository;
+    private final ModelMapper modelMapper;
 
 
     /* 채팅 데이터에 들어가는 유저 정보 Entity -> Dto 변환 */
@@ -85,6 +91,21 @@ public class ChatServiceImpl implements ChatService {
         try {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
             ChatDataEntity newChat = chatRepository.save(chatEntity);
+            ChatDTO chatDTO = ChatDTO.builder()
+                                        .chatId(newChat.getChatId())
+                                        .channelId(newChat.getChannelId().getChannelId())
+                                        .message(newChat.getMessage())
+                                        .language(newChat.getLanguage())
+                                        .build();
+            // springBoot => python
+            WebClient.create()
+                    .post()
+                    .uri("http://localhost:8000/saveChatData")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromValue(chatDTO))
+                    .retrieve()
+                    .bodyToMono(ResponseEntity.class)
+                    .subscribe(res -> log.info(res.toString()));
 
             return newChat.getChatId().intValue();
         } catch (Exception e) {
