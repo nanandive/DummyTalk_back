@@ -45,7 +45,7 @@ public class ChatServiceImpl implements ChatService {
     /* 채팅 데이터에 들어가는 유저 정보 Entity -> Dto 변환 */
     private ChatSenderDTO userToDto(User user) {
         return ChatSenderDTO.builder()
-                .sender(user.getUserId())
+                .userId(user.getUserId())
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .userImgPath(user.getUserImgPath())
@@ -154,7 +154,7 @@ public class ChatServiceImpl implements ChatService {
 
         try {
             return chatRepository.findAllByChannelId(channelEntity).stream()
-                    .map(this::chatToDto)
+                    .map(entity -> modelMapper.map(entity, MessageHistoryDto.class))
                     .collect(Collectors.toList());
 
         } catch (DataAccessException e) {
