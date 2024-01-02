@@ -58,6 +58,7 @@ public class ChannelServiceImpl implements ChannelService {
                                 .channelId(channelEntity.getChannelId())
                                 .serverId(channelEntity.getServerId())
                                 .channelName(channelEntity.getChannelName())
+                                .channelType(channelEntity.getChannelType())
                                 .build())
                         .collect(Collectors.toList());
             }

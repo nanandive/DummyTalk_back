@@ -1,11 +1,14 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +18,8 @@ public class MessageResponse {
     private MessageRequest chat;
     private String nickname;
     private String status;
+    @JsonFormat(pattern = "YYYY-MM-DD HH:mm:ss")
+    private LocalDateTime createdAt;
     private List<MessageRequest> chatList;
 
     public MessageResponse(String nickname, String status, MessageRequest chat) {
