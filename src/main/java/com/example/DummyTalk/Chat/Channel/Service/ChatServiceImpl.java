@@ -1,5 +1,7 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
@@ -45,7 +47,7 @@ public class ChatServiceImpl implements ChatService {
     /* 채팅 데이터에 들어가는 유저 정보 Entity -> Dto 변환 */
     private ChatSenderDTO userToDto(User user) {
         return ChatSenderDTO.builder()
-                .sender(user.getUserId())
+                .userId(user.getUserId())
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .userImgPath(user.getUserImgPath())
@@ -91,16 +93,19 @@ public class ChatServiceImpl implements ChatService {
         try {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
             ChatDataEntity newChat = chatRepository.save(chatEntity);
+
             ChatDTO chatDTO = ChatDTO.builder()
                                         .chatId(newChat.getChatId())
                                         .channelId(newChat.getChannelId().getChannelId())
                                         .message(newChat.getMessage())
                                         .language(newChat.getLanguage())
+                                        .nickname(user.getNickname())
                                         .build();
+
             // springBoot => python
             WebClient.create()
                     .post()
-                    .uri("http://localhost:8000/saveChatData")
+                    .uri("http://localhost:8000/api/search/saveChatData")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(chatDTO))
                     .retrieve()
@@ -154,7 +159,7 @@ public class ChatServiceImpl implements ChatService {
 
         try {
             return chatRepository.findAllByChannelId(channelEntity).stream()
-                    .map(this::chatToDto)
+                    .map(entity -> modelMapper.map(entity, MessageHistoryDto.class))
                     .collect(Collectors.toList());
 
         } catch (DataAccessException e) {
