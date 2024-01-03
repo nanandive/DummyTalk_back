@@ -82,7 +82,7 @@ public class ChatServiceImpl implements ChatService {
      *  @return : 채팅 아이디
      */
     @Transactional
-    public int saveChatData(MessageRequest message) {
+    public ChatDataEntity saveChatData(MessageRequest message) {
 
         User user = userRepository.findByUserId((long) message.getSender());
         ChannelEntity channel = channelRepository.findByChannelId((long) message.getChannelId());
@@ -112,7 +112,7 @@ public class ChatServiceImpl implements ChatService {
                     .bodyToMono(ResponseEntity.class)
                     .subscribe();
 
-            return newChat.getChatId().intValue();
+            return newChat;
         } catch (Exception e) {
             throw new ChatFailException("채팅 저장에 실패하였습니다.");
         }

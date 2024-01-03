@@ -5,6 +5,7 @@ import java.util.List;
 import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
 
 public interface ChatService {
 
@@ -13,7 +14,7 @@ public interface ChatService {
      *  @param message : 채팅 내용
      *  @return : 채팅 아이디
      */
-    int saveChatData(MessageRequest message);
+    ChatDataEntity saveChatData(MessageRequest message);
 
     /*** 채널 아이디로 조회한 채팅 데이터 리스트
      * @param channelId 채널 아이디
