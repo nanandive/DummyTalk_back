@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,6 +26,8 @@ public class MessageRequest {
     private String type;
     private String filePath;
     private int imageId;
+    @JsonFormat(pattern = "YYYY-MM-DD HH:mm:ss")
+    private LocalDateTime createdAt;
     private List<MessageRequest> chatList;
     private MultipartFile[] fileInfo;
     private MultipartFile file;
