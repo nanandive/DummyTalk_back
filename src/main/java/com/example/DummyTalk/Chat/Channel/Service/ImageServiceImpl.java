@@ -182,7 +182,7 @@ public class ImageServiceImpl implements ImageService {
 
             WebClient.create()
                     .post()
-                    .uri("http://localhost:8000/uploadImage")
+                    .uri("http://localhost:8000/api/image/upload")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(chat))
                     .retrieve()
@@ -193,19 +193,7 @@ public class ImageServiceImpl implements ImageService {
             log.error("{}", e);
         }
     }
-            // subscribe 메서드를 사용하여 비동기적으로 응답을 처리
-//            response.subscribe(
-//                    res -> {
-//                        log.info("Received response: " + response);
-//                        if(!res.get("message").getAsString().equals("200")) {
-//                            throw new ChatFailException("이미지 임베딩에 실패하였습니다.");
-//                        }
-//                    },
-//                    error -> {
-//                        log.info("Error occurred: " + error.getMessage());
-//                    }
-//            );
-//        }
+
 
 
     @Override
@@ -227,16 +215,4 @@ public class ImageServiceImpl implements ImageService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<ImageDto> getImageEmbeddList(Long channelId, String query) {
-
-//        WebClient.create()
-//                .get()
-//                .uri("http://localhost:8000/textImageSearch/"+channelId.intValue()+"/"+query)
-//                .retrieve()
-//                .bodyToMono(ResponseEntity.class)
-//                .subscribe(res ->  log.info("\nImageServiceImpl getImageEmbeddList    : {}", res));
-
-        return null;
-    }
 }
