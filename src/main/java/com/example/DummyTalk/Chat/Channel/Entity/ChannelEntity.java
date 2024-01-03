@@ -52,6 +52,10 @@ public class ChannelEntity extends BaseTimeEntity {
     @OneToMany(mappedBy = "channelId", fetch = FetchType.LAZY)
     private List<ChatDataEntity> chatDataEntityList = new ArrayList<>();
 
+    // summary와의 연관관계
+    @OneToOne(mappedBy = "channelEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private SummaryEntity summaryEntity;
+
 
 
 }
