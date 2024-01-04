@@ -1,4 +1,5 @@
 package com.example.DummyTalk.Chat.Server.Service;
+import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Repository.ChannelRepository;
 import com.example.DummyTalk.Chat.Server.Dto.ServerDto;
@@ -17,6 +18,7 @@ import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.modelmapper.TypeToken;
 import org.apache.catalina.Server;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-
+import java.lang.reflect.Type;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -196,6 +198,8 @@ public class ServerService {
     public ServerDto findById(Long id) {
         Optional<ServerEntity> optionalServerEntity = serverRepository.findById(id);
 
+        Type channelListType = new TypeToken<List<ChannelDto>>() {}.getType();
+
         if (optionalServerEntity.isPresent()) {
             ServerEntity serverEntity = optionalServerEntity.get();
             return ServerDto.builder()
@@ -206,6 +210,7 @@ public class ServerService {
                     .invitedCode(serverEntity.getInvitedCode())
                     .userName(serverEntity.getUserName())
                     .currentUsers(serverEntity.getCurrentUsers())
+                    .channelDtoList(modelMapper.map(serverEntity.getChannelEntityList(), channelListType))
                     .build();
         } else {
             return null;
