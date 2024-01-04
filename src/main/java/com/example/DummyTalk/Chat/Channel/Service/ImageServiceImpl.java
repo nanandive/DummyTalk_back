@@ -16,6 +16,7 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -182,10 +183,12 @@ public class ImageServiceImpl implements ImageService {
             try {
                 WebClient.create()
                         .post()
-                        .uri("http://localhost:8000/uploadImage")
+                        .uri("http://localhost:8000/api/image/upload")
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(chat))
-                        .retrieve();
+                        .retrieve()
+                        .bodyToMono(ResponseEntity.class)
+                        .subscribe(res-> log.info("\nImageServiceImpl imageEmbedded    : {}", res));
             }catch (Exception e){
                 log.error("\nImageUploadController imageEmbedded    : {}", e.getMessage());
                 throw new ChatFailException("이미지 임베딩에 실패하였습니다.");
