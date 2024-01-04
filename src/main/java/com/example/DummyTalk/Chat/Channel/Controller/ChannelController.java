@@ -35,9 +35,9 @@ public class ChannelController {
     /* 채널 생성, 채널 타입 insert */
     @PostMapping("/writePro1")
     public ResponseEntity<?> serverWritePro2(@ModelAttribute ChannelDto channelDto) {
-        channelServiceImpl.createChannelType(channelDto);
+        ChannelDto responseChannelDTO = channelServiceImpl.createChannelType(channelDto);
         System.out.println(">>>>>>>>>" + channelDto);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseChannelDTO);
     }
 
     /* 채널 삭제 */

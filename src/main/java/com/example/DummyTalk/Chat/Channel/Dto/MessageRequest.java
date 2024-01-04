@@ -1,13 +1,16 @@
 package com.example.DummyTalk.Chat.Channel.Dto;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
@@ -24,6 +27,8 @@ public class MessageRequest {
     private String type;
     private String filePath;
     private int imageId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING ,pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
     private List<MessageRequest> chatList;
     private MultipartFile[] fileInfo;
     private MultipartFile file;

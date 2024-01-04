@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Entity.UserChat;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChannelServiceImpl implements ChannelService {
     private final ChannelRepository channelRepository;
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     @Transactional
     /* 채널 생성 */
@@ -92,7 +95,7 @@ public class ChannelServiceImpl implements ChannelService {
 
 
     /*채널 타입 로직추가 */
-    public void createChannelType(ChannelDto channelDto) {
+    public ChannelDto createChannelType(ChannelDto channelDto) {
         ChannelEntity.ChannelType type = channelDto.getChannelType();
         if (type == null) {
             type = ChannelEntity.ChannelType.TEXT; // 기본값 설정
@@ -104,7 +107,8 @@ public class ChannelServiceImpl implements ChannelService {
                 .channelType(type)
                 .build();
 
-        channelRepository.save(channelEntity);
+        ChannelEntity responseChannelEntity = channelRepository.save(channelEntity);
+        return modelMapper.map(responseChannelEntity, ChannelDto.class);
     }
 
 

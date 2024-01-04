@@ -1,23 +1,32 @@
 package com.example.DummyTalk.Chat.Channel.Controller;
 
-import com.example.DummyTalk.Chat.Channel.Dto.ChatDataDto.MessageType;
-import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
-import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
-import com.example.DummyTalk.Chat.Channel.Dto.SummaryDto;
-import com.example.DummyTalk.Chat.Channel.Service.ChatService;
-import com.example.DummyTalk.Common.DTO.ResponseDTO;
-import com.example.DummyTalk.Exception.ChatFailException;
-import com.example.DummyTalk.Jwt.JwtFilter;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.DummyTalk.Chat.Channel.Dto.ChatDataDto.MessageType;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageHistoryDto;
+import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import com.example.DummyTalk.Chat.Channel.Dto.SummaryDto;
+import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
+import com.example.DummyTalk.Chat.Channel.Service.ChatService;
+import com.example.DummyTalk.Common.DTO.ResponseDTO;
+import com.example.DummyTalk.Exception.ChatFailException;
+import com.example.DummyTalk.Jwt.JwtFilter;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -53,9 +62,10 @@ public class ChatController {
         }
 
         if (message.getMessage() != null && !message.getMessage().isEmpty()) {
-            int chatId = chatService.saveChatData(message);
-            message.setChatId((long) chatId);
+            ChatDataEntity chat = chatService.saveChatData(message);
+            message.setChatId(chat.getChatId());
             message.setType("TEXT");
+            message.setCreatedAt(chat.getCreatedAt());
             log.info("\n handleMessage TEXT   : {}", message);
             return new MessageResponse(message.getNickname(), "일반 텍스트 채팅 메시지 전송 성공", message);
         } else {
