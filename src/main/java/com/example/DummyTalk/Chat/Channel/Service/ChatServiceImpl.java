@@ -89,33 +89,34 @@ public class ChatServiceImpl implements ChatService {
 
         if(user == null ) throw new ChatFailException("유저 조회에 실패하였습니다. ");
         if(channel == null ) throw new ChatFailException("채널 조회에 실패하였습니다.");
-
+        ChatDataEntity newChat = null;
+        ChatDTO chatDTO = null;
         try {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
-            ChatDataEntity newChat = chatRepository.save(chatEntity);
+            newChat = chatRepository.save(chatEntity);
 
-            ChatDTO chatDTO = ChatDTO.builder()
+            chatDTO = ChatDTO.builder()
                                         .chatId(newChat.getChatId())
                                         .channelId(newChat.getChannelId().getChannelId())
                                         .message(newChat.getMessage())
                                         .language(newChat.getLanguage())
                                         .nickname(user.getNickname())
                                         .build();
-
-            // springBoot => python
-            WebClient.create()
-                    .post()
-                    .uri("http://localhost:8000/api/search/saveChatData")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(chatDTO))
-                    .retrieve()
-                    .bodyToMono(ResponseEntity.class)
-                    .subscribe();
-
-            return newChat;
         } catch (Exception e) {
             throw new ChatFailException("채팅 저장에 실패하였습니다.");
         }
+
+        // springBoot => python
+        WebClient.create()
+                .post()
+                .uri("http://localhost:8000/api/search/saveChatData")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(chatDTO))
+                .retrieve()
+                .bodyToMono(ResponseEntity.class)
+                .subscribe();
+
+        return newChat;
     }
 
     /***
