@@ -17,7 +17,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION_HEADER = "Authorization"; // 사용자가 request header에 Authorization 속성으로 token을 던진다.
 
-    public static final String BEARER_PREFIX = "Bearer"; // 사용자가 던지는 토큰 값만 파싱하기 위한 접두사 저장용 변수(접두사는 Bearer라는 표준으로 정의됨)
+    public static final String BEARER_PREFIX = "Bearer";               // 사용자가 던지는 토큰 값만 파싱하기 위한 접두사 저장용 변수(접두사는 Bearer라는 표준으로 정의됨)
 
     private final TokenProvider tokenProvider;
 
@@ -39,7 +39,6 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response); // 다음 filterchain 진행
     }
 
-
     /* Request Header에서 토큰 정보 꺼내기(여기서 위에서 선언한 두개의 static변수를 사용할꺼)*/
     public static String resolveToken(HttpServletRequest request){
 
@@ -50,5 +49,4 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         return null;
     }
-
 }

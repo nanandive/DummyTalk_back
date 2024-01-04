@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
@@ -61,15 +62,18 @@ public class SecurityConfig {
                 .cors(cors ->  cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers(HttpMethod.GET, "/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/**").permitAll()
-                                .requestMatchers(HttpMethod.DELETE, "/**").permitAll()
-                                .requestMatchers(HttpMethod.PUT, "/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 //.requestMatchers("/server/**", "/channel/**", "/chat/**").access(USER,ADMIN)
                                 .requestMatchers("/", "/login/**", "/websocket", "/app/**","/googleLogin/**").permitAll()   // index와 login페이지만 허용
-                                .anyRequest().authenticated()
-                )
-                .apply(new JwtSecurityConfig(tokenProvider));
+                                .anyRequest().permitAll()
+                ).exceptionHandling(exception ->
+                        exception
+                                /* 기본 시큐리티 설정에서 JWT 토큰과 관련된 유효성과 권한 체크용 설정*/
+                                .authenticationEntryPoint(jwtAuthenticationEntryPoint)//  필요한 권한 없이 접근(403)
+                                .accessDeniedHandler(jwtAccessDeniedHandler)
+                ).sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                ).apply(new JwtSecurityConfig(tokenProvider));
 
         return http.build();
 
@@ -103,7 +107,6 @@ public class SecurityConfig {
                 , "X-Requested-With"));
         configuration.setExposedHeaders(List.of("Access-Control-Allow-Origin"));                   // setExposedHeaders() : 서버에서 클라이언트로 응답할 때 노출할 수 있는 헤더의 목록을 지정
         configuration.addAllowedMethod("*");                                                           // addAllowedMethod() : Get/Post/Delete.. 등 요청의 모든 방식을 허용
-
         configuration.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", configuration);                                 // 특정 URL이 아닌 모든 URL에 CORS 적용

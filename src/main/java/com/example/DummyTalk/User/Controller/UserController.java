@@ -19,6 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -37,6 +40,7 @@ public class UserController {
     private String absolutePath;
 
     private final UserService userService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     /* 회원가입 */
     @PostMapping("/signUp")
@@ -97,22 +101,42 @@ public class UserController {
     }
 
     /* 친구 요청 */
-    @PostMapping("/friend/{userId}")
-    public ResponseEntity<ResponseDTO> saveFriend(@PathVariable String userId,
-                                                  @RequestBody Map<String, String> email){
+//    @PostMapping("/friend/{userId}")
+//    public ResponseEntity<ResponseDTO> saveFriend(@PathVariable String userId,
+//                                                  @RequestBody Map<String, String> email){
+//
+//        try{
+//            FriendDTO result = userService.saveFriend(userId, email);
+//
+//            return  ResponseEntity
+//                    .status(HttpStatus.OK)
+//                    .body(new ResponseDTO(HttpStatus.OK, "친구 신청을 보냈습니다.", result));
+//
+//        } catch (RuntimeException e){
+//            return  ResponseEntity
+//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null));
+//        }
+//    }
+
+    @MessageMapping("/friend/{userId}")
+    public void saveFriend(@DestinationVariable String userId,
+                                                  Map<String, String> message){
+
 
         try{
-            FriendDTO result = userService.saveFriend(userId, email);
+            FriendDTO result = userService.saveFriend(userId, message);
 
-            return  ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new ResponseDTO(HttpStatus.OK, "친구 신청을 보냈습니다.", result));
+            simpMessagingTemplate.convertAndSend("/topic/friend","성공");
+            simpMessagingTemplate.convertAndSend("/topic/friend/" + userId, "친구 신청을 보냈습니다");
 
         } catch (RuntimeException e){
-            return  ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null));
+
+            simpMessagingTemplate.convertAndSend("/topic/friend","실패");
+            simpMessagingTemplate.convertAndSend("/topic/friend/"+userId, e.getMessage());
         }
+
+
     }
 
     /* 친구 요청 조회 */
