@@ -198,7 +198,7 @@ public class ServerService {
     public ServerDto findById(Long id) {
         Optional<ServerEntity> optionalServerEntity = serverRepository.findById(id);
 
-        Type listType = new TypeToken<List<ChannelDto>>() {}.getType();
+        Type channelListType = new TypeToken<List<ChannelDto>>() {}.getType();
 
         if (optionalServerEntity.isPresent()) {
             ServerEntity serverEntity = optionalServerEntity.get();
@@ -210,7 +210,7 @@ public class ServerService {
                     .invitedCode(serverEntity.getInvitedCode())
                     .userName(serverEntity.getUserName())
                     .currentUsers(serverEntity.getCurrentUsers())
-                    .channelDtoList(modelMapper.map(serverEntity.getChannelEntityList(), listType))
+                    .channelDtoList(modelMapper.map(serverEntity.getChannelEntityList(), channelListType))
                     .build();
         } else {
             return null;
