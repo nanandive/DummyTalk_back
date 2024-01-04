@@ -220,7 +220,7 @@ public class ServerService {
     /* 서버 수정 */
     @Transactional
     public void updateServer(ServerSettingDto serverSettingDto) {
-
+        System.out.println(">>>>>>>>>>>>>>>>, " + serverSettingDto.getServerId());
         log.info("serverSettingDto {}", serverSettingDto);
         try {
             ServerEntity serverEntity = serverRepository.findById(serverSettingDto.getServerId()).orElseThrow(() -> new IOException("Error"));
@@ -252,6 +252,7 @@ public class ServerService {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없음"));
 
         System.out.println("1-1>>>>>>>>>>>>>>>> : " + userId);
+        System.out.println("dto>>>>>>>>>>>>>>>" + userServerCodeDto.getServerId());
 
         // serverId를 가지고 서버 조회
         ServerEntity serverEntity = serverRepository.findById(userServerCodeDto.getServerId())
