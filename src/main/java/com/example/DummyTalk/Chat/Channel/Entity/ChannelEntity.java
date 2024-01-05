@@ -49,7 +49,7 @@ public class ChannelEntity extends BaseTimeEntity {
 
     /* 채널과 채널 데이터와의 연관관계 (부모) */
     @Builder.Default
-    @OneToMany(mappedBy = "channelId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "channelId", fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
     private List<ChatDataEntity> chatDataEntityList = new ArrayList<>();
 
     // summary와의 연관관계
