@@ -27,4 +27,6 @@ public class ChatDTO {
 
     private String nickname;
 
+    private String createdAt;
+
 }

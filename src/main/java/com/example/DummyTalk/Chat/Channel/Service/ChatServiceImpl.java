@@ -1,6 +1,7 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -95,12 +96,16 @@ public class ChatServiceImpl implements ChatService {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
             newChat = chatRepository.save(chatEntity);
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String createAt = newChat.getCreatedAt().format(formatter);
+
             chatDTO = ChatDTO.builder()
                                         .chatId(newChat.getChatId())
                                         .channelId(newChat.getChannelId().getChannelId())
                                         .message(newChat.getMessage())
                                         .language(newChat.getLanguage())
                                         .nickname(user.getNickname())
+                                        .createdAt(createAt)
                                         .build();
         } catch (Exception e) {
             throw new ChatFailException("채팅 저장에 실패하였습니다.");

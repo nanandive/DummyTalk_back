@@ -37,6 +37,8 @@ public class ChatDataEntity extends BaseTimeEntity {
     private String audioUrl;  // 추가: 오디오 URL
     private int audioChatId;  // 추가: 오디오 채팅 ID
 
+    private String engMessage; // 추가 : 영어 번역 텍스트
+
 
     /* 채널 데이터와 번역된 텍스트의 연관관계 (부모) */
     @Builder.Default
