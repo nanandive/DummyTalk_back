@@ -103,7 +103,7 @@ public class ChatServiceImpl implements ChatService {
                                         .chatId(newChat.getChatId())
                                         .channelId(newChat.getChannelId().getChannelId())
                                         .message(newChat.getMessage())
-                                        .language(newChat.getLanguage())
+                                        .language(user.getNationalLanguage())
                                         .nickname(user.getNickname())
                                         .createdAt(createAt)
                                         .build();
