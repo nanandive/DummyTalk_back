@@ -37,6 +37,7 @@ public class ChatDataEntity extends BaseTimeEntity {
     private String audioUrl;  // 추가: 오디오 URL
     private int audioChatId;  // 추가: 오디오 채팅 ID
 
+    @Column(name= "engMessage", length = 1000)
     private String engMessage; // 추가 : 영어 번역 텍스트
 
 

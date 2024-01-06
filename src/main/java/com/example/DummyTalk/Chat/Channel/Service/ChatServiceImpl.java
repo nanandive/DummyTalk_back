@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
+import com.example.DummyTalk.Aws.AwsS3Service;
 import com.example.DummyTalk.Chat.Channel.Dto.ChatDTO;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
 import org.modelmapper.ModelMapper;
@@ -43,6 +44,7 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final ChannelParticipantRepository channelParticipantRepository;
     private final ModelMapper modelMapper;
+    private final AwsS3Service awsS3Service;
 
 
     /* 채팅 데이터에 들어가는 유저 정보 Entity -> Dto 변환 */
@@ -137,6 +139,22 @@ public class ChatServiceImpl implements ChatService {
     }
 
     /***
+     *  chat message URL에서 AWS ObejectKey 추출
+     *  @param url : 이미지 URL
+     *  @return : AWS ObjectKey
+     */
+    private String extractSubstring(String url) {
+        String awsPath = "amazonaws.com/";
+
+        int index = url.indexOf(awsPath);
+
+        String sss = url.substring(index + awsPath.length());
+
+        log.info("\n extractSubstring   : {}", sss);
+        return sss;
+    }
+
+    /***
      *  채팅 내용 삭제
      *  @param chatId : 채팅 아이디
      *  @return 삭제된 채팅 아이디
@@ -150,8 +168,14 @@ public class ChatServiceImpl implements ChatService {
 
         if( chat == null ) throw new ChatFailException("오류가 발생하였습니다. 다시 시도해주세요.");
 
+        if(chat.getType().equals("IMAGE")){
+            String objectKey = extractSubstring(chat.getMessage());
+            awsS3Service.deleteObject(objectKey);
+        }
+
         return chat.delete();
     }
+
 
     /*** 채널 아이디로 조회한 채팅 데이터 리스트
      * @param channelId 채널 아이디

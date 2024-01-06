@@ -67,4 +67,19 @@ public class AwsS3Service {
 
         return null;
     }
+
+    public void deleteObject(String keyName) {
+        try {
+            log.info("\nAwsS3Service deleteObject : " + keyName);
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(env.getProperty("cloud.s3.bucket"))
+                    .key(keyName)
+                    .build();
+
+            s3Client.deleteObject(deleteObjectRequest);
+        } catch (S3Exception e) {
+            log.error(e.awsErrorDetails().errorMessage());
+            log.error("AwsS3Service deleteObject error : " + e.getMessage());
+        }
+    }
 }
