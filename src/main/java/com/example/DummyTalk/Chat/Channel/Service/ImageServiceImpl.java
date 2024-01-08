@@ -52,6 +52,7 @@ public class ImageServiceImpl implements ImageService {
 
     private ChatDataEntity convertToChatEntity(User user, ChannelEntity channel, String filePath, int imageId) {
         return ChatDataEntity.builder()
+                .imageId((long)imageId)
                 .sender(user)
                 .channelId(channel)
                 .message(filePath)
@@ -162,7 +163,6 @@ public class ImageServiceImpl implements ImageService {
             log.error(e.getMessage());
             throw new ChatFailException("채팅 데이터 저장에 실패하였습니다.");
         }
-
     }
 
 

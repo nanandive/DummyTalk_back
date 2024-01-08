@@ -135,9 +135,9 @@ public class ChatServiceImpl implements ChatService {
     public void checkParticipant(int channelId, Long userId) {
         ChannelParticipantEntity channel =
                 channelParticipantRepository.findByChannelIdAndUserId((long)channelId, userId);
-        if (channel == null) {
-            throw new ChatFailException("초대 된 채널이 아닙니다.");
-        }
+//        if (channel == null) {
+//            throw new ChatFailException("초대 된 채널이 아닙니다.");
+//        }
     }
 
     /***
@@ -170,12 +170,12 @@ public class ChatServiceImpl implements ChatService {
 
         if( chat == null ) throw new ChatFailException("오류가 발생하였습니다. 다시 시도해주세요.");
 
-        if(chat.getType().equals("IMAGE")){
-            String objectKey = extractSubstring(chat.getMessage());
-            awsS3Service.deleteObject(objectKey);
-            imageRepository.deleteById(chat.getImageId());
-            milvusDelete(chat.getImageId());
-        }
+//        if(chat.getType().equals("IMAGE")){
+//            String objectKey = extractSubstring(chat.getMessage());
+//            awsS3Service.deleteObject(objectKey);
+//            imageRepository.deleteById(chat.getImageId());
+//            milvusDelete(chat.getImageId());
+//        }
         return chat.delete();
     }
 
