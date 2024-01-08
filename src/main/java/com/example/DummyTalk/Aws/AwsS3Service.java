@@ -25,6 +25,13 @@ public class AwsS3Service {
     @Value("${chatAbsolutePath.dir}")
     private String chatAbsolutePath;
 
+    /***
+     * 이미지 업로드
+     * @param file
+     * @param BUCKET_DIR : 업로드할 버킷 디렉토리 (ex. channel-1/, profile/)
+     * @return imageDto
+     * @throws IOException
+     */
     public ImageDto upload(MultipartFile file, String BUCKET_DIR) throws IOException {
 
         try (InputStream fileStream = file.getInputStream()) {

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.example.DummyTalk.Aws.AwsS3Service;
 import com.example.DummyTalk.Chat.Channel.Dto.ChatDTO;
 import com.example.DummyTalk.Chat.Channel.Dto.MessageRequest;
+import com.example.DummyTalk.Chat.Channel.Repository.ImageRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.MediaType;
@@ -45,6 +46,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChannelParticipantRepository channelParticipantRepository;
     private final ModelMapper modelMapper;
     private final AwsS3Service awsS3Service;
+    private final ImageRepository imageRepository;
 
 
     /* 채팅 데이터에 들어가는 유저 정보 Entity -> Dto 변환 */
@@ -133,9 +135,9 @@ public class ChatServiceImpl implements ChatService {
     public void checkParticipant(int channelId, Long userId) {
         ChannelParticipantEntity channel =
                 channelParticipantRepository.findByChannelIdAndUserId((long)channelId, userId);
-//        if (channel == null) {
-//            throw new ChatFailException("초대 된 채널이 아닙니다.");
-//        }
+        if (channel == null) {
+            throw new ChatFailException("초대 된 채널이 아닙니다.");
+        }
     }
 
     /***
@@ -171,9 +173,22 @@ public class ChatServiceImpl implements ChatService {
         if(chat.getType().equals("IMAGE")){
             String objectKey = extractSubstring(chat.getMessage());
             awsS3Service.deleteObject(objectKey);
+            imageRepository.deleteById(chat.getImageId());
+            milvusDelete(chat.getImageId());
         }
-
         return chat.delete();
+    }
+
+    // TODO: milvus delete
+    private void milvusDelete(Long imageId) {
+        WebClient.create()
+                .post()
+                .uri("http://localhost:8000/api/search/deleteImage")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(imageId))
+                .retrieve()
+                .bodyToMono(ResponseEntity.class)
+                .subscribe();
     }
 
 

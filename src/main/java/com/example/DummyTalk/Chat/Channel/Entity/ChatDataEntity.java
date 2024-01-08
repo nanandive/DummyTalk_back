@@ -34,6 +34,8 @@ public class ChatDataEntity extends BaseTimeEntity {
 
     private String type;      // 추가: 메시지 타입 (TEXT, image, audio)
 
+    private Long imageId;     // 추가: 이미지 ID
+
     private String audioUrl;  // 추가: 오디오 URL
     private int audioChatId;  // 추가: 오디오 채팅 ID
 
