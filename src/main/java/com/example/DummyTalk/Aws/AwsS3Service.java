@@ -25,6 +25,13 @@ public class AwsS3Service {
     @Value("${chatAbsolutePath.dir}")
     private String chatAbsolutePath;
 
+    /***
+     * 이미지 업로드
+     * @param file
+     * @param BUCKET_DIR : 업로드할 버킷 디렉토리 (ex. channel-1/, profile/)
+     * @return imageDto
+     * @throws IOException
+     */
     public ImageDto upload(MultipartFile file, String BUCKET_DIR) throws IOException {
 
         try (InputStream fileStream = file.getInputStream()) {
@@ -66,5 +73,20 @@ public class AwsS3Service {
         }
 
         return null;
+    }
+
+    public void deleteObject(String keyName) {
+        try {
+            log.info("\nAwsS3Service deleteObject : " + keyName);
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(env.getProperty("cloud.s3.bucket"))
+                    .key(keyName)
+                    .build();
+
+            s3Client.deleteObject(deleteObjectRequest);
+        } catch (S3Exception e) {
+            log.error(e.awsErrorDetails().errorMessage());
+            log.error("AwsS3Service deleteObject error : " + e.getMessage());
+        }
     }
 }
