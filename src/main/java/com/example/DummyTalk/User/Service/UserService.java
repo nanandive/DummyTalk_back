@@ -141,11 +141,12 @@ public class UserService  {
             LocalDateTime plus9Hours = currentDateTime.plusHours(9);
 
             UserDTO userDTO = UserDTO.builder()
-                                        .nickname("기본 닉네임")
+                                        .nickname(getEmailUsername(email))
                                         .credential(credential.substring(0, 500))
                                         .createAt(plus9Hours)
                                         .userSecretKey(encrtptJWT)
                                         .userEmail(email)
+                                        .nationalLanguage("kor_Hang")
                                         .build();
 
             User user = modelMapper.map(userDTO, User.class);
@@ -308,6 +309,19 @@ public class UserService  {
         byte[] randomBytes = new byte[length];
         secureRandom.nextBytes(randomBytes);
         return randomBytes;
+    }
+
+
+    public static String getEmailUsername(String email) {
+        int atIndex = email.indexOf('@');
+        if (atIndex != -1) {
+            // "@" 앞의 문자열 추출
+            String username = email.substring(0, atIndex);
+            return username;
+        } else {
+            // "@"이 없는 경우 빈 문자열 반환 또는 오류 처리
+            return "";
+        }
     }
 
 }

@@ -100,18 +100,21 @@ public class ChatServiceImpl implements ChatService {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
             newChat = chatRepository.save(chatEntity);
 
+            log.info("chatEntity=================>{}", chatEntity);
+            log.info("newChat=================>{}", newChat);
+
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String createAt = newChat.getCreatedAt().format(formatter);
-
             chatDTO = ChatDTO.builder()
                                         .chatId(newChat.getChatId())
                                         .channelId(newChat.getChannelId().getChannelId())
                                         .message(newChat.getMessage())
-                                        .language(newChat.getLanguage())
+                                        .language(user.getNationalLanguage())
                                         .nickname(user.getNickname())
                                         .createdAt(createAt)
                                         .build();
         } catch (Exception e) {
+            log.info("에러 메시지=====>{}", e.getMessage());
             throw new ChatFailException("채팅 저장에 실패하였습니다.");
         }
 
