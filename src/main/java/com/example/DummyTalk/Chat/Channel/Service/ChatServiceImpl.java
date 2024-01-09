@@ -179,7 +179,7 @@ public class ChatServiceImpl implements ChatService {
         return chat.delete();
     }
 
-    // TODO: milvus delete
+
     private void milvusDelete(Long imageId) {
         WebClient.create()
                 .post()
