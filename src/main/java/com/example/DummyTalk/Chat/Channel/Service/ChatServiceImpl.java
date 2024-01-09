@@ -100,9 +100,11 @@ public class ChatServiceImpl implements ChatService {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
             newChat = chatRepository.save(chatEntity);
 
+            log.info("chatEntity=================>{}", chatEntity);
+            log.info("newChat=================>{}", newChat);
+
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String createAt = newChat.getCreatedAt().format(formatter);
-
             chatDTO = ChatDTO.builder()
                                         .chatId(newChat.getChatId())
                                         .channelId(newChat.getChannelId().getChannelId())
