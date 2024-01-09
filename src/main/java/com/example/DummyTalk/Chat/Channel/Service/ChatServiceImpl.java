@@ -91,7 +91,8 @@ public class ChatServiceImpl implements ChatService {
 
         User user = userRepository.findByUserId((long) message.getSender());
         ChannelEntity channel = channelRepository.findByChannelId((long) message.getChannelId());
-
+        log.info("user=================>{}", user);
+        log.info("channel=================>{}", channel);
         if(user == null ) throw new ChatFailException("유저 조회에 실패하였습니다. ");
         if(channel == null ) throw new ChatFailException("채널 조회에 실패하였습니다.");
         ChatDataEntity newChat = null;

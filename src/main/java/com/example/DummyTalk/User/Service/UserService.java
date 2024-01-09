@@ -114,7 +114,7 @@ public class UserService  {
     // 구글 로그인
     public TokenDTO googleLogin(String credential) throws Exception {
 
-        User result =  userRepository.findByCredential(credential.substring(0, 500));
+        User result =  userRepository.findByCredential(credential.substring(0, 300));
 
         // 등록된 계정이 아닐 경우 등록
         if(result == null){
@@ -142,7 +142,7 @@ public class UserService  {
 
             UserDTO userDTO = UserDTO.builder()
                                         .nickname(getEmailUsername(email))
-                                        .credential(credential.substring(0, 500))
+                                        .credential(credential.substring(0, 300))
                                         .createAt(plus9Hours)
                                         .userSecretKey(encrtptJWT)
                                         .userEmail(email)
