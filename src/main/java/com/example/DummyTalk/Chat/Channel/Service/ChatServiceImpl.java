@@ -171,12 +171,12 @@ public class ChatServiceImpl implements ChatService {
 
         if( chat == null ) throw new ChatFailException("오류가 발생하였습니다. 다시 시도해주세요.");
 
-//        if(chat.getType().equals("IMAGE")){
-//            String objectKey = extractSubstring(chat.getMessage());
-//            awsS3Service.deleteObject(objectKey);
-//            imageRepository.deleteById(chat.getImageId());
-//            milvusDelete(chat.getImageId());
-//        }
+        if(chat.getType().equals("IMAGE")){
+            String objectKey = extractSubstring(chat.getMessage());
+            awsS3Service.deleteObject(objectKey);
+            imageRepository.deleteById(chat.getImageId());
+            milvusDelete(chat.getImageId());
+        }
         return chat.delete();
     }
 
@@ -184,7 +184,7 @@ public class ChatServiceImpl implements ChatService {
     private void milvusDelete(Long imageId) {
         WebClient.create()
                 .post()
-                .uri("http://localhost:8000/api/search/deleteImage")
+                .uri("http://localhost:8000/api/image/delete/"+imageId.intValue())
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(imageId))
                 .retrieve()
