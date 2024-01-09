@@ -69,7 +69,7 @@ public class ChatController {
             log.info("\n handleMessage TEXT   : {}", message);
             return new MessageResponse(message.getNickname(), "일반 텍스트 채팅 메시지 전송 성공", message);
         } else {
-            throw new ChatFailException("메시지를 입력해주세요.");
+            throw new ChatFailException("메시지를 입력해주세요. ");
         }
     }
 
