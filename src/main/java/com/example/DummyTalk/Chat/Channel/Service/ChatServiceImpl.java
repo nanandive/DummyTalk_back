@@ -112,6 +112,7 @@ public class ChatServiceImpl implements ChatService {
                                         .createdAt(createAt)
                                         .build();
         } catch (Exception e) {
+            log.info("에러 메시지=====>{}", e.getMessage());
             throw new ChatFailException("채팅 저장에 실패하였습니다.");
         }
 
