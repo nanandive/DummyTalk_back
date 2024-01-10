@@ -91,7 +91,8 @@ public class ChatServiceImpl implements ChatService {
 
         User user = userRepository.findByUserId((long) message.getSender());
         ChannelEntity channel = channelRepository.findByChannelId((long) message.getChannelId());
-
+        log.info("user=================>{}", user);
+        log.info("channel=================>{}", channel);
         if(user == null ) throw new ChatFailException("유저 조회에 실패하였습니다. ");
         if(channel == null ) throw new ChatFailException("채널 조회에 실패하였습니다.");
         ChatDataEntity newChat = null;
@@ -128,17 +129,6 @@ public class ChatServiceImpl implements ChatService {
         return newChat;
     }
 
-    /***
-     *  참여자 체크
-     *  @param channelId : 채널 아이디
-     */
-    public void checkParticipant(int channelId, Long userId) {
-        ChannelParticipantEntity channel =
-                channelParticipantRepository.findByChannelIdAndUserId((long)channelId, userId);
-//        if (channel == null) {
-//            throw new ChatFailException("초대 된 채널이 아닙니다.");
-//        }
-    }
 
     /***
      *  chat message URL에서 AWS ObejectKey 추출

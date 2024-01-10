@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                //.requestMatchers("/server/**", "/channel/**", "/chat/**").access(USER,ADMIN)
+//                                .requestMatchers("/server/**", "/channel/**", "/chat/**").access(USER,ADMIN)
                                 .requestMatchers("/", "/login/**", "/websocket", "/app/**","/googleLogin/**").permitAll()   // index와 login페이지만 허용
                                 .anyRequest().permitAll()
                 ).exceptionHandling(exception ->
