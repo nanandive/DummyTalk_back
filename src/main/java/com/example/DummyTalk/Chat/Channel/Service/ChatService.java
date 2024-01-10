@@ -24,12 +24,6 @@ public interface ChatService {
     MessageResponse translateMessage(MessageRequest chat, String nationLanguage);
 
     /***
-     *  참여자 체크
-     *  @param channelId : 채널 아이디
-     */
-    void checkParticipant(int channelId, Long userId);
-
-    /***
      *  채팅 내용 삭제
      *  @param chatId : 채팅 아이디
      *  @return 삭제된 채팅 아이디

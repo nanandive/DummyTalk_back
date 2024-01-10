@@ -77,7 +77,6 @@ public class ChatController {
     @GetMapping("/{channelId}/{userId}")
     public ResponseEntity<ResponseDTO> getChatData(@PathVariable int channelId, @PathVariable String userId) {
         log.info("\n getChatData channelId=============================\n{}", channelId);
-        chatService.checkParticipant(channelId, Long.parseLong(userId));
         try {
             List<MessageHistoryDto> list = chatService.findChatData(channelId);
             return ResponseEntity
