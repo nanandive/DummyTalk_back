@@ -1,7 +1,6 @@
 package com.example.DummyTalk.Chat.Channel.Service;
 
 import com.example.DummyTalk.Aws.AwsS3Service;
-import com.example.DummyTalk.Chat.Channel.Controller.MessageResponse;
 import com.example.DummyTalk.Chat.Channel.Dto.*;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
 import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
@@ -12,23 +11,19 @@ import com.example.DummyTalk.Chat.Channel.Repository.ImageRepository;
 import com.example.DummyTalk.Exception.ChatFailException;
 import com.example.DummyTalk.User.Entity.User;
 import com.example.DummyTalk.User.Repository.UserRepository;
-import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,8 +50,9 @@ public class ImageServiceImpl implements ImageService {
                 .build();
     }
 
-    private ChatDataEntity convertToChatEntity(User user, ChannelEntity channel, String filePath) {
+    private ChatDataEntity convertToChatEntity(User user, ChannelEntity channel, String filePath, int imageId) {
         return ChatDataEntity.builder()
+                .imageId((long)imageId)
                 .sender(user)
                 .channelId(channel)
                 .message(filePath)
@@ -160,14 +156,13 @@ public class ImageServiceImpl implements ImageService {
     // 채팅 데이터 -> DB 저장
     private MessageRequest saveToChatDatabase(ImageEmbeddingRequestDto imageDto, User user, ChannelEntity channel) {
         try {
-            ChatDataEntity saveChat = chatRepository.save(convertToChatEntity(user, channel, imageDto.getFilePath()));
+            ChatDataEntity saveChat = chatRepository.save(convertToChatEntity(user, channel, imageDto.getFilePath(), imageDto.getImageId()));
             return convertToChatDto(saveChat);
         } catch (Exception e) {
             log.error("채팅 데이터를 데이터베이스에 저장하는데 에러가 발생했습니다.");
             log.error(e.getMessage());
             throw new ChatFailException("채팅 데이터 저장에 실패하였습니다.");
         }
-
     }
 
 
