@@ -21,10 +21,10 @@ public class LivekitController {
     private String LK_API_SECRET;
 
     @GetMapping("/getTokens")
-    public ResponseEntity<?> getToken(@RequestParam String room, @RequestParam String userId) {
+    public ResponseEntity<?> getToken(@RequestParam String room, @RequestParam String userId, @RequestParam String nickname) {
         AccessToken token = new AccessToken(LK_API_KEY, LK_API_SECRET);
         // Fill in token information.
-        token.setName("name");
+        token.setName(nickname);
         token.setIdentity(userId);
         token.setMetadata("metadata");
         token.addGrants(new RoomJoin(true), new RoomName(room));
