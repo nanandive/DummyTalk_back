@@ -101,21 +101,18 @@ public class ChatServiceImpl implements ChatService {
             ChatDataEntity chatEntity = convertToChannelEntity(user, channel, message);
             newChat = chatRepository.save(chatEntity);
 
-            log.info("chatEntity=================>{}", chatEntity);
-            log.info("newChat=================>{}", newChat);
-
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String createAt = newChat.getCreatedAt().format(formatter);
+
             chatDTO = ChatDTO.builder()
-                                        .chatId(newChat.getChatId())
-                                        .channelId(newChat.getChannelId().getChannelId())
-                                        .message(newChat.getMessage())
-                                        .language(user.getNationalLanguage())
-                                        .nickname(user.getNickname())
-                                        .createdAt(createAt)
-                                        .build();
+                    .chatId(newChat.getChatId())
+                    .channelId(newChat.getChannelId().getChannelId())
+                    .message(newChat.getMessage())
+                    .language(newChat.getLanguage())
+                    .nickname(user.getNickname())
+                    .createdAt(createAt)
+                    .build();
         } catch (Exception e) {
-            log.info("에러 메시지=====>{}", e.getMessage());
             throw new ChatFailException("채팅 저장에 실패하였습니다.");
         }
 
@@ -183,7 +180,7 @@ public class ChatServiceImpl implements ChatService {
         return chat.delete();
     }
 
-    // TODO: milvus delete
+
     private void milvusDelete(Long imageId) {
         WebClient.create()
                 .post()
