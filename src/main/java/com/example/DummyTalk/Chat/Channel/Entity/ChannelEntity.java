@@ -12,7 +12,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@ToString(exclude = {"serverEntity", "chatDataEntityList"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
