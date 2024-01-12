@@ -15,9 +15,12 @@ public class ServerDto {
 
     private Long id;
     private String serverName;
-    private String invitedUser;
+    private String invitedCode;
     private String userName;
-    private int userCount;
+    private int maxUsers;
+    private int currentUsers;
+
+    private Long userId;
 
     private String fileName;
     private String filePath;

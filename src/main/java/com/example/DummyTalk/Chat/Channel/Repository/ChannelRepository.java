@@ -2,6 +2,7 @@ package com.example.DummyTalk.Chat.Channel.Repository;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
 import com.example.DummyTalk.Chat.Channel.Entity.ChannelEntity;
+import com.example.DummyTalk.Chat.Channel.Entity.ChatDataEntity;
 import jakarta.annotation.PostConstruct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +17,6 @@ import java.util.Map;
 public interface ChannelRepository extends JpaRepository<ChannelEntity, Long> {
     /* 서버에 맞는 채널 리스트 조회 */
     List<ChannelEntity> findByServerId(Long serverId);
-
     ChannelEntity findByChannelId(Long channelId);
+
 }

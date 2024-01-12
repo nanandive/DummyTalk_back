@@ -6,6 +6,7 @@ import lombok.ToString;
 
 @Entity
 @Data
+@ToString(exclude = "channelDataId")
 @Table(name = "translated_text")
 public class TranslatedTextEntity {
     @Id
@@ -18,6 +19,8 @@ public class TranslatedTextEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "chat_id")
     private ChatDataEntity channelDataId;
+
+    private String national_language_code;
 
 //text, translated_text, image, img_em_text
 

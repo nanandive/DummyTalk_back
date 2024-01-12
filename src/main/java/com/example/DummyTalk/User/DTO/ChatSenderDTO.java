@@ -11,23 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 @ToString
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class ChatSenderDTO {
 
-    private Long sender;
+    private Long userId;
     private String name;
     private String nickname;
     private String userImgPath;
-
-    public ChatSenderDTO build() {
-        ChatSenderDTO dto = new ChatSenderDTO();
-        dto.sender = this.sender;
-        dto.name = this.name;
-        dto.nickname = this.nickname;
-        dto.userImgPath = this.userImgPath;
-        return dto;
-    }
 
 }

@@ -24,6 +24,7 @@ java {
     }
 
     dependencies {
+        implementation 'io.livekit:livekit-server:0.5.6'
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         implementation 'org.springframework.boot:spring-boot-starter-security'
         implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -54,9 +55,18 @@ java {
         implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
         implementation 'com.fasterxml.jackson.core:jackson-databind'
 
+        implementation group: 'com.google.api-client', name: 'google-api-client', version: '2.2.0'
+
+
         /* 로그인 인증 메일 */
         implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+        implementation 'commons-io:commons-io:2.15.1'
+
+        /* AWS */
+        implementation(platform("software.amazon.awssdk:bom:2.21.20"))
+        implementation("software.amazon.awssdk:s3")
+        implementation('software.amazon.awssdk:kms')
 
         tasks.named('bootBuildImage') {
             builder = 'paketobuildpacks/builder-jammy-base:latest'

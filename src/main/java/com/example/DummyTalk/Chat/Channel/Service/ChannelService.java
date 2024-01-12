@@ -3,10 +3,11 @@ package com.example.DummyTalk.Chat.Channel.Service;
 import java.util.List;
 
 import com.example.DummyTalk.Chat.Channel.Dto.ChannelDto;
-import com.example.DummyTalk.Chat.Channel.Dto.SendChatDto;
 
 public interface ChannelService {
-    List<ChannelDto> findByChannelList(Long ServerId);
+    List<ChannelDto> findByChannelList(Long ServerId, Long userId);
     void createChannel(ChannelDto channelDto);
+    ChannelDto getChannelName(Long channelId);
 
+    ChannelDto getChannelType(Long channelId);
 }

@@ -1,5 +1,6 @@
 package com.example.DummyTalk.User.DTO;
 
+import com.example.DummyTalk.User.Entity.UserServerCode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -13,13 +14,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class UserDTO implements UserDetails {
 
     private Long userId;
@@ -34,13 +36,19 @@ public class UserDTO implements UserDetails {
 
     private String userPhone;
 
+    private String credential;
+
     private String userImgPath;
 
-    private String userSecretKey;
+    private  String userSecretKey;
 
     private LocalDateTime createAt;
 
     private LocalDateTime updateAt;
+
+    private String nationalLanguage;
+
+    private List<UserServerCodeDto> userServerCodeList = new ArrayList<>();
 
 
     @Override
